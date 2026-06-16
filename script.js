@@ -119,32 +119,28 @@ function renderDrafts() {
         const titleContainer = li.querySelector('.draft-title-container');
         const titleTextSpan = li.querySelector('.title-text');
 
-        // MULTI-CLICK TIMING HANDLER (Flashes out double tap vs single tap accurately)
+        // MULTI-CLICK TIMING HANDLER
         let clickCount = 0;
         let clickTimer;
 
         titleContainer.addEventListener('click', (e) => {
             e.preventDefault();
-            
-            // If they are already editing, stop clicks entirely
             if (titleContainer.querySelector('input')) return;
 
             clickCount++;
 
             if (clickCount === 1) {
-                // Wait 250ms to check if a second tap follows
                 clickTimer = setTimeout(() => {
-                    clickCount = 0; // Reset counter
-                    loadDraft(draft.content); // Execute standard single tap action safely
+                    clickCount = 0;
+                    loadDraft(draft.content);
                 }, 250);
             } else if (clickCount === 2) {
-                clearTimeout(clickTimer); // Stop the single click action from loading the draft
-                clickCount = 0; // Reset counter
-                triggerRenameInterface(); // Fire custom renaming system instantly
+                clearTimeout(clickTimer);
+                clickCount = 0;
+                triggerRenameInterface();
             }
         });
 
-        // THE RENDERING LOGIC FOR INLINE EDITOR FIELD
         function triggerRenameInterface() {
             if (titleContainer.querySelector('input')) return;
 
@@ -229,13 +225,16 @@ downloadBtn.addEventListener('click', () => {
 
 
 /* ==========================================================================
-   6. AMBIENT JUNGLE PARTICLE ENGINE
+   6. UPGRADED MULTI-TONE AMBIENT PARTICLE ENGINE
    ========================================================================== */
 const canvas = document.getElementById('ambient-canvas');
 const ctx = canvas.getContext('2d');
 
 let particlesArray = [];
-const maxParticles = 40; 
+const maxParticles = 45; 
+
+// Forest color palette to blend with the new background gradient
+const forestColors = ['#3f5e52', '#52796f', '#71978c', '#2f4f43'];
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -248,11 +247,17 @@ class SporeParticle {
     constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height; 
-        this.size = Math.random() * 2.5 + 0.5; 
-        this.speedX = Math.random() * 0.4 - 0.2; 
-        this.speedY = -(Math.random() * 0.5 + 0.1); 
-        this.alpha = Math.random() * 0.5 + 0.1; 
-        this.fadeSpeed = Math.random() * 0.005 + 0.002;
+        
+        // Dynamic sizing creates foreground vs background depth
+        this.size = Math.random() * 2.8 + 0.4; 
+        
+        this.speedX = Math.random() * 0.3 - 0.15; 
+        this.speedY = -(Math.random() * 0.4 + 0.1); 
+        this.alpha = Math.random() * 0.4 + 0.05; 
+        this.fadeSpeed = Math.random() * 0.004 + 0.001;
+        
+        // Randomly select a color from our palette for variation
+        this.color = forestColors[Math.floor(Math.random() * forestColors.length)];
     }
 
     update() {
@@ -265,7 +270,7 @@ class SporeParticle {
             this.alpha = 0; 
         }
 
-        if (this.alpha < 0.6) {
+        if (this.alpha < 0.5) {
             this.alpha += this.fadeSpeed;
         }
     }
@@ -276,9 +281,11 @@ class SporeParticle {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         
-        ctx.fillStyle = '#52796f';
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = '#355245';
+        ctx.fillStyle = this.color;
+        
+        // Soft glowing shadows around particles
+        ctx.shadowBlur = this.size * 3;
+        ctx.shadowColor = '#1f3a2b';
         
         ctx.fill();
         ctx.restore();
