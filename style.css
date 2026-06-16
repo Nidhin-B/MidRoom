@@ -2,7 +2,6 @@
    MIDROOM — DEEP FOREST FANTASY ATMOSPHERE
    ========================================== */
 
-/* Resetting default margins and setting up the base font */
 * {
     margin: 0;
     padding: 0;
@@ -10,10 +9,9 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* The core background: an ancient, dark forest depth at midnight */
 body {
-    background-color: #0a0f0d; /* Ultra dark pine-needle black */
-    color: #cbd5e1; /* Soft misty silver text */
+    background-color: #0a0f0d; /* Dark pine-needle black */
+    color: #cbd5e1; /* Misty silver text */
     height: 100vh;
     display: flex;
     overflow: hidden;
@@ -25,13 +23,12 @@ body {
 .sidebar {
     position: fixed;
     top: 0;
-    left: -280px; /* Hidden offscreen by default */
+    left: -280px;
     width: 280px;
     height: 100%;
-    /* A translucent deep moss/canopy green tint */
     background: rgba(11, 19, 15, 0.85); 
-    backdrop-filter: blur(16px); /* Thick mist/fog blur effect */
-    border-right: 1px solid rgba(45, 90, 68, 0.15); /* Faint emerald root line */
+    backdrop-filter: blur(16px); 
+    border-right: 1px solid rgba(45, 90, 68, 0.15); 
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -54,11 +51,10 @@ body {
     font-size: 0.85rem;
     font-weight: 400;
     letter-spacing: 0.08em;
-    color: #52796f; /* Muted forest fern green */
+    color: #52796f; 
     text-transform: uppercase;
 }
 
-/* Custom list layout for saved drafts */
 .drafts-list {
     list-style: none;
     overflow-y: auto;
@@ -67,7 +63,7 @@ body {
 
 .drafts-list li {
     padding: 12px 14px;
-    background: rgba(45, 90, 68, 0.05); /* Faint leafy undertone */
+    background: rgba(45, 90, 68, 0.05); 
     border-radius: 6px;
     margin-bottom: 8px;
     cursor: pointer;
@@ -81,7 +77,7 @@ body {
 
 .drafts-list li:hover {
     background: rgba(53, 114, 88, 0.15);
-    color: #a7f3d0; /* Soft minty glow on text */
+    color: #a7f3d0; 
     border-color: rgba(53, 114, 88, 0.3);
 }
 
@@ -94,11 +90,9 @@ body {
     flex-direction: column;
     height: 100%;
     padding: 0 20px;
-    /* Subtle radial gradient that mimics a soft, dim clearing in the woods */
     background: radial-gradient(circle at center, #0f1a15 0%, #0a0f0d 100%);
 }
 
-/* Minimal Top Navigation */
 .top-nav {
     display: flex;
     justify-content: space-between;
@@ -123,16 +117,15 @@ body {
 .nav-btn:hover {
     color: #a7f3d0;
     border-color: rgba(167, 243, 208, 0.4);
-    box-shadow: 0 0 8px rgba(167, 243, 208, 0.1); /* Soft firefly glow */
+    box-shadow: 0 0 8px rgba(167, 243, 208, 0.1); 
 }
 
 .status-indicator {
     font-size: 0.8rem;
-    color: #2d4a3e; /* Hidden deep brushwood tone */
+    color: #2d4a3e; 
     letter-spacing: 0.05em;
 }
 
-/* The Text Input Area: Zero borders, distraction-free */
 #text-input {
     flex-grow: 1;
     width: 100%;
@@ -146,11 +139,17 @@ body {
     line-height: 1.8;
     resize: none;
     padding: 20px 0;
+    caret-color: #a7f3d0; /* Magical mint green blinking cursor */
 }
 
 #text-input::placeholder {
-    color: #22372d; /* Looks like text carved faintly into dark wood */
+    color: #355245; /* Moonlight moss color */
     font-style: italic;
+    transition: color 0.3s ease;
+}
+
+#text-input:focus::placeholder {
+    color: transparent;
 }
 
 /* ==========================================
@@ -193,7 +192,6 @@ body {
     background: rgba(167, 243, 208, 0.03);
 }
 
-/* Quick utility button styles */
 .icon-btn {
     background: transparent;
     border: none;
