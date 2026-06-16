@@ -1,1 +1,208 @@
-n
+/* ==========================================
+   MIDROOM — DEEP FOREST FANTASY ATMOSPHERE
+   ========================================== */
+
+/* Resetting default margins and setting up the base font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* The core background: an ancient, dark forest depth at midnight */
+body {
+    background-color: #0a0f0d; /* Ultra dark pine-needle black */
+    color: #cbd5e1; /* Soft misty silver text */
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+/* ==========================================
+   THE SIDEBAR (THE ENCHANTED VAULT)
+   ========================================== */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px; /* Hidden offscreen by default */
+    width: 280px;
+    height: 100%;
+    /* A translucent deep moss/canopy green tint */
+    background: rgba(11, 19, 15, 0.85); 
+    backdrop-filter: blur(16px); /* Thick mist/fog blur effect */
+    border-right: 1px solid rgba(45, 90, 68, 0.15); /* Faint emerald root line */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.sidebar-header h3 {
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: #52796f; /* Muted forest fern green */
+    text-transform: uppercase;
+}
+
+/* Custom list layout for saved drafts */
+.drafts-list {
+    list-style: none;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.drafts-list li {
+    padding: 12px 14px;
+    background: rgba(45, 90, 68, 0.05); /* Faint leafy undertone */
+    border-radius: 6px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.drafts-list li:hover {
+    background: rgba(53, 114, 88, 0.15);
+    color: #a7f3d0; /* Soft minty glow on text */
+    border-color: rgba(53, 114, 88, 0.3);
+}
+
+/* ==========================================
+   MAIN CANVAS & THE TYPING VOID
+   ========================================== */
+.canvas-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0 20px;
+    /* Subtle radial gradient that mimics a soft, dim clearing in the woods */
+    background: radial-gradient(circle at center, #0f1a15 0%, #0a0f0d 100%);
+}
+
+/* Minimal Top Navigation */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.nav-btn {
+    background: transparent;
+    border: 1px solid rgba(82, 121, 111, 0.2);
+    color: #52796f;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+    color: #a7f3d0;
+    border-color: rgba(167, 243, 208, 0.4);
+    box-shadow: 0 0 8px rgba(167, 243, 208, 0.1); /* Soft firefly glow */
+}
+
+.status-indicator {
+    font-size: 0.8rem;
+    color: #2d4a3e; /* Hidden deep brushwood tone */
+    letter-spacing: 0.05em;
+}
+
+/* The Text Input Area: Zero borders, distraction-free */
+#text-input {
+    flex-grow: 1;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e2e8f0;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    resize: none;
+    padding: 20px 0;
+}
+
+#text-input::placeholder {
+    color: #22372d; /* Looks like text carved faintly into dark wood */
+    font-style: italic;
+}
+
+/* ==========================================
+   THE MINIMAL INTERFACE TOOLBAR
+   ========================================== */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-top: 1px solid rgba(82, 121, 111, 0.08);
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.stats {
+    font-size: 0.85rem;
+    color: #355245;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+.action-btn {
+    background: transparent;
+    border: none;
+    color: #52796f;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 4px;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.action-btn:hover {
+    color: #a7f3d0;
+    background: rgba(167, 243, 208, 0.03);
+}
+
+/* Quick utility button styles */
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: #355245;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.icon-btn:hover {
+    color: #a7f3d0;
+}
