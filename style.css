@@ -1,6 +1,6 @@
 /* ==========================================================================
    MIDROOM — AMBIENT FANTASY WRITING CANVAS CORE STYLES (RESTORED)
-   ========================================================================== */
+   ========================================================================= */
 
 /* 1. RESET & UNIVERSAL SYSTEM VARIABLES */
 * {
@@ -13,7 +13,8 @@
 
 /* Force the page to lock exactly to the true mobile screen window size */
 html, body {
-    background-color: #0a0f0d; 
+    /* IMMERSIVE JUNGLE GRADIENT: Blends from a misty dark canopy down into an abyss */
+    background: linear-gradient(180deg, #0d1e16 0%, #060a08 60%, #020403 100%); 
     color: #cbd5e1; 
     
     /* Dynamic viewport height: Forces mobile browsers to drop the dead bottom gap */
@@ -49,7 +50,7 @@ html, body {
     position: relative;
     z-index: 1;
     /* Translucent shielding to embed the particles naturally into the void */
-    background: rgba(10, 15, 13, 0.4); 
+    background: rgba(10, 15, 13, 0.35); 
 }
 
 /* 3. TOP NAVIGATION HEADER */
@@ -218,7 +219,7 @@ html, body {
     align-items: center;
     transition: all 0.2s ease;
 
-    /* CRITICAL FIX: Blocks browser text copy overlay box when holding down on mobile */
+    /* Blocks browser text copy overlay box when holding down on mobile */
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
