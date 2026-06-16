@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — AMBIENT FANTASY WRITING CANVAS CORE STYLES
+   MIDROOM — AMBIENT FANTASY WRITING CANVAS CORE STYLES (RESTORED)
    ========================================================================== */
 
 /* 1. RESET & UNIVERSAL SYSTEM VARIABLES */
@@ -7,7 +7,8 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Courier New', Courier, monospace;
+    /* Clean, premium sans-serif typography for that modern minimal aesthetic */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* Force the page to lock exactly to the true mobile screen window size */
@@ -15,9 +16,9 @@ html, body {
     background-color: #0a0f0d; 
     color: #cbd5e1; 
     
-    /* The Ultimate Screen-Fit Fix */
+    /* Dynamic viewport height: Forces Chrome/Opera to drop the dead bottom gap */
     height: 100vh;
-    height: 100dvh; /* Dynamic viewport height: Forces Chrome to drop the dead bottom gap */
+    height: 100dvh; 
     
     width: 100vw;
     display: flex;
@@ -33,7 +34,7 @@ html, body {
     flex-direction: column;
     height: 100%;
     width: 100%;
-    padding: 20px;
+    padding: 24px 24px; /* Increased side padding for breathing room */
     position: relative;
     z-index: 1;
 }
@@ -46,7 +47,7 @@ html, body {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    flex-shrink: 0; /* Prevents top menu from breaking when keyboard pushes up */
+    flex-shrink: 0; 
 
     /* Universal fix for Opera full-screen clipping */
     padding: calc(15px + env(safe-area-inset-top)) 0 15px 0; 
@@ -56,10 +57,11 @@ html, body {
     background: transparent;
     border: 1px solid #1f3a2b;
     color: #52796f;
-    padding: 6px 14px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
     transition: all 0.3s ease;
 }
 
@@ -71,8 +73,9 @@ html, body {
 
 .status-indicator {
     font-size: 0.85rem;
-    color: #2f4f3e;
+    color: #355245;
     letter-spacing: 1px;
+    font-weight: 500;
 }
 
 /* 4. THE MAIN CENTRAL TEXT INPUT FIELD */
@@ -86,10 +89,10 @@ html, body {
     outline: none;
     resize: none;
     color: #cbd5e1;
-    font-size: 1.15rem;
-    line-height: 1.7;
-    padding: 20px 0;
-    letter-spacing: 0.5px;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    padding: 30px 0;
+    letter-spacing: 0.2px;
 }
 
 #text-input::placeholder {
@@ -105,19 +108,20 @@ html, body {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    padding: 15px 0 calc(10px + env(safe-area-inset-bottom)) 0;
-    border-top: 1px solid #0f1a14;
+    padding: 20px 0 calc(15px + env(safe-area-inset-bottom)) 0;
+    border-top: 1px solid #101c16;
     flex-shrink: 0;
 }
 
 .stats {
     font-size: 0.85rem;
-    color: #355245;
+    color: #4f7466;
+    font-weight: 500;
 }
 
 .actions {
     display: flex;
-    gap: 12px;
+    gap: 16px;
 }
 
 .action-btn {
@@ -126,6 +130,7 @@ html, body {
     color: #4f7466;
     cursor: pointer;
     font-size: 0.85rem;
+    font-weight: 500;
     transition: color 0.2s ease;
 }
 
@@ -163,8 +168,8 @@ html, body {
 
 .sidebar-header h3 {
     color: #52796f;
-    font-size: 1rem;
-    font-weight: normal;
+    font-size: 0.95rem;
+    font-weight: 500;
     letter-spacing: 1px;
 }
 
@@ -172,7 +177,7 @@ html, body {
     background: transparent;
     border: none;
     color: #355245;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     cursor: pointer;
     line-height: 1;
 }
@@ -190,23 +195,22 @@ html, body {
 
 .drafts-list li {
     padding: 12px 14px;
-    background: rgba(45, 90, 68, 0.1); 
+    background: rgba(45, 90, 68, 0.08); 
     border-radius: 6px;
     margin-bottom: 8px;
     cursor: pointer;
     font-size: 0.85rem;
-    display: flex; /* Keeps the dynamic title and delete trigger cleanly on one line */
+    display: flex; 
     justify-content: space-between;
     align-items: center;
     transition: all 0.2s ease;
 }
 
 .drafts-list li:hover {
-    background: rgba(53, 114, 88, 0.25);
+    background: rgba(53, 114, 88, 0.2);
     color: #a7f3d0; 
 }
 
-/* Sleek deletion button layout embedded directly into item line */
 .delete-draft-btn {
     background: transparent;
     border: none;
@@ -219,11 +223,10 @@ html, body {
 }
 
 .delete-draft-btn:hover {
-    color: #ef4444; /* Premium warning highlight on action hover */
+    color: #ef4444; 
     transform: scale(1.2);
 }
 
-/* Webkit Scrollbar Modifications for the Vault Sidebar view */
 .drafts-list::-webkit-scrollbar {
     width: 4px;
 }
