@@ -1,1 +1,46 @@
-n
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MidRoom — An Ambient Fantasy Canvas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Recent Drafts</h3>
+            <button id="close-sidebar-btn" class="icon-btn">×</button>
+        </div>
+        <ul class="drafts-list" id="drafts-list">
+            </ul>
+    </aside>
+
+    <main class="canvas-container">
+        <header class="top-nav">
+            <button id="menu-btn" class="nav-btn">Menu</button>
+            <span class="status-indicator">Private Room</span>
+        </header>
+
+        <textarea 
+            id="text-input" 
+            placeholder="Type your thoughts into the void..." 
+            spellcheck="false"
+        ></textarea>
+
+        <footer class="toolbar">
+            <div class="stats">
+                <span id="word-count">0 words</span>
+            </div>
+            <div class="actions">
+                <button id="save-btn" class="action-btn">Save Draft</button>
+                <button id="copy-btn" class="action-btn">Copy Text</button>
+                <button id="download-btn" class="action-btn">Download .txt</button>
+            </div>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
