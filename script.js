@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — CORE CANVAS ENGINES, VAULT HOOKS & CUSTOM RENAMING
+   MIDROOM — CORE CANVAS ENGINES, VAULT HOOKS & TIMED LONG-PRESS RENAMING
    ========================================================================== */
 
 // 1. DOM SELECTORS
@@ -46,7 +46,6 @@ function saveDraftToVault() {
     if (!text) return;
 
     const drafts = getDrafts();
-    // Use first 25 chars as title anchor initially
     const firstLine = text.split('\n')[0].substring(0, 25) || "Untitled Draft";
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -60,7 +59,6 @@ function saveDraftToVault() {
     drafts.unshift(newDraft);
     localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
     
-    // Quick, clean save feedback trigger
     const originalText = saveBtn.textContent;
     saveBtn.textContent = "Saved ✔";
     saveBtn.style.color = "#a7f3d0";
@@ -71,17 +69,16 @@ function saveDraftToVault() {
 }
 
 function deleteDraft(id, event) {
-    event.stopPropagation(); // Prevents clicking delete from instantly opening the draft
+    event.stopPropagation(); 
     let drafts = getDrafts();
     drafts = drafts.filter(draft => draft.id !== id);
     localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
     renderDrafts();
 }
 
-// NEW FEATURE: INLINE DRAFT RENAMING MECHANIC
 function renameDraft(id, newTitle) {
     const trimmedTitle = newTitle.trim();
-    if (!trimmedTitle) return; // Don't allow empty names
+    if (!trimmedTitle) return; 
 
     let drafts = getDrafts();
     drafts = drafts.map(draft => {
@@ -96,7 +93,7 @@ function renameDraft(id, newTitle) {
 
 function loadDraft(content) {
     textInput.value = content;
-    textInput.dispatchEvent(new Event('input')); // Force recalculation of word count
+    textInput.dispatchEvent(new Event('input')); 
     sidebar.classList.remove('active');
 }
 
@@ -114,7 +111,7 @@ function renderDrafts() {
         li.innerHTML = `
             <span class="draft-title-container" style="display: flex; flex-direction: column; flex: 1; margin-right: 10px;">
                 <span class="title-text" style="font-weight: 500; word-break: break-all;">${draft.title}</span>
-                <small style="color: #2f4f3e; margin-top: 2px; font-family: sans-serif; font-size: 0.75rem;">${draft.time} • Double tap to rename</small>
+                <small style="color: #2f4f3e; margin-top: 2px; font-family: sans-serif; font-size: 0.75rem;">${draft.time} • Hold to rename</small>
             </span>
             <button class="delete-draft-btn" data-id="${draft.id}">&times;</button>
         `;
@@ -122,18 +119,48 @@ function renderDrafts() {
         const titleContainer = li.querySelector('.draft-title-container');
         const titleTextSpan = li.querySelector('.title-text');
 
-        // Clicking the title area opens the draft normally
-        titleContainer.addEventListener('click', (e) => {
-            // Prevent opening if they are actively interacting with an input field
-            if (titleContainer.querySelector('input')) return;
-            loadDraft(draft.content);
-        });
+        // MOBILE-READY LONG PRESS TRIGGERS
+        let pressTimer;
+        let isLongPress = false;
 
-        // Double click/tap turns the title into an edit field
-        titleContainer.addEventListener('dblclick', (e) => {
-            e.stopPropagation(); // Don't trigger the file open layout
+        const startPress = (e) => {
+            if (titleContainer.querySelector('input')) return;
+            isLongPress = false;
             
-            // Check if we are already editing
+            // Wait 600ms to confirm long press hold
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                
+                // CRITICAL FIX: Blocks browser text highlight pins from rendering on top
+                if (e.cancelable) e.preventDefault(); 
+                
+                triggerRenameInterface();
+            }, 600);
+        };
+
+        const cancelPress = () => {
+            clearTimeout(pressTimer);
+        };
+
+        const endPressHandleClick = () => {
+            clearTimeout(pressTimer);
+            if (!isLongPress && !titleContainer.querySelector('input')) {
+                loadDraft(draft.content);
+            }
+        };
+
+        // Unified Event Hooks for Desktop Mouse & Mobile Touch
+        titleContainer.addEventListener('mousedown', startPress);
+        titleContainer.addEventListener('touchstart', startPress, { passive: false }); // Set passive false to allow preventDefault()
+        
+        titleContainer.addEventListener('mouseup', endPressHandleClick);
+        titleContainer.addEventListener('touchend', endPressHandleClick);
+        
+        titleContainer.addEventListener('mouseleave', cancelPress);
+        titleContainer.addEventListener('touchmove', cancelPress, { passive: true });
+
+        // THE RENDERING LOGIC FOR INLINE EDITOR FIELD
+        function triggerRenameInterface() {
             if (titleContainer.querySelector('input')) return;
 
             const currentTitle = titleTextSpan.textContent;
@@ -141,36 +168,32 @@ function renderDrafts() {
             input.type = 'text';
             input.value = currentTitle;
             
-            // Inline dark minimalist styling for the input box
             input.style.background = '#0a0f0d';
             input.style.border = '1px solid #1f3a2b';
             input.style.color = '#cbd5e1';
-            input.style.padding = '4px 8px';
+            input.style.padding = '6px 10px';
             input.style.borderRadius = '4px';
             input.style.fontSize = '0.85rem';
             input.style.fontFamily = 'inherit';
             input.style.width = '100%';
-            input.style.marginTop = '4px';
+            input.style.marginTop = '6px';
 
-            // Replace the static text with our interactive field
             titleTextSpan.style.display = 'none';
             titleContainer.insertBefore(input, titleTextSpan);
             input.focus();
-            input.select();
+            
+            setTimeout(() => input.select(), 50);
 
-            // Save handlers
             const saveRename = () => {
                 const updatedTitle = input.value;
                 if (updatedTitle && updatedTitle !== currentTitle) {
                     renameDraft(draft.id, updatedTitle);
                 } else {
-                    // Fallback cleanly if unchanged
                     input.remove();
                     titleTextSpan.style.display = 'block';
                 }
             };
 
-            // Hit Enter to save, Escape to cancel
             input.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
                     event.preventDefault();
@@ -182,11 +205,9 @@ function renderDrafts() {
                 }
             });
 
-            // If user clicks anywhere else, lock in the change
             input.addEventListener('blur', saveRename);
-        });
+        }
         
-        // Connect deletion trigger explicitly
         const delBtn = li.querySelector('.delete-draft-btn');
         delBtn.addEventListener('click', (e) => deleteDraft(draft.id, e));
 
@@ -299,6 +320,5 @@ function animateParticles() {
     requestAnimationFrame(animateParticles);
 }
 
-// Fire up engines
 initParticles();
 animateParticles();
