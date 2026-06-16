@@ -1,26 +1,23 @@
 /* ==========================================
-   MIDROOM — UNIVERSAL RESPONSIVE ATMOSPHERE
+   MIDROOM — UNIVERSAL DEVICE AUTO-FIT SYSTEM
    ========================================== */
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Using dynamic viewport height to auto-adjust when keyboards open */
-body {
+/* Force the page to lock exactly to the true mobile screen window size */
+html, body {
     background-color: #0a0f0d; 
     color: #cbd5e1; 
     height: 100vh;
-    height: -webkit-fill-available; /* Fixed stretch bug on Safari/Chrome mobile */
+    height: 100svh; /* Short viewport height: Fixes mobile browser address bar overlaps */
+    width: 100vw;
     display: flex;
     overflow: hidden;
-}
-
-html {
-    height: -webkit-fill-available;
 }
 
 /* ==========================================
@@ -32,14 +29,14 @@ html {
     left: -280px;
     width: 280px;
     height: 100%;
-    background: rgba(11, 19, 15, 0.95); /* Slightly higher opacity for text readability */
+    background: rgba(11, 19, 15, 0.98); /* Opaque background so text never overlaps */
     backdrop-filter: blur(16px); 
-    border-right: 1px solid rgba(45, 90, 68, 0.15); 
+    border-right: 1px solid rgba(45, 90, 68, 0.2); 
     padding: 20px;
     display: flex;
     flex-direction: column;
     z-index: 100;
-    transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
+    transition: left 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
 }
 
 .sidebar.active {
@@ -55,10 +52,9 @@ html {
 
 .sidebar-header h3 {
     font-size: 0.85rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
     color: #52796f; 
     text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .drafts-list {
@@ -69,22 +65,20 @@ html {
 
 .drafts-list li {
     padding: 12px 14px;
-    background: rgba(45, 90, 68, 0.05); 
+    background: rgba(45, 90, 68, 0.1); 
     border-radius: 6px;
     margin-bottom: 8px;
     cursor: pointer;
     font-size: 0.85rem;
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s ease;
 }
 
 .drafts-list li:hover {
-    background: rgba(53, 114, 88, 0.15);
+    background: rgba(53, 114, 88, 0.25);
     color: #a7f3d0; 
-    border-color: rgba(53, 114, 88, 0.3);
 }
 
 /* ==========================================
@@ -95,9 +89,10 @@ html {
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 100%;
     padding: 0 20px;
     background: radial-gradient(circle at center, #0f1a15 0%, #0a0f0d 100%);
-    position: relative;
+    overflow: hidden;
 }
 
 .top-nav {
@@ -105,36 +100,34 @@ html {
     justify-content: space-between;
     align-items: center;
     padding: 15px 0;
-    max-width: 800px;
     width: 100%;
+    max-width: 800px;
     margin: 0 auto;
-    flex-shrink: 0; /* Prevents top nav from shrinking when keyboard opens */
+    flex-shrink: 0; /* Prevents top menu from breaking when keyboard pushes up */
 }
 
 .nav-btn {
     background: transparent;
-    border: 1px solid rgba(82, 121, 111, 0.2);
+    border: 1px solid rgba(82, 121, 111, 0.3);
     color: #52796f;
     padding: 6px 14px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.85rem;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .nav-btn:hover {
     color: #a7f3d0;
     border-color: rgba(167, 243, 208, 0.4);
-    box-shadow: 0 0 8px rgba(167, 243, 208, 0.1); 
 }
 
 .status-indicator {
     font-size: 0.8rem;
     color: #355245; 
-    letter-spacing: 0.05em;
 }
 
-/* Crucial mobile update: Allows text wrapper container to scroll instead of breaking elements */
+/* Fixed textarea boundaries to stop text running off screens */
 #text-input {
     flex-grow: 1;
     width: 100%;
@@ -148,34 +141,32 @@ html {
     line-height: 1.8;
     resize: none;
     padding: 10px 0;
-    overflow-y: auto; 
+    overflow-y: auto;
     caret-color: #a7f3d0; 
 }
 
 #text-input::placeholder {
     color: #355245; 
     font-style: italic;
-    transition: color 0.3s ease;
-}
-
-#text-input:focus::placeholder {
-    color: transparent;
 }
 
 /* ==========================================
-   THE MINIMAL INTERFACE TOOLBAR
+   THE TOOLBAR (PINNED SAFE BOTTTOM)
    ========================================== */
 .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 15px 0;
-    border-top: 1px solid rgba(82, 121, 111, 0.08);
-    max-width: 800px;
+    border-top: 1px solid rgba(82, 121, 111, 0.1);
     width: 100%;
+    max-width: 800px;
     margin: 0 auto;
-    flex-shrink: 0; /* Prevents toolbar layout collapsing entirely */
-    background: #0a0f0d; /* Keeps toolbar crisp against background masking */
+    background: #0a0f0d;
+    flex-shrink: 0; /* Guarantees layout doesn't compress or fold */
+    
+    /* Adds safe padding at the very bottom so mobile home indicator bars can't overlap buttons */
+    padding-bottom: calc(15px + env(safe-area-inset-bottom)); 
 }
 
 .stats {
@@ -185,7 +176,7 @@ html {
 
 .actions {
     display: flex;
-    gap: 8px; /* Slightly tighter gap spacing for mobile screen limits */
+    gap: 8px;
 }
 
 .action-btn {
@@ -193,15 +184,14 @@ html {
     border: none;
     color: #52796f;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     padding: 6px 8px;
     border-radius: 4px;
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: color 0.2s ease;
 }
 
 .action-btn:hover {
     color: #a7f3d0;
-    background: rgba(167, 243, 208, 0.03);
 }
 
 .icon-btn {
@@ -210,21 +200,16 @@ html {
     color: #355245;
     font-size: 1.5rem;
     cursor: pointer;
-    line-height: 1;
 }
 
-.icon-btn:hover {
-    color: #a7f3d0;
-}
-
-/* Media query check to guarantee clean mobile scaling if resolution drops below 480px */
+/* Dynamic adjustment block for smaller mobile layouts */
 @media (max-width: 480px) {
     .actions {
-        gap: 4px;
+        gap: 2px;
     }
     .action-btn {
-        font-size: 0.75rem;
-        padding: 4px 6px;
+        font-size: 0.8rem;
+        padding: 6px 4px;
     }
     #text-input {
         font-size: 1.05rem;
