@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — CORE CANVAS ENGINES & VAULT HOOKS
+   MIDROOM — CORE CANVAS ENGINES, VAULT HOOKS & CUSTOM RENAMING
    ========================================================================== */
 
 // 1. DOM SELECTORS
@@ -46,13 +46,13 @@ function saveDraftToVault() {
     if (!text) return;
 
     const drafts = getDrafts();
-    // Use first 25 chars as title anchor
-    const title = text.split('\n')[0].substring(0, 25) || "Untitled Draft";
+    // Use first 25 chars as title anchor initially
+    const firstLine = text.split('\n')[0].substring(0, 25) || "Untitled Draft";
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const newDraft = {
         id: Date.now(),
-        title: title + '...',
+        title: firstLine + '...',
         content: text,
         time: timestamp
     };
@@ -78,6 +78,22 @@ function deleteDraft(id, event) {
     renderDrafts();
 }
 
+// NEW FEATURE: INLINE DRAFT RENAMING MECHANIC
+function renameDraft(id, newTitle) {
+    const trimmedTitle = newTitle.trim();
+    if (!trimmedTitle) return; // Don't allow empty names
+
+    let drafts = getDrafts();
+    drafts = drafts.map(draft => {
+        if (draft.id === id) {
+            draft.title = trimmedTitle;
+        }
+        return draft;
+    });
+    localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
+    renderDrafts();
+}
+
 function loadDraft(content) {
     textInput.value = content;
     textInput.dispatchEvent(new Event('input')); // Force recalculation of word count
@@ -96,11 +112,79 @@ function renderDrafts() {
     drafts.forEach(draft => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <span>${draft.title} <small style="color: #2f4f3e; margin-left: 5px;">${draft.time}</small></span>
+            <span class="draft-title-container" style="display: flex; flex-direction: column; flex: 1; margin-right: 10px;">
+                <span class="title-text" style="font-weight: 500; word-break: break-all;">${draft.title}</span>
+                <small style="color: #2f4f3e; margin-top: 2px; font-family: sans-serif; font-size: 0.75rem;">${draft.time} • Double tap to rename</small>
+            </span>
             <button class="delete-draft-btn" data-id="${draft.id}">&times;</button>
         `;
         
-        li.addEventListener('click', () => loadDraft(draft.content));
+        const titleContainer = li.querySelector('.draft-title-container');
+        const titleTextSpan = li.querySelector('.title-text');
+
+        // Clicking the title area opens the draft normally
+        titleContainer.addEventListener('click', (e) => {
+            // Prevent opening if they are actively interacting with an input field
+            if (titleContainer.querySelector('input')) return;
+            loadDraft(draft.content);
+        });
+
+        // Double click/tap turns the title into an edit field
+        titleContainer.addEventListener('dblclick', (e) => {
+            e.stopPropagation(); // Don't trigger the file open layout
+            
+            // Check if we are already editing
+            if (titleContainer.querySelector('input')) return;
+
+            const currentTitle = titleTextSpan.textContent;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentTitle;
+            
+            // Inline dark minimalist styling for the input box
+            input.style.background = '#0a0f0d';
+            input.style.border = '1px solid #1f3a2b';
+            input.style.color = '#cbd5e1';
+            input.style.padding = '4px 8px';
+            input.style.borderRadius = '4px';
+            input.style.fontSize = '0.85rem';
+            input.style.fontFamily = 'inherit';
+            input.style.width = '100%';
+            input.style.marginTop = '4px';
+
+            // Replace the static text with our interactive field
+            titleTextSpan.style.display = 'none';
+            titleContainer.insertBefore(input, titleTextSpan);
+            input.focus();
+            input.select();
+
+            // Save handlers
+            const saveRename = () => {
+                const updatedTitle = input.value;
+                if (updatedTitle && updatedTitle !== currentTitle) {
+                    renameDraft(draft.id, updatedTitle);
+                } else {
+                    // Fallback cleanly if unchanged
+                    input.remove();
+                    titleTextSpan.style.display = 'block';
+                }
+            };
+
+            // Hit Enter to save, Escape to cancel
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    saveRename();
+                }
+                if (event.key === 'Escape') {
+                    input.remove();
+                    titleTextSpan.style.display = 'block';
+                }
+            });
+
+            // If user clicks anywhere else, lock in the change
+            input.addEventListener('blur', saveRename);
+        });
         
         // Connect deletion trigger explicitly
         const delBtn = li.querySelector('.delete-draft-btn');
@@ -145,7 +229,7 @@ const canvas = document.getElementById('ambient-canvas');
 const ctx = canvas.getContext('2d');
 
 let particlesArray = [];
-const maxParticles = 40; // Controlled layout density for perfect performance stability
+const maxParticles = 40; 
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -159,8 +243,8 @@ class SporeParticle {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height; 
         this.size = Math.random() * 2.5 + 0.5; 
-        this.speedX = Math.random() * 0.4 - 0.2; // Slow left-to-right sway
-        this.speedY = -(Math.random() * 0.5 + 0.1); // Slow ambient rise up
+        this.speedX = Math.random() * 0.4 - 0.2; 
+        this.speedY = -(Math.random() * 0.5 + 0.1); 
         this.alpha = Math.random() * 0.5 + 0.1; 
         this.fadeSpeed = Math.random() * 0.005 + 0.002;
     }
@@ -169,7 +253,6 @@ class SporeParticle {
         this.x += this.speedX;
         this.y += this.speedY;
 
-        // Reset system loops if floating off edges
         if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
             this.x = Math.random() * canvas.width;
             this.y = canvas.height + Math.random() * 20;
@@ -187,7 +270,6 @@ class SporeParticle {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         
-        // Moody Deep Forest Green Glow Tints
         ctx.fillStyle = '#52796f';
         ctx.shadowBlur = 10;
         ctx.shadowColor = '#355245';
@@ -201,7 +283,7 @@ function initParticles() {
     particlesArray = [];
     for (let i = 0; i < maxParticles; i++) {
         let p = new SporeParticle();
-        p.y = Math.random() * canvas.height; // Instantly scatter across viewport on load
+        p.y = Math.random() * canvas.height; 
         particlesArray.push(p);
     }
 }
