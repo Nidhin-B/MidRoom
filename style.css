@@ -1,6 +1,6 @@
 /* ==========================================================================
    MIDROOM — AMBIENT FANTASY WRITING CANVAS CORE STYLES (RESTORED)
-   ========================================================================= */
+   ========================================================================== */
 
 /* 1. RESET & UNIVERSAL SYSTEM VARIABLES */
 * {
@@ -217,6 +217,12 @@ html, body {
     justify-content: space-between;
     align-items: center;
     transition: all 0.2s ease;
+
+    /* CRITICAL FIX: Blocks browser text copy overlay box when holding down on mobile */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .drafts-list li:hover {
