@@ -2,52 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MidRoom — An Ambient Fantasy Canvas</title>
-    
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#0a0f0d">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <link rel="stylesheet" href="./style.css?v=2.1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MidRoom — Ambient Canvas</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h3>Recent Drafts</h3>
-            <button id="close-sidebar-btn" class="icon-btn">×</button>
-        </div>
-        <ul class="drafts-list" id="drafts-list"></ul>
-    </aside>
+    <!-- Ambient Jungle Particle Canvas Layer -->
+    <canvas id="ambient-canvas"></canvas>
 
-    <main class="canvas-container">
+    <!-- Main Interactive Writing Void Container -->
+    <div class="canvas-container">
+        
+        <!-- Top Navigation Header -->
         <header class="top-nav">
-            <button id="menu-btn" class="nav-btn">Menu</button>
-            <span class="status-indicator">Private Room</span>
+            <button class="nav-btn" id="menu-toggle">Menu</button>
+            <div class="status-indicator">Private Room</div>
         </header>
 
-        <textarea 
-            id="text-input" 
-            placeholder="Type your thoughts into the void..." 
-            spellcheck="false"
-            inputmode="text"
-            enterkeyhint="enter"
-        ></textarea>
+        <!-- Main Central Text Input Field -->
+        <textarea id="text-input" placeholder="Type your thoughts into the void..." spellcheck="false"></textarea>
 
+        <!-- Fixed Universal Bottom Toolbar Layout -->
         <footer class="toolbar">
             <div class="stats">
-                <span id="word-count">0 words</span>
+                <span id="word-count">0</span> words
             </div>
             <div class="actions">
-                <button id="save-btn" class="action-btn">Save Draft</button>
-                <button id="copy-btn" class="action-btn">Copy Text</button>
-                <button id="download-btn" class="action-btn">Download .txt</button>
+                <button class="action-btn" id="save-btn">Save Draft</button>
+                <button class="action-btn" id="copy-btn">Copy Text</button>
+                <button class="action-btn" id="download-btn">Download .txt</button>
             </div>
         </footer>
-    </main>
 
-    <script src="./script.js?v=2.1"></script>
+    </div>
+
+    <!-- The Enchanted Vault Sidebar System -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>DRAFTS VAULT</h3>
+            <button class="icon-btn" id="close-sidebar">&times;</button>
+        </div>
+        <ul class="drafts-list" id="drafts-list">
+            <!-- JavaScript dynamically injects list items here -->
+        </ul>
+    </aside>
+
+    <script src="script.js"></script>
 </body>
 </html>
