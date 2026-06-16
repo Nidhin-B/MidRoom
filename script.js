@@ -12,6 +12,9 @@ const saveBtn = document.getElementById('save-btn');
 const copyBtn = document.getElementById('copy-btn');
 const downloadBtn = document.getElementById('download-btn');
 
+// Track the current active draft session to prevent duplication bugs
+let currentDraftId = null;
+
 // --- 1. THE SMOOTH FOREST MENU TOGGLE ---
 menuBtn.addEventListener('click', () => {
     sidebar.classList.add('active');
@@ -70,12 +73,28 @@ saveBtn.addEventListener('click', () => {
 
     let savedDrafts = JSON.parse(localStorage.getItem('midroom_drafts')) || [];
     
-    savedDrafts.unshift({
-        id: Date.now(),
-        content: text,
-        timestamp: new Date().toLocaleDateString()
-    });
+    if (currentDraftId) {
+        // If editing a draft that's already loaded, find it and overwrite it
+        const draftIndex = savedDrafts.findIndex(d => d.id === currentDraftId);
+        if (draftIndex !== -1) {
+            savedDrafts[draftIndex].content = text;
+            savedDrafts[draftIndex].timestamp = new Date().toLocaleDateString();
+            
+            // Move the updated draft to the top of the pile
+            const [updatedDraft] = savedDrafts.splice(draftIndex, 1);
+            savedDrafts.unshift(updatedDraft);
+        }
+    } else {
+        // Brand new note session creation
+        currentDraftId = Date.now();
+        savedDrafts.unshift({
+            id: currentDraftId,
+            content: text,
+            timestamp: new Date().toLocaleDateString()
+        });
+    }
 
+    // Enforce your max limit of 15 elements inside the array
     if (savedDrafts.length > 15) savedDrafts.pop();
 
     localStorage.setItem('midroom_drafts', JSON.stringify(savedDrafts));
@@ -98,15 +117,37 @@ function loadDraftsList() {
 
     savedDrafts.forEach(draft => {
         const li = document.createElement('li');
-        li.textContent = draft.content.substring(0, 25) + (draft.content.length > 25 ? "..." : "");
+        
+        // Grab the first line of text to act as a dynamic note title
+        const firstLine = draft.content.trim().split('\n')[0] || "Untitled Void Note";
+        li.textContent = firstLine.substring(0, 22) + (firstLine.length > 22 ? "..." : "");
         li.title = `Saved on ${draft.timestamp}`;
         
         li.addEventListener('click', () => {
             textInput.value = draft.content;
+            currentDraftId = draft.id; // Lock the session to this specific draft ID
             textInput.dispatchEvent(new Event('input')); 
             sidebar.classList.remove('active');
         });
         
         draftsList.appendChild(li);
+    });
+}
+
+// Reset session tracker if the text input is cleared manually out to zero
+textInput.addEventListener('blur', () => {
+    if (textInput.value.trim() === "") {
+        currentDraftId = null;
+    }
+});
+
+// =======================================================
+// PWA Core Background Engine Registration Block
+// =======================================================
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker linked up!'))
+            .catch(err => console.error('Service Worker setup error:', err));
     });
 }
