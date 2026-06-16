@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — CORE CANVAS ENGINES, VAULT HOOKS & TIMED LONG-PRESS RENAMING
+   MIDROOM — CORE CANVAS ENGINES, VAULT HOOKS & SEPARATED DOUBLE-TAP RENAMING
    ========================================================================== */
 
 // 1. DOM SELECTORS
@@ -111,7 +111,7 @@ function renderDrafts() {
         li.innerHTML = `
             <span class="draft-title-container" style="display: flex; flex-direction: column; flex: 1; margin-right: 10px;">
                 <span class="title-text" style="font-weight: 500; word-break: break-all;">${draft.title}</span>
-                <small style="color: #2f4f3e; margin-top: 2px; font-family: sans-serif; font-size: 0.75rem;">${draft.time} • Hold to rename</small>
+                <small style="color: #2f4f3e; margin-top: 2px; font-family: sans-serif; font-size: 0.75rem;">${draft.time} • Double tap to rename</small>
             </span>
             <button class="delete-draft-btn" data-id="${draft.id}">&times;</button>
         `;
@@ -119,45 +119,30 @@ function renderDrafts() {
         const titleContainer = li.querySelector('.draft-title-container');
         const titleTextSpan = li.querySelector('.title-text');
 
-        // MOBILE-READY LONG PRESS TRIGGERS
-        let pressTimer;
-        let isLongPress = false;
+        // MULTI-CLICK TIMING HANDLER (Flashes out double tap vs single tap accurately)
+        let clickCount = 0;
+        let clickTimer;
 
-        const startPress = (e) => {
-            if (titleContainer.querySelector('input')) return;
-            isLongPress = false;
+        titleContainer.addEventListener('click', (e) => {
+            e.preventDefault();
             
-            // Wait 600ms to confirm long press hold
-            pressTimer = setTimeout(() => {
-                isLongPress = true;
-                
-                // CRITICAL FIX: Blocks browser text highlight pins from rendering on top
-                if (e.cancelable) e.preventDefault(); 
-                
-                triggerRenameInterface();
-            }, 600);
-        };
+            // If they are already editing, stop clicks entirely
+            if (titleContainer.querySelector('input')) return;
 
-        const cancelPress = () => {
-            clearTimeout(pressTimer);
-        };
+            clickCount++;
 
-        const endPressHandleClick = () => {
-            clearTimeout(pressTimer);
-            if (!isLongPress && !titleContainer.querySelector('input')) {
-                loadDraft(draft.content);
+            if (clickCount === 1) {
+                // Wait 250ms to check if a second tap follows
+                clickTimer = setTimeout(() => {
+                    clickCount = 0; // Reset counter
+                    loadDraft(draft.content); // Execute standard single tap action safely
+                }, 250);
+            } else if (clickCount === 2) {
+                clearTimeout(clickTimer); // Stop the single click action from loading the draft
+                clickCount = 0; // Reset counter
+                triggerRenameInterface(); // Fire custom renaming system instantly
             }
-        };
-
-        // Unified Event Hooks for Desktop Mouse & Mobile Touch
-        titleContainer.addEventListener('mousedown', startPress);
-        titleContainer.addEventListener('touchstart', startPress, { passive: false }); // Set passive false to allow preventDefault()
-        
-        titleContainer.addEventListener('mouseup', endPressHandleClick);
-        titleContainer.addEventListener('touchend', endPressHandleClick);
-        
-        titleContainer.addEventListener('mouseleave', cancelPress);
-        titleContainer.addEventListener('touchmove', cancelPress, { passive: true });
+        });
 
         // THE RENDERING LOGIC FOR INLINE EDITOR FIELD
         function triggerRenameInterface() {
