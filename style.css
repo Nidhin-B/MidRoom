@@ -1,5 +1,5 @@
 /* ==========================================
-   MIDROOM — DEEP FOREST FANTASY ATMOSPHERE
+   MIDROOM — UNIVERSAL RESPONSIVE ATMOSPHERE
    ========================================== */
 
 * {
@@ -9,12 +9,18 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* Using dynamic viewport height to auto-adjust when keyboards open */
 body {
-    background-color: #0a0f0d; /* Dark pine-needle black */
-    color: #cbd5e1; /* Misty silver text */
+    background-color: #0a0f0d; 
+    color: #cbd5e1; 
     height: 100vh;
+    height: -webkit-fill-available; /* Fixed stretch bug on Safari/Chrome mobile */
     display: flex;
     overflow: hidden;
+}
+
+html {
+    height: -webkit-fill-available;
 }
 
 /* ==========================================
@@ -26,7 +32,7 @@ body {
     left: -280px;
     width: 280px;
     height: 100%;
-    background: rgba(11, 19, 15, 0.85); 
+    background: rgba(11, 19, 15, 0.95); /* Slightly higher opacity for text readability */
     backdrop-filter: blur(16px); 
     border-right: 1px solid rgba(45, 90, 68, 0.15); 
     padding: 20px;
@@ -91,16 +97,18 @@ body {
     height: 100%;
     padding: 0 20px;
     background: radial-gradient(circle at center, #0f1a15 0%, #0a0f0d 100%);
+    position: relative;
 }
 
 .top-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
+    padding: 15px 0;
     max-width: 800px;
     width: 100%;
     margin: 0 auto;
+    flex-shrink: 0; /* Prevents top nav from shrinking when keyboard opens */
 }
 
 .nav-btn {
@@ -122,10 +130,11 @@ body {
 
 .status-indicator {
     font-size: 0.8rem;
-    color: #2d4a3e; 
+    color: #355245; 
     letter-spacing: 0.05em;
 }
 
+/* Crucial mobile update: Allows text wrapper container to scroll instead of breaking elements */
 #text-input {
     flex-grow: 1;
     width: 100%;
@@ -138,12 +147,13 @@ body {
     font-size: 1.15rem;
     line-height: 1.8;
     resize: none;
-    padding: 20px 0;
-    caret-color: #a7f3d0; /* Magical mint green blinking cursor */
+    padding: 10px 0;
+    overflow-y: auto; 
+    caret-color: #a7f3d0; 
 }
 
 #text-input::placeholder {
-    color: #355245; /* Moonlight moss color */
+    color: #355245; 
     font-style: italic;
     transition: color 0.3s ease;
 }
@@ -159,21 +169,23 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
+    padding: 15px 0;
     border-top: 1px solid rgba(82, 121, 111, 0.08);
     max-width: 800px;
     width: 100%;
     margin: 0 auto;
+    flex-shrink: 0; /* Prevents toolbar layout collapsing entirely */
+    background: #0a0f0d; /* Keeps toolbar crisp against background masking */
 }
 
 .stats {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #355245;
 }
 
 .actions {
     display: flex;
-    gap: 12px;
+    gap: 8px; /* Slightly tighter gap spacing for mobile screen limits */
 }
 
 .action-btn {
@@ -181,8 +193,8 @@ body {
     border: none;
     color: #52796f;
     cursor: pointer;
-    font-size: 0.85rem;
-    padding: 6px 10px;
+    font-size: 0.8rem;
+    padding: 6px 8px;
     border-radius: 4px;
     transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -203,4 +215,18 @@ body {
 
 .icon-btn:hover {
     color: #a7f3d0;
+}
+
+/* Media query check to guarantee clean mobile scaling if resolution drops below 480px */
+@media (max-width: 480px) {
+    .actions {
+        gap: 4px;
+    }
+    .action-btn {
+        font-size: 0.75rem;
+        padding: 4px 6px;
+    }
+    #text-input {
+        font-size: 1.05rem;
+    }
 }
