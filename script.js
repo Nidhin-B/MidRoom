@@ -118,16 +118,44 @@ function loadDraftsList() {
     savedDrafts.forEach(draft => {
         const li = document.createElement('li');
         
-        // Grab the first line of text to act as a dynamic note title
+        // Wrap the text title dynamically inside a container span
+        const textSpan = document.createElement('span');
         const firstLine = draft.content.trim().split('\n')[0] || "Untitled Void Note";
-        li.textContent = firstLine.substring(0, 22) + (firstLine.length > 22 ? "..." : "");
+        textSpan.textContent = firstLine.substring(0, 18) + (firstLine.length > 18 ? "..." : "");
+        li.appendChild(textSpan);
+        
+        // Create the sleek delete element trigger
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = "×";
+        deleteBtn.className = "delete-draft-btn";
+        deleteBtn.title = "Delete Draft";
+        li.appendChild(deleteBtn);
+        
         li.title = `Saved on ${draft.timestamp}`;
         
+        // Clicking the main list body loads the draft content setup
         li.addEventListener('click', () => {
             textInput.value = draft.content;
-            currentDraftId = draft.id; // Lock the session to this specific draft ID
+            currentDraftId = draft.id;
             textInput.dispatchEvent(new Event('input')); 
             sidebar.classList.remove('active');
+        });
+        
+        // Clicking the delete button specifically purges the draft data array
+        deleteBtn.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevents loading the note onto the page when trying to delete it
+            
+            let updatedDrafts = JSON.parse(localStorage.getItem('midroom_drafts')) || [];
+            updatedDrafts = updatedDrafts.filter(d => d.id !== draft.id);
+            localStorage.setItem('midroom_drafts', JSON.stringify(updatedDrafts));
+            
+            // If the currently open draft is the one being deleted, reset the active session state tracker
+            if (currentDraftId === draft.id) {
+                currentDraftId = null;
+            }
+            
+            // Refresh layout instantly
+            loadDraftsList();
         });
         
         draftsList.appendChild(li);
@@ -146,7 +174,6 @@ textInput.addEventListener('input', () => {
 // =======================================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        // Explicitly scoping to root ensures strict engines like Opera accept installation rules
         navigator.serviceWorker.register('./sw.js', { scope: './' })
             .then(reg => console.log('Service Worker linked up across all engines!'))
             .catch(err => console.error('Service Worker setup error:', err));
