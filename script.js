@@ -1,181 +1,222 @@
-/* ==========================================
-   MIDROOM — INTERACTIVE CORE LOGIC
-   ========================================== */
+/* ==========================================================================
+   MIDROOM — CORE CANVAS ENGINES & VAULT HOOKS
+   ========================================================================== */
 
+// 1. DOM SELECTORS
 const textInput = document.getElementById('text-input');
-const wordCount = document.getElementById('word-count');
-const menuBtn = document.getElementById('menu-btn');
-const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+const wordCountSpan = document.getElementById('word-count');
+const menuToggle = document.getElementById('menu-toggle');
 const sidebar = document.getElementById('sidebar');
+const closeSidebar = document.getElementById('close-sidebar');
 const draftsList = document.getElementById('drafts-list');
 const saveBtn = document.getElementById('save-btn');
 const copyBtn = document.getElementById('copy-btn');
 const downloadBtn = document.getElementById('download-btn');
 
-// Track the current active draft session to prevent duplication bugs
-let currentDraftId = null;
-
-// --- 1. THE SMOOTH FOREST MENU TOGGLE ---
-menuBtn.addEventListener('click', () => {
-    sidebar.classList.add('active');
-    loadDraftsList(); 
+// 2. REAL-TIME WORD COUNTER SYSTEM
+textInput.addEventListener('input', () => {
+    const text = textInput.value.trim();
+    const words = text === '' ? 0 : text.split(/\s+/).length;
+    wordCountSpan.textContent = words;
 });
 
-closeSidebarBtn.addEventListener('click', () => {
+// 3. ENCHANTED VAULT SIDEBAR MECHANICS
+menuToggle.addEventListener('click', () => {
+    renderDrafts();
+    sidebar.classList.add('active');
+});
+
+closeSidebar.addEventListener('click', () => {
     sidebar.classList.remove('active');
 });
 
-// --- 2. REAL-TIME WORD COUNTER ---
-textInput.addEventListener('input', () => {
+// Close sidebar on tapping back into the canvas
+textInput.addEventListener('focus', () => {
+    sidebar.classList.remove('active');
+});
+
+// 4. STORAGE PRIMITIVES MANAGEMENT (LOCALSTORAGE VAULT)
+function getDrafts() {
+    const drafts = localStorage.getItem('midroom_drafts');
+    return drafts ? JSON.parse(drafts) : [];
+}
+
+function saveDraftToVault() {
     const text = textInput.value.trim();
-    const words = text === "" ? 0 : text.split(/\s+/).length;
-    wordCount.textContent = `${words} ${words === 1 ? 'word' : 'words'}`;
-});
+    if (!text) return;
 
-// --- 3. COPY TO CLIPBOARD BUTTON ---
-copyBtn.addEventListener('click', () => {
-    if (textInput.value.trim() === "") return;
+    const drafts = getDrafts();
+    // Use first 25 chars as title anchor
+    const title = text.split('\n')[0].substring(0, 25) || "Untitled Draft";
+    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const newDraft = {
+        id: Date.now(),
+        title: title + '...',
+        content: text,
+        time: timestamp
+    };
+
+    drafts.unshift(newDraft);
+    localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
     
-    navigator.clipboard.writeText(textInput.value).then(() => {
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = "Copied! 📋";
-        copyBtn.style.color = "#a7f3d0"; 
-        
-        setTimeout(() => {
-            copyBtn.textContent = originalText;
-            copyBtn.style.color = "";
-        }, 2000);
-    });
-});
-
-// --- 4. DOWNLOAD AS .TXT FILE ---
-downloadBtn.addEventListener('click', () => {
-    const text = textInput.value;
-    if (text.trim() === "") return;
-
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    
-    a.href = url;
-    a.download = `midroom-draft-${Date.now()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-});
-
-// --- 5. BROWSER STORAGE (LOCALSTORAGE) DRAFTS ---
-saveBtn.addEventListener('click', () => {
-    const text = textInput.value.trim();
-    if (text === "") return;
-
-    let savedDrafts = JSON.parse(localStorage.getItem('midroom_drafts')) || [];
-    
-    if (currentDraftId) {
-        // If editing a draft that's already loaded, find it and overwrite it
-        const draftIndex = savedDrafts.findIndex(d => d.id === currentDraftId);
-        if (draftIndex !== -1) {
-            savedDrafts[draftIndex].content = text;
-            savedDrafts[draftIndex].timestamp = new Date().toLocaleDateString();
-            
-            // Move the updated draft to the top of the pile
-            const [updatedDraft] = savedDrafts.splice(draftIndex, 1);
-            savedDrafts.unshift(updatedDraft);
-        }
-    } else {
-        // Brand new note session creation
-        currentDraftId = Date.now();
-        savedDrafts.unshift({
-            id: currentDraftId,
-            content: text,
-            timestamp: new Date().toLocaleDateString()
-        });
-    }
-
-    // Enforce your max limit of 15 elements inside the array
-    if (savedDrafts.length > 15) savedDrafts.pop();
-
-    localStorage.setItem('midroom_drafts', JSON.stringify(savedDrafts));
-    
+    // Quick, clean save feedback trigger
     const originalText = saveBtn.textContent;
-    saveBtn.textContent = "Saved to Vault 🌲";
+    saveBtn.textContent = "Saved ✔";
+    saveBtn.style.color = "#a7f3d0";
     setTimeout(() => {
         saveBtn.textContent = originalText;
-    }, 2000);
-});
+        saveBtn.style.color = "";
+    }, 1500);
+}
 
-function loadDraftsList() {
-    draftsList.innerHTML = "";
-    const savedDrafts = JSON.parse(localStorage.getItem('midroom_drafts')) || [];
+function deleteDraft(id, event) {
+    event.stopPropagation(); // Prevents clicking delete from instantly opening the draft
+    let drafts = getDrafts();
+    drafts = drafts.filter(draft => draft.id !== id);
+    localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
+    renderDrafts();
+}
 
-    if (savedDrafts.length === 0) {
-        draftsList.innerHTML = `<li style="color: #2d4a3e; font-style: italic; cursor: default; background: transparent;">The vault is empty...</li>`;
+function loadDraft(content) {
+    textInput.value = content;
+    textInput.dispatchEvent(new Event('input')); // Force recalculation of word count
+    sidebar.classList.remove('active');
+}
+
+function renderDrafts() {
+    draftsList.innerHTML = '';
+    const drafts = getDrafts();
+
+    if (drafts.length === 0) {
+        draftsList.innerHTML = `<li style="background: transparent; color: #1a3325; font-style: italic; cursor: default;">Vault is empty...</li>`;
         return;
     }
 
-    savedDrafts.forEach(draft => {
+    drafts.forEach(draft => {
         const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${draft.title} <small style="color: #2f4f3e; margin-left: 5px;">${draft.time}</small></span>
+            <button class="delete-draft-btn" data-id="${draft.id}">&times;</button>
+        `;
         
-        // Wrap the text title dynamically inside a container span
-        const textSpan = document.createElement('span');
-        const firstLine = draft.content.trim().split('\n')[0] || "Untitled Void Note";
-        textSpan.textContent = firstLine.substring(0, 18) + (firstLine.length > 18 ? "..." : "");
-        li.appendChild(textSpan);
+        li.addEventListener('click', () => loadDraft(draft.content));
         
-        // Create the sleek delete element trigger
-        const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = "×";
-        deleteBtn.className = "delete-draft-btn";
-        deleteBtn.title = "Delete Draft";
-        li.appendChild(deleteBtn);
-        
-        li.title = `Saved on ${draft.timestamp}`;
-        
-        // Clicking the main list body loads the draft content setup
-        li.addEventListener('click', () => {
-            textInput.value = draft.content;
-            currentDraftId = draft.id;
-            textInput.dispatchEvent(new Event('input')); 
-            sidebar.classList.remove('active');
-        });
-        
-        // Clicking the delete button specifically purges the draft data array
-        deleteBtn.addEventListener('click', (event) => {
-            event.stopPropagation(); // Prevents loading the note onto the page when trying to delete it
-            
-            let updatedDrafts = JSON.parse(localStorage.getItem('midroom_drafts')) || [];
-            updatedDrafts = updatedDrafts.filter(d => d.id !== draft.id);
-            localStorage.setItem('midroom_drafts', JSON.stringify(updatedDrafts));
-            
-            // If the currently open draft is the one being deleted, reset the active session state tracker
-            if (currentDraftId === draft.id) {
-                currentDraftId = null;
-            }
-            
-            // Refresh layout instantly
-            loadDraftsList();
-        });
-        
+        // Connect deletion trigger explicitly
+        const delBtn = li.querySelector('.delete-draft-btn');
+        delBtn.addEventListener('click', (e) => deleteDraft(draft.id, e));
+
         draftsList.appendChild(li);
     });
 }
 
-// Reset session tracker if the text input is cleared manually out to zero
-textInput.addEventListener('input', () => {
-    if (textInput.value.trim() === "") {
-        currentDraftId = null;
-    }
+// 5. UTILITY ACTION ACCESSORS
+saveBtn.addEventListener('click', saveDraftToVault);
+
+copyBtn.addEventListener('click', () => {
+    if (!textInput.value) return;
+    navigator.clipboard.writeText(textInput.value);
+    
+    const originalText = copyBtn.textContent;
+    copyBtn.textContent = "Copied!";
+    setTimeout(() => copyBtn.textContent = originalText, 1500);
 });
 
-// =======================================================
-// UNIVERSAL PWA SERVICE WORKER REGISTRATION (OPERA FIX)
-// =======================================================
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { scope: './' })
-            .then(reg => console.log('Service Worker linked up across all engines!'))
-            .catch(err => console.error('Service Worker setup error:', err));
-    });
+downloadBtn.addEventListener('click', () => {
+    const text = textInput.value;
+    if (!text) return;
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const anchor = document.createElement('a');
+    anchor.download = `midroom_draft_${Date.now()}.txt`;
+    anchor.href = window.URL.createObjectURL(blob);
+    anchor.target = '_blank';
+    anchor.style.display = 'none';
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+});
+
+
+/* ==========================================================================
+   6. AMBIENT JUNGLE PARTICLE ENGINE
+   ========================================================================== */
+const canvas = document.getElementById('ambient-canvas');
+const ctx = canvas.getContext('2d');
+
+let particlesArray = [];
+const maxParticles = 40; // Controlled layout density for perfect performance stability
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+class SporeParticle {
+    constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height; 
+        this.size = Math.random() * 2.5 + 0.5; 
+        this.speedX = Math.random() * 0.4 - 0.2; // Slow left-to-right sway
+        this.speedY = -(Math.random() * 0.5 + 0.1); // Slow ambient rise up
+        this.alpha = Math.random() * 0.5 + 0.1; 
+        this.fadeSpeed = Math.random() * 0.005 + 0.002;
+    }
+
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Reset system loops if floating off edges
+        if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
+            this.x = Math.random() * canvas.width;
+            this.y = canvas.height + Math.random() * 20;
+            this.alpha = 0; 
+        }
+
+        if (this.alpha < 0.6) {
+            this.alpha += this.fadeSpeed;
+        }
+    }
+
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        
+        // Moody Deep Forest Green Glow Tints
+        ctx.fillStyle = '#52796f';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#355245';
+        
+        ctx.fill();
+        ctx.restore();
+    }
+}
+
+function initParticles() {
+    particlesArray = [];
+    for (let i = 0; i < maxParticles; i++) {
+        let p = new SporeParticle();
+        p.y = Math.random() * canvas.height; // Instantly scatter across viewport on load
+        particlesArray.push(p);
+    }
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+    }
+    
+    requestAnimationFrame(animateParticles);
+}
+
+// Fire up engines
+initParticles();
+animateParticles();
