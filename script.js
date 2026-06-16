@@ -135,19 +135,20 @@ function loadDraftsList() {
 }
 
 // Reset session tracker if the text input is cleared manually out to zero
-textInput.addEventListener('blur', () => {
+textInput.addEventListener('input', () => {
     if (textInput.value.trim() === "") {
         currentDraftId = null;
     }
 });
 
 // =======================================================
-// PWA Core Background Engine Registration Block
+// UNIVERSAL PWA SERVICE WORKER REGISTRATION (OPERA FIX)
 // =======================================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log('Service Worker linked up!'))
+        // Explicitly scoping to root ensures strict engines like Opera accept installation rules
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+            .then(reg => console.log('Service Worker linked up across all engines!'))
             .catch(err => console.error('Service Worker setup error:', err));
     });
 }
