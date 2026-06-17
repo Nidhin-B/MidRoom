@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — ORIGINAL ATMOSPHERIC DEEP FOREST SHADE RESTORED
+   MIDROOM — ORIGINAL ATMOSPHERIC RESTORED & EXTENDED FOR INLINE EDITING
    ========================================================================= */
 
 * {
@@ -11,7 +11,7 @@
 }
 
 html, body {
-    background-color: #020503; /* Deepest forest undergrowth base */
+    background-color: #020503;
     color: #cbd5e1;
     height: 100vh;
     height: 100dvh;
@@ -21,7 +21,7 @@ html, body {
     -webkit-text-size-adjust: 100%;
 }
 
-/* ORIGINAL FOREST GLOW & DEPTH DEPLOYED HERE */
+/* Original ambient canopy glow restored */
 #ambient-canvas {
     position: fixed;
     top: 0;
@@ -32,19 +32,16 @@ html, body {
     z-index: -1; 
     pointer-events: none; 
     background-color: #020503;
-    
-    /* The exact deep, moody forest canopy cone from your original screens */
     background-image: radial-gradient(
         ellipse 85% 70% at 50% 0%,
-        rgba(26, 61, 46, 0.45) 0%,   /* Rich atmospheric green core */
-        rgba(10, 28, 20, 0.22) 50%,   /* Soft, sweeping gradient mid-tones */
+        rgba(26, 61, 46, 0.45) 0%,   
+        rgba(10, 28, 20, 0.22) 50%,   
         rgba(2, 5, 3, 0) 100%
     );
     background-size: 100% 100%;
     background-position: center top;
 }
 
-/* Application Interface Layout */
 .canvas-container {
     position: relative;
     z-index: 2;
@@ -56,7 +53,6 @@ html, body {
     padding: 16px 24px;
 }
 
-/* Top Navigation Section */
 .top-nav {
     display: flex;
     justify-content: space-between;
@@ -96,9 +92,9 @@ html, body {
     font-size: 0.85rem;
     color: #3b6b53;
     letter-spacing: 1px;
+    transition: color 0.3s ease;
 }
 
-/* Text Editor Body */
 #text-input {
     flex: 1;
     width: 100%;
@@ -119,7 +115,6 @@ html, body {
     font-style: italic;
 }
 
-/* Bottom Actions Section */
 .toolbar {
     display: flex;
     justify-content: space-between;
@@ -157,7 +152,6 @@ html, body {
     color: #86efac !important;
 }
 
-/* Sidebar Drawer System */
 .sidebar {
     position: fixed;
     top: 0;
@@ -225,7 +219,7 @@ html, body {
     transition: all 0.2s ease;
 }
 
-.draft-item:active, .draft-item.selected {
+.draft-item.selected {
     background: rgba(38, 89, 67, 0.15);
     border-color: #3b6b53;
 }
@@ -234,6 +228,8 @@ html, body {
     flex: 1;
     overflow: hidden;
     padding-right: 8px;
+    display: flex;
+    align-items: center;
 }
 
 .draft-title-text {
@@ -242,6 +238,20 @@ html, body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    width: 100%;
+    display: inline-block;
+}
+
+.inline-rename-input {
+    background: rgba(12, 31, 23, 0.8);
+    border: 1px solid #3b6b53;
+    border-radius: 4px;
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    padding: 2px 6px;
+    width: 100%;
+    font-family: inherit;
+    outline: none;
 }
 
 .delete-draft-btn {
@@ -257,7 +267,6 @@ html, body {
     color: #ef4444 !important;
 }
 
-/* Feedback Toast Notification */
 .toast-container {
     position: fixed;
     bottom: calc(80px + env(safe-area-inset-bottom));
