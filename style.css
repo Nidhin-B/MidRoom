@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — PERMANENT COLOR & INTERFACE RESTORATION
+   MIDROOM — PERMANENT COLOR & INTERFACE RESTORATION (TYPO FIXED)
    ========================================================================= */
 
 * {
@@ -11,7 +11,7 @@
 }
 
 html, body {
-    background-color: #020503; /* Deepest forest undergrowth base */
+    background-color: #020503; 
     color: #cbd5e1;
     height: 100vh;
     height: 100dvh;
@@ -21,7 +21,7 @@ html, body {
     -webkit-text-size-adjust: 100%;
 }
 
-/* THE CORRECT ATMOSPHERIC GRADIENT PRESERVED HERE */
+/* THE GRADIENT IS FIXED: No more broken syntax */
 #ambient-canvas {
     position: fixed;
     top: 0;
@@ -36,7 +36,7 @@ html, body {
         ellipse 85% 70% at 50% 0%,
         rgba(26, 61, 46, 0.45) 0%,   /* Dark emerald core */
         rgba(10, 28, 20, 0.22) 50%,  /* Atmospheric transition fade */
-        rgba(2, 5, 3, 0) 100__
+        rgba(2, 5, 3, 0) 100%        /* FIXED: Changed from broken 100__ to 100% */
     );
     background-size: 100% 100%;
     background-position: center top;
@@ -230,7 +230,6 @@ html, body {
     padding-right: 8px;
 }
 
-/* MINIMALIST INLINE RENAME: Fully text-based edit area */
 .draft-title-text {
     font-size: 0.85rem;
     color: #cbd5e1;
