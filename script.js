@@ -1,5 +1,5 @@
 // ==========================================================================
-// MIDROOM — BULLETPROOF CORE ARCHITECTURE & PARTICLE ENGINE
+// MIDROOM — CORE ARCHITECTURE & PARTICLE ENGINE (REMASTERED FIX)
 // ==========================================================================
 
 // 1. DOM ELEMENT REGISTRATION
@@ -19,13 +19,17 @@ const toast = document.getElementById('toast-notification');
 let autoSaveTimer = null;
 let currentDraftId = null;
 
-// 2. REAL-TIME WORD COUNTER & AUTO-SAVE
+// 2. REAL-TIME WORD COUNTER & AUTO-SAVE (FIXED FOR GHOST SPACES)
 textInput.addEventListener('input', () => {
-    const text = textInput.value.trim();
-    const words = text === '' ? 0 : text.split(/\s+/).length;
+    const rawText = textInput.value;
+    const trimmedText = rawText.trim();
+    
+    // Word counter execution
+    const words = trimmedText === '' ? 0 : trimmedText.split(/\s+/).length;
     wordCountSpan.textContent = words;
 
-    if (text.length > 0) {
+    // Only trigger typing states if there's ACTUAL text written
+    if (trimmedText.length > 0) {
         statusIndicator.textContent = "typing...";
         statusIndicator.style.color = "#3f6356";
         
@@ -34,6 +38,8 @@ textInput.addEventListener('input', () => {
             autoSaveDraft();
         }, 1500); 
     } else {
+        // Clear timer and reset instantly if empty or just spaces
+        clearTimeout(autoSaveTimer);
         statusIndicator.textContent = "Private Room";
         statusIndicator.style.color = "#1f3a2d";
     }
@@ -41,6 +47,7 @@ textInput.addEventListener('input', () => {
 
 // 3. TOAST NOTIFICATION ENGINE
 function showToast(message) {
+    if (!toast) return;
     toast.textContent = message;
     toast.classList.add('show');
     setTimeout(() => {
@@ -75,6 +82,7 @@ function autoSaveDraft() {
 }
 
 function renderDrafts() {
+    if (!draftsList) return;
     draftsList.innerHTML = '';
     const drafts = JSON.parse(localStorage.getItem('midroom_drafts')) || [];
 
