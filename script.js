@@ -1,14 +1,12 @@
 /* ==========================================================================
-   MIDROOM — RUNTIME LOGIC ENGINE + FLOATING PARTICLES RESTORED
+   MIDROOM — RUNTIME ENGINE WITH STABLE PARTICLES RETAINED
    ========================================================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Core Elements
     const textInput = document.getElementById('text-input');
     const wordCount = document.getElementById('word-count');
     const statusIndicator = document.getElementById('status-indicator');
     
-    // Core Interactive Triggers
     const saveBtn = document.getElementById('save-btn');
     const copyBtn = document.getElementById('copy-btn');
     const downloadBtn = document.getElementById('download-btn');
@@ -16,14 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const newCanvasBtn = document.getElementById('new-canvas-btn');
     const closeSidebar = document.getElementById('close-sidebar');
     
-    // Drawer/Alert Components
     const sidebar = document.getElementById('sidebar');
     const draftsList = document.getElementById('drafts-list');
     const toastNotification = document.getElementById('toast-notification');
 
     let currentDraftId = null;
 
-    // 1. PARTICLES ENGINE RESTORED (Lightweight float forest dust)
+    // FLOATING FOREST DUST ENGINE
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -38,15 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
     class DustParticle {
         constructor() {
             this.reset();
-            this.y = Math.random() * canvas.height; // Spread out initially
+            this.y = Math.random() * canvas.height;
         }
         reset() {
             this.x = Math.random() * canvas.width;
             this.y = canvas.height + 10;
-            this.size = Math.random() * 1.3 + 0.6; // Small lightweight specs
-            this.speedY = -(Math.random() * 0.25 + 0.1); // Slow, calm upward crawl
-            this.speedX = (Math.random() - 0.5) * 0.15;
-            this.alpha = Math.random() * 0.35 + 0.1;
+            this.size = Math.random() * 1.4 + 0.5; 
+            this.speedY = -(Math.random() * 0.20 + 0.08); 
+            this.speedX = (Math.random() - 0.5) * 0.12;
+            this.alpha = Math.random() * 0.40 + 0.15;
         }
         update() {
             this.y += this.speedY;
@@ -58,19 +55,18 @@ document.addEventListener('DOMContentLoaded', () => {
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(167, 243, 208, ${this.alpha})`;
+            // Ambient soft mint specs matching original snapshots
+            ctx.fillStyle = `rgba(134, 239, 172, ${this.alpha})`;
             ctx.fill();
         }
     }
 
-    // Spawn 35 organic floating specs
-    for (let i = 0; i < 35; i++) {
+    for (let i = 0; i < 40; i++) {
         particles.push(new DustParticle());
     }
 
     function animateParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Let CSS handle the background gradient flawlessly
-        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => {
             p.update();
             p.draw();
@@ -79,21 +75,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     animateParticles();
 
-    // 2. WORD COUNTER
+    // WORD COUNTER
     function updateWordCount() {
         const text = textInput.value.trim();
         wordCount.textContent = text === '' ? 0 : text.split(/\s+/).length;
     }
     textInput.addEventListener('input', updateWordCount);
 
-    // Toast Messenger Alerts
     function showToast(message) {
         toastNotification.textContent = message;
         toastNotification.classList.add('show');
         setTimeout(() => toastNotification.classList.remove('show'), 2000);
     }
 
-    // Local Storage Communication Link
+    // STORAGE LINKS
     function getDrafts() {
         return JSON.parse(localStorage.getItem('midroom_drafts')) || [];
     }
@@ -102,13 +97,12 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('midroom_drafts', JSON.stringify(draftsArr));
     }
 
-    // Render Drafts Inside Sidebar Panel Drawer
     function displayDrafts() {
         draftsList.innerHTML = '';
         const drafts = getDrafts();
 
         if (drafts.length === 0) {
-            draftsList.innerHTML = '<li style="color: #2b5742; font-style: italic; padding: 10px 0; border: none; background: transparent;">The Vault is empty...</li>';
+            draftsList.innerHTML = '<li style="color: #1e4231; font-style: italic; padding: 10px 0; border: none; background: transparent;">The Vault is empty...</li>';
             return;
         }
 
@@ -125,7 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
             titleSpan.textContent = draft.title || `Untitled Log ${index + 1}`;
             detailsDiv.appendChild(titleSpan);
 
-            // Row Interaction: Load selected payload data on normal click
             li.addEventListener('click', () => {
                 currentDraftId = draft.id;
                 textInput.value = draft.content;
@@ -135,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast("Loaded entry");
             });
 
-            // SAFE DOUBLE TAP RENAME
             li.addEventListener('dblclick', (e) => {
                 e.stopPropagation(); 
                 const newTitle = prompt("Rename your draft log entry:", titleSpan.textContent);
@@ -151,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Trash Button Setup
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-draft-btn';
             deleteBtn.innerHTML = '&times;';
@@ -176,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Core Toolbar Save Command
     saveBtn.addEventListener('click', () => {
         const payload = textInput.value;
         if (!payload.trim()) {
@@ -214,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
         displayDrafts();
     });
 
-    // Copy Command Execution
     copyBtn.addEventListener('click', () => {
         if (!textInput.value.trim()) {
             showToast("Nothing to copy");
@@ -225,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(() => showToast("Clipboard action failed"));
     });
 
-    // Export System
     downloadBtn.addEventListener('click', () => {
         const value = textInput.value;
         if (!value.trim()) {
@@ -243,7 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
         URL.revokeObjectURL(downloadUrl);
     });
 
-    // Drawer Management Controls
     menuToggle.addEventListener('click', () => {
         displayDrafts();
         sidebar.classList.add('active');
