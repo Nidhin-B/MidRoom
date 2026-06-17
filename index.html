@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>MidRoom — Atmospheric Vault</title>
-    <link rel="stylesheet" href="style.css?v=10">
+    <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 
+    <!-- PARTICLE BACKGROUND LAYER TARGET -->
     <canvas id="ambient-canvas"></canvas>
 
+    <!-- CONTENT SYSTEM CONTROLS WRAPPER -->
     <div class="canvas-container">
         
+        <!-- HEADER INTERFACEHUD -->
         <header class="top-nav">
             <div class="nav-controls">
                 <button class="nav-btn" id="menu-toggle">Menu</button>
@@ -20,8 +23,10 @@
             <div class="status-indicator" id="status-indicator">Private Room</div>
         </header>
 
+        <!-- MAIN WRITING LAYER -->
         <textarea id="text-input" placeholder="Type your thoughts into the void..." spellcheck="false"></textarea>
 
+        <!-- BASE TOOLBAR ACTIONS MODULE -->
         <footer class="toolbar">
             <div class="stats">
                 <span id="word-count">0</span> words
@@ -35,6 +40,7 @@
 
     </div>
 
+    <!-- PERSISTENT VAULT PANEL MODAL -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h3>THE VAULT</h3>
@@ -43,8 +49,9 @@
         <ul class="drafts-list" id="drafts-list"></ul>
     </aside>
 
+    <!-- TOAST DIALOG MANAGER NOTIFICATION CONTAINER -->
     <div id="toast-notification" class="toast-container"></div>
 
-    <script src="script.js?v=10"></script>
+    <script src="script.js?v=12"></script>
 </body>
 </html>
