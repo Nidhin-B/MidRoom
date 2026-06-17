@@ -1,5 +1,5 @@
 // ==========================================================================
-// MIDROOM — CORE ARCHITECTURE & PARTICLE ENGINE (REMASTERED FIX)
+// MIDROOM — APPARATUS ENGINE WITH VIBRANT AMBIENT SPORES
 // ==========================================================================
 
 // 1. DOM ELEMENT REGISTRATION
@@ -19,33 +19,30 @@ const toast = document.getElementById('toast-notification');
 let autoSaveTimer = null;
 let currentDraftId = null;
 
-// 2. REAL-TIME WORD COUNTER & AUTO-SAVE (FIXED FOR GHOST SPACES)
+// 2. REAL-TIME WORD COUNTER & AUTO-SAVE MECHANISM
 textInput.addEventListener('input', () => {
     const rawText = textInput.value;
     const trimmedText = rawText.trim();
     
-    // Word counter execution
     const words = trimmedText === '' ? 0 : trimmedText.split(/\s+/).length;
     wordCountSpan.textContent = words;
 
-    // Only trigger typing states if there's ACTUAL text written
     if (trimmedText.length > 0) {
         statusIndicator.textContent = "typing...";
-        statusIndicator.style.color = "#3f6356";
+        statusIndicator.style.color = "#4b7364";
         
         clearTimeout(autoSaveTimer);
         autoSaveTimer = setTimeout(() => {
             autoSaveDraft();
         }, 1500); 
     } else {
-        // Clear timer and reset instantly if empty or just spaces
         clearTimeout(autoSaveTimer);
         statusIndicator.textContent = "Private Room";
-        statusIndicator.style.color = "#1f3a2d";
+        statusIndicator.style.color = "#2b4c3d";
     }
 });
 
-// 3. TOAST NOTIFICATION ENGINE
+// 3. UI TOAST POPUP NOTIFICATION CONTROLLER
 function showToast(message) {
     if (!toast) return;
     toast.textContent = message;
@@ -55,7 +52,7 @@ function showToast(message) {
     }, 2500);
 }
 
-// 4. THE VAULT CORE DATA ACTIONS
+// 4. VAULT OPERATIONS LOGIC
 function autoSaveDraft() {
     const text = textInput.value.trim();
     if (!text) return;
@@ -87,7 +84,7 @@ function renderDrafts() {
     const drafts = JSON.parse(localStorage.getItem('midroom_drafts')) || [];
 
     if (drafts.length === 0) {
-        draftsList.innerHTML = '<li style="color: #1f3a2d; cursor: default; background: transparent;">The Vault is empty</li>';
+        draftsList.innerHTML = '<li style="color: #2b4c3d; cursor: default; background: transparent;">The Vault is empty</li>';
         return;
     }
 
@@ -105,7 +102,6 @@ function renderDrafts() {
         li.appendChild(titleSpan);
         li.appendChild(deleteBtn);
         
-        // Single tap to load
         titleSpan.addEventListener('click', (e) => {
             e.stopPropagation();
             textInput.value = draft.content;
@@ -118,23 +114,6 @@ function renderDrafts() {
             showToast("Draft loaded from Vault");
         });
 
-        // Double tap to rename
-        titleSpan.addEventListener('dblclick', (e) => {
-            e.stopPropagation();
-            const newName = prompt("Rename this draft:", draft.title);
-            if (newName && newName.trim() !== '') {
-                let currentDrafts = JSON.parse(localStorage.getItem('midroom_drafts')) || [];
-                const idx = currentDrafts.findIndex(d => d.id === draft.id);
-                if (idx !== -1) {
-                    currentDrafts[idx].title = newName.trim();
-                    localStorage.setItem('midroom_drafts', JSON.stringify(currentDrafts));
-                    renderDrafts();
-                    showToast("Draft renamed");
-                }
-            }
-        });
-
-        // Delete execution
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             let currentDrafts = JSON.parse(localStorage.getItem('midroom_drafts')) || [];
@@ -146,7 +125,7 @@ function renderDrafts() {
                 currentDraftId = null;
                 wordCountSpan.textContent = 0;
                 statusIndicator.textContent = "Private Room";
-                statusIndicator.style.color = "#1f3a2d";
+                statusIndicator.style.color = "#2b4c3d";
             }
             
             renderDrafts();
@@ -157,7 +136,7 @@ function renderDrafts() {
     });
 }
 
-// 5. TOOLBAR BUTTON EVENT LISTENERS
+// 5. EVENT LISTENERS
 saveBtn.addEventListener('click', () => {
     if (textInput.value.trim() === '') {
         showToast("Canvas is empty");
@@ -203,24 +182,25 @@ newCanvasBtn.addEventListener('click', () => {
     currentDraftId = null;
     wordCountSpan.textContent = '0';
     statusIndicator.textContent = "Private Room";
-    statusIndicator.style.color = "#1f3a2d";
+    statusIndicator.style.color = "#2b4c3d";
     textInput.focus();
     showToast("Cleared the slate");
 });
 
-// SIDEBAR TOGGLES
 menuToggle.addEventListener('click', () => {
     renderDrafts();
     sidebar.classList.add('active');
 });
 closeSidebar.addEventListener('click', () => sidebar.classList.remove('active'));
 
-// 6. ORIGINAL HIGH-DENSITY PARTICLE ENGINE
+// 6. HIGH-DENSITY VISIBILITY AMBIENT SPORE SIMULATION
 const canvas = document.getElementById('ambient-canvas');
 const ctx = canvas.getContext('2d');
 let particlesArray = [];
-const maxParticles = 45;
-const sporeColors = ['#1a3329', '#2f4f43', '#3f6356', '#52796f'];
+const maxParticles = 60; // Upgraded density count
+
+// High-contrast emerald colors tailored to pop over the deep background void
+const sporeColors = ['#1d3b2f', '#2a5444', '#3d735f', '#54967d', '#73bfa3', '#9ce6c9'];
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -233,20 +213,24 @@ class SporeParticle {
     constructor() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 0.5;
-        this.speedY = -(Math.random() * 0.2 + 0.05);
-        this.speedX = Math.random() * 0.2 - 0.1;
-        this.maxAlpha = Math.random() * 0.4 + 0.1;
+        this.size = Math.random() * 2.2 + 0.6; // Clean structural radius variations
+        this.speedY = -(Math.random() * 0.22 + 0.04); // Smooth upwards drift speed
+        this.speedX = Math.random() * 0.16 - 0.08;
+        this.maxAlpha = Math.random() * 0.65 + 0.25; // Boosted visibility presence
         this.alpha = Math.random() * this.maxAlpha;
         this.color = sporeColors[Math.floor(Math.random() * sporeColors.length)];
     }
     update() {
         this.x += this.speedX;
         this.y += this.speedY;
+        
         if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
             this.x = Math.random() * canvas.width;
             this.y = canvas.height + 10;
             this.alpha = 0;
+        }
+        if (this.alpha < this.maxAlpha) {
+            this.alpha += 0.006; // Smooth entry fade-in
         }
     }
     draw() {
