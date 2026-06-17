@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — FULL HOLLOW KNIGHT ATMOSPHERATION & LAYOUT RESTORATION
+   MIDROOM — INTERFACE HUD STYLING RESTORATION (HOLLOW KNIGHT VIBE)
    ========================================================================= */
 
 * {
@@ -10,10 +10,10 @@
 }
 
 html, body {
-    background-color: #020403; /* Abyss black base layer */
-    color: #cbd5e1; 
+    background-color: #020403;
+    color: #cbd5e1;
     height: 100vh;
-    height: 100dvh; 
+    height: 100dvh;
     width: 100vw;
     display: flex;
     overflow: hidden;
@@ -21,41 +21,39 @@ html, body {
     touch-action: manipulation;
 }
 
-/* THE BACKGROUND CANVASES LAYER WITH HOLLOW KNIGHT GRADIENT OVERLAY */
+/* DEEP VIGNETTE AMBIENCE CANVAS BACKGROUND */
 #ambient-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1; /* Behind text interaction elements */
+    z-index: 1;
     pointer-events: none;
     background-color: #020403;
-    
-    /* Hollow Knight atmospheric fog template style */
     background-image: linear-gradient(
         to top,
         rgba(2, 4, 3, 1) 0%,
-        rgba(5, 14, 10, 0.95) 40%,
-        rgba(12, 33, 24, 0.7) 80%,
-        rgba(18, 48, 35, 0.45) 100
+        rgba(5, 14, 10, 0.95) 45%,
+        rgba(12, 33, 24, 0.75) 80%,
+        rgba(18, 48, 35, 0.5) 100%
     );
 }
 
-/* CORE INTERFACE CONTAINERS */
+/* UI CONSOLE LAYERING GRID */
 .canvas-container {
     flex: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
-    padding: 24px 24px; 
+    padding: 24px 24px;
     position: relative;
-    z-index: 2; /* Sits above your canvas engine particles */
-    background: transparent !important; 
+    z-index: 2;
+    background: transparent !important;
 }
 
-/* TOP NAVIGATION HUD BAR */
+/* HEADER NAVIGATION */
 .top-nav {
     display: flex;
     justify-content: space-between;
@@ -63,8 +61,8 @@ html, body {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    flex-shrink: 0; 
-    padding: calc(15px + env(safe-area-inset-top)) 0 15px 0; 
+    flex-shrink: 0;
+    padding: calc(15px + env(safe-area-inset-top)) 0 15px 0;
     background: transparent !important;
 }
 
@@ -75,8 +73,8 @@ html, body {
 
 .nav-btn {
     background: rgba(20, 36, 28, 0.4) !important;
-    border: 1px solid #14241c;
-    color: #4b7364;
+    border: 1px solid #14241c !important;
+    color: #4b7364 !important;
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
@@ -86,8 +84,8 @@ html, body {
 }
 
 .nav-btn:hover {
-    border-color: #52796f;
-    color: #cbd5e1;
+    border-color: #52796f !important;
+    color: #cbd5e1 !important;
     background: rgba(82, 121, 111, 0.2) !important;
 }
 
@@ -98,7 +96,7 @@ html, body {
     font-weight: 500;
 }
 
-/* MAIN FOCUS TEXT WRITING INTERFACE */
+/* INPUT COMPONENT SPECIFICS */
 #text-input {
     flex: 1;
     width: 100%;
@@ -109,7 +107,7 @@ html, body {
     outline: none !important;
     resize: none;
     color: #e2e8f0;
-    font-size: 1.25rem; 
+    font-size: 1.25rem;
     line-height: 1.8;
     padding: 30px 0;
     letter-spacing: 0.2px;
@@ -120,7 +118,7 @@ html, body {
     font-style: italic;
 }
 
-/* BOTTOM TOOLBAR CONSOLE STYLING */
+/* HUD BASEBAR TOOLBAR */
 .toolbar {
     display: flex;
     justify-content: space-between;
@@ -148,7 +146,7 @@ html, body {
 .action-btn {
     background: transparent !important;
     border: none !important;
-    color: #4b7364;
+    color: #4b7364 !important;
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 500;
@@ -156,10 +154,10 @@ html, body {
 }
 
 .action-btn:hover {
-    color: #a7f3d0;
+    color: #a7f3d0 !important;
 }
 
-/* SIDEBAR SYSTEM PANELS */
+/* VAULT DRAG PANEL SYSTEM */
 .sidebar {
     position: fixed;
     top: 0;
@@ -197,17 +195,12 @@ html, body {
 .icon-btn {
     background: transparent !important;
     border: none !important;
-    color: #2b4c3d;
+    color: #2b4c3d !important;
     font-size: 1.3rem;
     cursor: pointer;
     line-height: 1;
 }
 
-.icon-btn:hover {
-    color: #ef4444;
-}
-
-/* INTERNAL VAULT FILE LIST ITEMS */
 .drafts-list {
     list-style: none;
     overflow-y: auto;
@@ -216,53 +209,26 @@ html, body {
 
 .drafts-list li {
     padding: 12px 14px;
-    background: rgba(45, 90, 68, 0.03); 
+    background: rgba(45, 90, 68, 0.03);
     border-radius: 6px;
     margin-bottom: 8px;
     cursor: pointer;
     font-size: 0.85rem;
-    display: flex; 
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.2s ease;
-    user-select: none;
     color: #cbd5e1;
-}
-
-.drafts-list li:hover {
-    background: rgba(53, 114, 88, 0.1);
-    color: #a7f3d0; 
 }
 
 .delete-draft-btn {
     background: transparent !important;
     border: none !important;
-    color: #2b4c3d;
+    color: #2b4c3d !important;
     font-size: 1.1rem;
     cursor: pointer;
-    padding: 0 4px;
-    line-height: 1;
-    transition: color 0.2s ease;
 }
 
-.delete-draft-btn:hover {
-    color: #ef4444; 
-}
-
-.drafts-list::-webkit-scrollbar {
-    width: 4px;
-}
-
-.drafts-list::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.drafts-list::-webkit-scrollbar-thumb {
-    background: #0f2117;
-    border-radius: 2px;
-}
-
-/* ALERT HUD MESSAGE INFRASTRUCTURE CONTAINER */
+/* ALERT LOG HOUSING */
 .toast-container {
     position: fixed;
     bottom: calc(80px + env(safe-area-inset-bottom));
@@ -274,13 +240,10 @@ html, body {
     padding: 10px 24px;
     border-radius: 30px;
     font-size: 0.85rem;
-    font-family: sans-serif;
-    letter-spacing: 0.3px;
     z-index: 100;
     opacity: 0;
     pointer-events: none;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .toast-container.show {
