@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — RUNTIME ENGINE WITH STABLE PARTICLES RETAINED
+   MIDROOM — FULL ENGINE: AUTO-SAVE, MANUAL SAVE, & INLINE RENAME
    ========================================================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,20 +7,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const wordCount = document.getElementById('word-count');
     const statusIndicator = document.getElementById('status-indicator');
     
+    // Core Actions
     const saveBtn = document.getElementById('save-btn');
     const copyBtn = document.getElementById('copy-btn');
     const downloadBtn = document.getElementById('download-btn');
+    
+    // Navigation & Sidebar
     const menuToggle = document.getElementById('menu-toggle');
     const newCanvasBtn = document.getElementById('new-canvas-btn');
     const closeSidebar = document.getElementById('close-sidebar');
-    
     const sidebar = document.getElementById('sidebar');
     const draftsList = document.getElementById('drafts-list');
     const toastNotification = document.getElementById('toast-notification');
 
     let currentDraftId = null;
+    let autoSaveTimeout = null;
 
-    // FLOATING FOREST DUST ENGINE
+    // 1. FOREST DUST ENGINE (Renders the background atmosphere)
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -55,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            // Ambient soft mint specs matching original snapshots
             ctx.fillStyle = `rgba(134, 239, 172, ${this.alpha})`;
             ctx.fill();
         }
@@ -75,12 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     animateParticles();
 
-    // WORD COUNTER
+    // 2. INTERFACE HELPERS
     function updateWordCount() {
         const text = textInput.value.trim();
         wordCount.textContent = text === '' ? 0 : text.split(/\s+/).length;
     }
-    textInput.addEventListener('input', updateWordCount);
 
     function showToast(message) {
         toastNotification.textContent = message;
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => toastNotification.classList.remove('show'), 2000);
     }
 
-    // STORAGE LINKS
+    // 3. STORAGE ACCESS
     function getDrafts() {
         return JSON.parse(localStorage.getItem('midroom_drafts')) || [];
     }
@@ -97,6 +98,62 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('midroom_drafts', JSON.stringify(draftsArr));
     }
 
+    // 4. THE CORE SAVE FUNCTION (Shared by manual and auto-save)
+    function saveCurrentProgress(isManual = false) {
+        const payload = textInput.value;
+        if (!payload.trim() && !currentDraftId) {
+            if (isManual) showToast("Cannot preserve an empty room");
+            return;
+        }
+
+        const drafts = getDrafts();
+        statusIndicator.textContent = isManual ? "Saving Entry..." : "Auto-saving...";
+        statusIndicator.style.color = "#86efac";
+
+        if (currentDraftId) {
+            const index = drafts.findIndex(d => d.id === currentDraftId);
+            if (index !== -1) {
+                drafts[index].content = payload;
+                drafts[index].updatedAt = new Date().toISOString();
+                saveDrafts(drafts);
+            }
+        } else {
+            currentDraftId = 'draft_' + Date.now();
+            const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const newDraft = {
+                id: currentDraftId,
+                title: `Draft (${timeString})`,
+                content: payload,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            drafts.unshift(newDraft);
+            saveDrafts(drafts);
+        }
+
+        setTimeout(() => {
+            statusIndicator.textContent = "Saved to Vault";
+            statusIndicator.style.color = "#3b6b53";
+            if (isManual) showToast("Entry preserved");
+        }, 500);
+    }
+
+    // Trigger Auto-save while typing
+    textInput.addEventListener('input', () => {
+        updateWordCount();
+        clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(() => saveCurrentProgress(false), 1500);
+    });
+
+    // Trigger Manual Save on click
+    if (saveBtn) {
+        saveBtn.addEventListener('click', () => {
+            clearTimeout(autoSaveTimeout);
+            saveCurrentProgress(true);
+        });
+    }
+
+    // 5. SIDEBAR DRAWER WITH MINIMALIST INLINE RENAMING
     function displayDrafts() {
         draftsList.innerHTML = '';
         const drafts = getDrafts();
@@ -119,7 +176,10 @@ document.addEventListener('DOMContentLoaded', () => {
             titleSpan.textContent = draft.title || `Untitled Log ${index + 1}`;
             detailsDiv.appendChild(titleSpan);
 
+            // Click row to open entry
             li.addEventListener('click', () => {
+                if (detailsDiv.querySelector('input')) return; // Block loading if currently renaming
+                
                 currentDraftId = draft.id;
                 textInput.value = draft.content;
                 updateWordCount();
@@ -128,21 +188,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast("Loaded entry");
             });
 
+            // Double click title text to rename inline inside the row
             li.addEventListener('dblclick', (e) => {
-                e.stopPropagation(); 
-                const newTitle = prompt("Rename your draft log entry:", titleSpan.textContent);
-                if (newTitle !== null && newTitle.trim() !== "") {
-                    const savedList = getDrafts();
-                    const targetIdx = savedList.findIndex(d => d.id === draft.id);
-                    if (targetIdx !== -1) {
-                        savedList[targetIdx].title = newTitle.trim();
-                        saveDrafts(savedList);
-                        titleSpan.textContent = newTitle.trim();
-                        showToast("Draft renamed");
+                e.stopPropagation();
+                if (detailsDiv.querySelector('input')) return;
+
+                const currentName = titleSpan.textContent;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'inline-rename-input';
+                input.value = currentName;
+
+                detailsDiv.innerHTML = '';
+                detailsDiv.appendChild(input);
+                input.focus();
+                input.select();
+
+                function commitInlineRename() {
+                    const newTitle = input.value.trim();
+                    detailsDiv.innerHTML = ''; 
+                    
+                    if (newTitle !== "" && newTitle !== currentName) {
+                        const savedList = getDrafts();
+                        const targetIdx = savedList.findIndex(d => d.id === draft.id);
+                        if (targetIdx !== -1) {
+                            savedList[targetIdx].title = newTitle;
+                            saveDrafts(savedList);
+                            draft.title = newTitle;
+                        }
+                        titleSpan.textContent = newTitle;
+                    } else {
+                        titleSpan.textContent = currentName;
                     }
+                    detailsDiv.appendChild(titleSpan);
                 }
+
+                input.addEventListener('keydown', (evt) => {
+                    if (evt.key === 'Enter') {
+                        evt.preventDefault();
+                        commitInlineRename();
+                    }
+                });
+                input.addEventListener('blur', commitInlineRename);
             });
 
+            // Delete entry button
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-draft-btn';
             deleteBtn.innerHTML = '&times;';
@@ -161,49 +251,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast("Draft wiped");
             });
 
+            detailsDiv.appendChild(titleSpan);
             li.appendChild(detailsDiv);
             li.appendChild(deleteBtn);
             draftsList.appendChild(li);
         });
     }
 
-    saveBtn.addEventListener('click', () => {
-        const payload = textInput.value;
-        if (!payload.trim()) {
-            showToast("Cannot preserve an empty room");
-            return;
-        }
-
-        const drafts = getDrafts();
-        
-        if (currentDraftId) {
-            const index = drafts.findIndex(d => d.id === currentDraftId);
-            if (index !== -1) {
-                drafts[index].content = payload;
-                drafts[index].updatedAt = new Date().toISOString();
-                saveDrafts(drafts);
-                statusIndicator.textContent = "Saved to Vault";
-                showToast("Entry updated");
-            }
-        } else {
-            const uniqueId = 'draft_' + Date.now();
-            const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const newDraft = {
-                id: uniqueId,
-                title: `Draft (${timeString})`,
-                content: payload,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-            drafts.unshift(newDraft);
-            saveDrafts(drafts);
-            currentDraftId = uniqueId;
-            statusIndicator.textContent = "Saved to Vault";
-            showToast("Added into private records");
-        }
-        displayDrafts();
-    });
-
+    // 6. BOTTOM TOOLBAR CONTROLS
     copyBtn.addEventListener('click', () => {
         if (!textInput.value.trim()) {
             showToast("Nothing to copy");
@@ -241,6 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     newCanvasBtn.addEventListener('click', () => {
+        clearTimeout(autoSaveTimeout);
         currentDraftId = null;
         textInput.value = '';
         updateWordCount();
