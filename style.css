@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — FOREST PROFILE STYLESHEET (LIGHTWEIGHT AMBIENT FOREST GREEN)
+   MIDROOM — ORIGINAL ATMOSPHERIC DEEP FOREST SHADE RESTORED
    ========================================================================= */
 
 * {
@@ -11,7 +11,7 @@
 }
 
 html, body {
-    background-color: #040c08; /* Slightly lighter, organic deep forest base */
+    background-color: #020503; /* Deepest forest undergrowth base */
     color: #cbd5e1;
     height: 100vh;
     height: 100dvh;
@@ -21,7 +21,7 @@ html, body {
     -webkit-text-size-adjust: 100%;
 }
 
-/* LIGHTWEIGHT FOREST BACKGROUND GRADIENT */
+/* ORIGINAL FOREST GLOW & DEPTH DEPLOYED HERE */
 #ambient-canvas {
     position: fixed;
     top: 0;
@@ -29,16 +29,16 @@ html, body {
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    z-index: -1; /* Pushed safely to background behind all interface items */
-    pointer-events: none; /* Clicks completely pass through to buttons */
-    background-color: #040c08;
+    z-index: -1; 
+    pointer-events: none; 
+    background-color: #020503;
     
-    /* Soft, lightweight misty forest radial bloom centered perfectly at top */
+    /* The exact deep, moody forest canopy cone from your original screens */
     background-image: radial-gradient(
-        ellipse 95% 65% at 50% 10%,
-        rgba(46, 117, 89, 0.4) 0%,   /* Considerably lighter, vibrant forest green core */
-        rgba(20, 59, 43, 0.18) 55%,   /* Smoothly fading out */
-        rgba(4, 12, 8, 0) 100%
+        ellipse 85% 70% at 50% 0%,
+        rgba(26, 61, 46, 0.45) 0%,   /* Rich atmospheric green core */
+        rgba(10, 28, 20, 0.22) 50%,   /* Soft, sweeping gradient mid-tones */
+        rgba(2, 5, 3, 0) 100%
     );
     background-size: 100% 100%;
     background-position: center top;
@@ -75,9 +75,9 @@ html, body {
 }
 
 .nav-btn {
-    background: rgba(28, 59, 46, 0.4) !important;
-    border: 1px solid #1c3b2e !important;
-    color: #5fa383 !important;
+    background: rgba(16, 36, 28, 0.4) !important;
+    border: 1px solid #142e23 !important;
+    color: #4b8568 !important;
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
@@ -87,14 +87,14 @@ html, body {
 }
 
 .nav-btn:hover, .nav-btn:active {
-    border-color: #72bfa1 !important;
+    border-color: #5fa383 !important;
     color: #cbd5e1 !important;
-    background: rgba(95, 163, 131, 0.2) !important;
+    background: rgba(75, 133, 104, 0.2) !important;
 }
 
 .status-indicator {
     font-size: 0.85rem;
-    color: #457e63;
+    color: #3b6b53;
     letter-spacing: 1px;
 }
 
@@ -115,7 +115,7 @@ html, body {
 }
 
 #text-input::placeholder {
-    color: #1f4233;
+    color: #163326;
     font-style: italic;
 }
 
@@ -128,14 +128,14 @@ html, body {
     max-width: 800px;
     margin: 0 auto;
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    border-top: 1px solid #143024;
+    border-top: 1px solid #0c1f17;
     height: 60px;
     flex-shrink: 0;
 }
 
 .stats {
     font-size: 0.85rem;
-    color: #5fa383;
+    color: #4b8568;
 }
 
 .actions {
@@ -146,7 +146,7 @@ html, body {
 .action-btn {
     background: transparent !important;
     border: none !important;
-    color: #5fa383 !important;
+    color: #4b8568 !important;
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 500;
@@ -154,7 +154,7 @@ html, body {
 }
 
 .action-btn:hover, .action-btn:active {
-    color: #a7f3d0 !important;
+    color: #86efac !important;
 }
 
 /* Sidebar Drawer System */
@@ -164,8 +164,8 @@ html, body {
     left: 0;
     width: 280px;
     height: 100%;
-    background: #030806;
-    border-right: 1px solid #143024;
+    background: #010402;
+    border-right: 1px solid #0c1f17;
     z-index: 10;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
@@ -186,13 +186,13 @@ html, body {
 }
 
 .sidebar-header h3 {
-    color: #5fa383;
+    color: #4b8568;
     font-size: 0.9rem;
     letter-spacing: 1px;
 }
 
 .sidebar-hint {
-    color: #2b5742;
+    color: #1e4231;
     font-size: 0.75rem;
     font-style: italic;
     margin-bottom: 20px;
@@ -201,7 +201,7 @@ html, body {
 .icon-btn {
     background: transparent !important;
     border: none !important;
-    color: #5fa383 !important;
+    color: #4b8568 !important;
     font-size: 1.5rem;
     cursor: pointer;
 }
@@ -214,8 +214,8 @@ html, body {
 
 .draft-item {
     padding: 12px 14px;
-    background: rgba(28, 59, 46, 0.15);
-    border: 1px solid #143024;
+    background: rgba(20, 46, 35, 0.15);
+    border: 1px solid #0c1f17;
     border-radius: 6px;
     margin-bottom: 10px;
     cursor: pointer;
@@ -226,8 +226,8 @@ html, body {
 }
 
 .draft-item:active, .draft-item.selected {
-    background: rgba(46, 117, 89, 0.15);
-    border-color: #457e63;
+    background: rgba(38, 89, 67, 0.15);
+    border-color: #3b6b53;
 }
 
 .draft-details {
@@ -247,14 +247,14 @@ html, body {
 .delete-draft-btn {
     background: transparent !important;
     border: none !important;
-    color: #5fa383 !important;
+    color: #4b8568 !important;
     font-size: 1.2rem;
     cursor: pointer;
     padding: 4px;
 }
 
 .delete-draft-btn:hover {
-    color: #f87171 !important;
+    color: #ef4444 !important;
 }
 
 /* Feedback Toast Notification */
@@ -263,9 +263,9 @@ html, body {
     bottom: calc(80px + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: #06140e;
-    border: 1px solid #1c3b2e;
-    color: #a7f3d0;
+    background: #030a06;
+    border: 1px solid #142e23;
+    color: #86efac;
     padding: 10px 20px;
     border-radius: 20px;
     font-size: 0.8rem;
