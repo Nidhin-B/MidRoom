@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — FULL ENGINE: AUTO-SAVE, MANUAL SAVE, & INLINE RENAME
+   MIDROOM — FIXED LOGIC FRAMEWORK (STABLE AUTO-SAVE & INLINE TEXT EDIT)
    ========================================================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,15 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const wordCount = document.getElementById('word-count');
     const statusIndicator = document.getElementById('status-indicator');
     
-    // Core Actions
     const saveBtn = document.getElementById('save-btn');
     const copyBtn = document.getElementById('copy-btn');
     const downloadBtn = document.getElementById('download-btn');
-    
-    // Navigation & Sidebar
     const menuToggle = document.getElementById('menu-toggle');
     const newCanvasBtn = document.getElementById('new-canvas-btn');
     const closeSidebar = document.getElementById('close-sidebar');
+    
     const sidebar = document.getElementById('sidebar');
     const draftsList = document.getElementById('drafts-list');
     const toastNotification = document.getElementById('toast-notification');
@@ -23,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentDraftId = null;
     let autoSaveTimeout = null;
 
-    // 1. FOREST DUST ENGINE (Renders the background atmosphere)
+    // 1. FOREST DUST ENGINE
     const canvas = document.getElementById('ambient-canvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
@@ -77,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     animateParticles();
 
-    // 2. INTERFACE HELPERS
+    // 2. UTILITIES
     function updateWordCount() {
         const text = textInput.value.trim();
         wordCount.textContent = text === '' ? 0 : text.split(/\s+/).length;
@@ -89,33 +87,27 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => toastNotification.classList.remove('show'), 2000);
     }
 
-    // 3. STORAGE ACCESS
     function getDrafts() {
         return JSON.parse(localStorage.getItem('midroom_drafts')) || [];
     }
 
-    function saveDrafts(draftsArr) {
-        localStorage.setItem('midroom_drafts', JSON.stringify(draftsArr));
-    }
-
-    // 4. THE CORE SAVE FUNCTION (Shared by manual and auto-save)
-    function saveCurrentProgress(isManual = false) {
+    // 3. SECURE PRESERVE ENGINE (Shared Manual + Auto-save pipeline)
+    function executeSaveAction(isManual = false) {
         const payload = textInput.value;
         if (!payload.trim() && !currentDraftId) {
-            if (isManual) showToast("Cannot preserve an empty room");
+            if (isManual) showToast("Cannot save an empty room");
             return;
         }
 
         const drafts = getDrafts();
         statusIndicator.textContent = isManual ? "Saving Entry..." : "Auto-saving...";
-        statusIndicator.style.color = "#86efac";
 
         if (currentDraftId) {
             const index = drafts.findIndex(d => d.id === currentDraftId);
             if (index !== -1) {
                 drafts[index].content = payload;
                 drafts[index].updatedAt = new Date().toISOString();
-                saveDrafts(drafts);
+                localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
             }
         } else {
             currentDraftId = 'draft_' + Date.now();
@@ -128,32 +120,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 updatedAt: new Date().toISOString()
             };
             drafts.unshift(newDraft);
-            saveDrafts(drafts);
+            localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
         }
 
         setTimeout(() => {
             statusIndicator.textContent = "Saved to Vault";
-            statusIndicator.style.color = "#3b6b53";
             if (isManual) showToast("Entry preserved");
-        }, 500);
+        }, 400);
     }
 
-    // Trigger Auto-save while typing
+    // Auto-save triggers silently 1.5s after typing breaks
     textInput.addEventListener('input', () => {
         updateWordCount();
         clearTimeout(autoSaveTimeout);
-        autoSaveTimeout = setTimeout(() => saveCurrentProgress(false), 1500);
+        autoSaveTimeout = setTimeout(() => executeSaveAction(false), 1500);
     });
 
-    // Trigger Manual Save on click
+    // Manual save fallback button works flawlessly
     if (saveBtn) {
         saveBtn.addEventListener('click', () => {
             clearTimeout(autoSaveTimeout);
-            saveCurrentProgress(true);
+            executeSaveAction(true);
         });
     }
 
-    // 5. SIDEBAR DRAWER WITH MINIMALIST INLINE RENAMING
+    // 4. VAULT RENDERER WITH INTERACTIVE INLINE TEXT EDITING
     function displayDrafts() {
         draftsList.innerHTML = '';
         const drafts = getDrafts();
@@ -176,10 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
             titleSpan.textContent = draft.title || `Untitled Log ${index + 1}`;
             detailsDiv.appendChild(titleSpan);
 
-            // Click row to open entry
-            li.addEventListener('click', () => {
-                if (detailsDiv.querySelector('input')) return; // Block loading if currently renaming
-                
+            // Direct Click: Load File
+            li.addEventListener('click', (e) => {
+                if (titleSpan.getAttribute('contenteditable') === 'true') return;
                 currentDraftId = draft.id;
                 textInput.value = draft.content;
                 updateWordCount();
@@ -188,58 +178,54 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast("Loaded entry");
             });
 
-            // Double click title text to rename inline inside the row
+            // Double Click: Toggle text edit natively inside row block without popups
             li.addEventListener('dblclick', (e) => {
                 e.stopPropagation();
-                if (detailsDiv.querySelector('input')) return;
-
-                const currentName = titleSpan.textContent;
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.className = 'inline-rename-input';
-                input.value = currentName;
-
-                detailsDiv.innerHTML = '';
-                detailsDiv.appendChild(input);
-                input.focus();
-                input.select();
-
-                function commitInlineRename() {
-                    const newTitle = input.value.trim();
-                    detailsDiv.innerHTML = ''; 
-                    
-                    if (newTitle !== "" && newTitle !== currentName) {
-                        const savedList = getDrafts();
-                        const targetIdx = savedList.findIndex(d => d.id === draft.id);
-                        if (targetIdx !== -1) {
-                            savedList[targetIdx].title = newTitle;
-                            saveDrafts(savedList);
-                            draft.title = newTitle;
-                        }
-                        titleSpan.textContent = newTitle;
-                    } else {
-                        titleSpan.textContent = currentName;
-                    }
-                    detailsDiv.appendChild(titleSpan);
-                }
-
-                input.addEventListener('keydown', (evt) => {
-                    if (evt.key === 'Enter') {
-                        evt.preventDefault();
-                        commitInlineRename();
-                    }
-                });
-                input.addEventListener('blur', commitInlineRename);
+                titleSpan.setAttribute('contenteditable', 'true');
+                titleSpan.focus();
+                
+                // Select all text natively inside element node
+                const range = document.createRange();
+                range.selectNodeContents(titleSpan);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
             });
 
-            // Delete entry button
+            // Handle finishing name change
+            function processNameUpdate() {
+                titleSpan.setAttribute('contenteditable', 'false');
+                const cleanName = titleSpan.textContent.trim();
+                if (cleanName && cleanName !== draft.title) {
+                    const savedList = getDrafts();
+                    const match = savedList.findIndex(d => d.id === draft.id);
+                    if (match !== -1) {
+                        savedList[match].title = cleanName;
+                        localStorage.setItem('midroom_drafts', JSON.stringify(savedList));
+                        draft.title = cleanName;
+                        showToast("Renamed successfully");
+                    }
+                } else {
+                    titleSpan.textContent = draft.title; // revert
+                }
+            }
+
+            titleSpan.addEventListener('keydown', (evt) => {
+                if (evt.key === 'Enter') {
+                    evt.preventDefault();
+                    titleSpan.blur();
+                }
+            });
+            titleSpan.addEventListener('blur', processNameUpdate);
+
+            // Delete Action
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-draft-btn';
             deleteBtn.innerHTML = '&times;';
             deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation(); 
                 let activeDrafts = getDrafts().filter(d => d.id !== draft.id);
-                saveDrafts(activeDrafts);
+                localStorage.setItem('midroom_drafts', JSON.stringify(activeDrafts));
                 
                 if (currentDraftId === draft.id) {
                     currentDraftId = null;
@@ -258,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 6. BOTTOM TOOLBAR CONTROLS
+    // 5. SECONDARY INTERFACE HOOKS
     copyBtn.addEventListener('click', () => {
         if (!textInput.value.trim()) {
             showToast("Nothing to copy");
