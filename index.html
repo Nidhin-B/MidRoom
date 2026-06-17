@@ -2,28 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MidRoom — Ambient Canvas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Midroom — Ambient Writing Canvas</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Ambient Jungle Particle Canvas Layer -->
     <canvas id="ambient-canvas"></canvas>
 
-    <!-- Main Interactive Writing Void Container -->
-    <div class="canvas-container">
+    <main class="canvas-container">
         
-        <!-- Top Navigation Header -->
-        <header class="top-nav">
-            <button class="nav-btn" id="menu-toggle">Menu</button>
-            <div class="status-indicator">Private Room</div>
-        </header>
+        <nav class="top-nav">
+            <div class="nav-controls">
+                <button class="nav-btn" id="menu-toggle">Menu</button>
+                <button class="nav-btn" id="new-canvas-btn" title="Open Clean Canvas">+</button>
+            </div>
+            <span class="status-indicator" id="status-indicator">Private Room</span>
+        </nav>
 
-        <!-- Main Central Text Input Field -->
-        <textarea id="text-input" placeholder="Type your thoughts into the void..." spellcheck="false"></textarea>
+        <textarea id="text-input" placeholder="Type your thoughts into the void..." autofocus spellcheck="false"></textarea>
 
-        <!-- Fixed Universal Bottom Toolbar Layout -->
         <footer class="toolbar">
             <div class="stats">
                 <span id="word-count">0</span> words
@@ -35,18 +33,18 @@
             </div>
         </footer>
 
+    </main>
+
+    <div class="sidebar" id="sidebar">
+        <header class="sidebar-header">
+            <h3>THE VAULT</h3>
+            <button class="icon-btn" id="close-sidebar">&times;</button>
+        </header>
+        <ul class="drafts-list" id="drafts-list">
+            </ul>
     </div>
 
-    <!-- The Enchanted Vault Sidebar System -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h3>DRAFTS VAULT</h3>
-            <button class="icon-btn" id="close-sidebar">&times;</button>
-        </div>
-        <ul class="drafts-list" id="drafts-list">
-            <!-- JavaScript dynamically injects list items here -->
-        </ul>
-    </aside>
+    <div class="toast-container" id="toast-notification">Notification</div>
 
     <script src="script.js"></script>
 </body>
