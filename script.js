@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — RUNTIME LOGIC ENGINE (CLEAN CONTROLS + STABLE PROMPT RENAME)
+   MIDROOM — RUNTIME LOGIC ENGINE + FLOATING PARTICLES RESTORED
    ========================================================================= */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -23,7 +23,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentDraftId = null;
 
-    // Word Counter
+    // 1. PARTICLES ENGINE RESTORED (Lightweight float forest dust)
+    const canvas = document.getElementById('ambient-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class DustParticle {
+        constructor() {
+            this.reset();
+            this.y = Math.random() * canvas.height; // Spread out initially
+        }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = canvas.height + 10;
+            this.size = Math.random() * 1.3 + 0.6; // Small lightweight specs
+            this.speedY = -(Math.random() * 0.25 + 0.1); // Slow, calm upward crawl
+            this.speedX = (Math.random() - 0.5) * 0.15;
+            this.alpha = Math.random() * 0.35 + 0.1;
+        }
+        update() {
+            this.y += this.speedY;
+            this.x += this.speedX;
+            if (this.y < -10 || this.x < 0 || this.x > canvas.width) {
+                this.reset();
+            }
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(167, 243, 208, ${this.alpha})`;
+            ctx.fill();
+        }
+    }
+
+    // Spawn 35 organic floating specs
+    for (let i = 0; i < 35; i++) {
+        particles.push(new DustParticle());
+    }
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Let CSS handle the background gradient flawlessly
+        
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // 2. WORD COUNTER
     function updateWordCount() {
         const text = textInput.value.trim();
         wordCount.textContent = text === '' ? 0 : text.split(/\s+/).length;
@@ -52,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const drafts = getDrafts();
 
         if (drafts.length === 0) {
-            draftsList.innerHTML = '<li style="color: #2b4c3d; font-style: italic; padding: 10px 0; border: none; background: transparent;">The Vault is empty...</li>';
+            draftsList.innerHTML = '<li style="color: #2b5742; font-style: italic; padding: 10px 0; border: none; background: transparent;">The Vault is empty...</li>';
             return;
         }
 
@@ -79,9 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast("Loaded entry");
             });
 
-            // SAFE DOUBLE TAP RENAME: Native prompt prevents any CSS breaking or target glitching
+            // SAFE DOUBLE TAP RENAME
             li.addEventListener('dblclick', (e) => {
-                e.stopPropagation(); // Avoid triggering standard load clicks
+                e.stopPropagation(); 
                 const newTitle = prompt("Rename your draft log entry:", titleSpan.textContent);
                 if (newTitle !== null && newTitle.trim() !== "") {
                     const savedList = getDrafts();
@@ -100,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteBtn.className = 'delete-draft-btn';
             deleteBtn.innerHTML = '&times;';
             deleteBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Avoid loading deleted draft content fields
+                e.stopPropagation(); 
                 let activeDrafts = getDrafts().filter(d => d.id !== draft.id);
                 saveDrafts(activeDrafts);
                 
@@ -131,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const drafts = getDrafts();
         
         if (currentDraftId) {
-            // Overwrite existing active file track
             const index = drafts.findIndex(d => d.id === currentDraftId);
             if (index !== -1) {
                 drafts[index].content = payload;
@@ -141,7 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast("Entry updated");
             }
         } else {
-            // Unshift clean object context setup
             const uniqueId = 'draft_' + Date.now();
             const timeString = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             const newDraft = {
@@ -199,7 +253,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebar.classList.remove('active');
     });
 
-    // New Canvas Session Reset Action
     newCanvasBtn.addEventListener('click', () => {
         currentDraftId = null;
         textInput.value = '';
