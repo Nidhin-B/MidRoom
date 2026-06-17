@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>MidRoom — Atmospheric Vault</title>
-    <link rel="stylesheet" href="style.css?v=41">
+    <link rel="stylesheet" href="style.css?v=42">
 </head>
 <body>
 
-    <!-- Canvas layer for floating dust particles -->
     <canvas id="ambient-canvas"></canvas>
 
-    <!-- Interface Layout Foreground -->
     <div class="canvas-container">
         
         <header class="top-nav">
@@ -29,7 +27,6 @@
                 <span id="word-count">0</span> words
             </div>
             <div class="actions">
-                <!-- Save Draft button restored right here -->
                 <button class="action-btn" id="save-btn">Save Draft</button>
                 <button class="action-btn" id="copy-btn">Copy Text</button>
                 <button class="action-btn" id="download-btn">Download .txt</button>
@@ -38,7 +35,6 @@
 
     </div>
 
-    <!-- The Vault Side Panel -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h3>THE VAULT</h3>
@@ -48,9 +44,8 @@
         <ul class="drafts-list" id="drafts-list"></ul>
     </aside>
 
-    <!-- Floating Alerts -->
     <div id="toast-notification" class="toast-container"></div>
 
-    <script src="script.js?v=41"></script>
+    <script src="script.js?v=42"></script>
 </body>
 </html>
