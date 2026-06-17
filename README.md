@@ -1,5 +1,5 @@
 # MidRoom
-MidRoom — Minimalist Ambient Web Text Editor
+MidRoom — Minimalist Ambient Web Text Editor.
 A minimalist, immersive writing sanctuary designed for the void. Midroom provides a distraction-free, atmospheric darkroom for your thoughts, featuring a custom particle-driven environment and a persistent vault for your drafts. Built for creators who need a space that feels as deep as their stories.
 
 Key Features:
