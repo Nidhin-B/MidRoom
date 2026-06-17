@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — ORIGINAL FANTASY WRITING CANVAS CORE STYLES (RESTORED & POLISHED)
+   MIDROOM — ORIGINAL AMBIENT VOID CORE STYLES (RESTORED)
    ========================================================================= */
 
 * {
@@ -10,8 +10,7 @@
 }
 
 html, body {
-    /* Back to the gorgeous, pitch-black ambient void */
-    background: #050a07; 
+    background: #050a07; /* Your beautiful original dark room shade */
     color: #cbd5e1; 
     height: 100vh;
     height: 100dvh; 
@@ -32,7 +31,6 @@ html, body {
     pointer-events: none;
 }
 
-/* 2. THE WRITING VOID CONTAINER LAYOUT */
 .canvas-container {
     flex: 1;
     display: flex;
@@ -45,7 +43,7 @@ html, body {
     background: transparent; 
 }
 
-/* 3. TOP NAVIGATION HEADER */
+/* TOP NAVIGATION */
 .top-nav {
     display: flex;
     justify-content: space-between;
@@ -85,10 +83,9 @@ html, body {
     color: #1f3a2d;
     letter-spacing: 1px;
     font-weight: 500;
-    transition: color 0.3s ease;
 }
 
-/* 4. THE MAIN CENTRAL TEXT INPUT FIELD */
+/* INPUT TEXT AREA */
 #text-input {
     flex: 1;
     width: 100%;
@@ -110,7 +107,7 @@ html, body {
     font-style: italic;
 }
 
-/* 5. FIXED UNIVERSAL BOTTOM TOOLBAR LAYOUT */
+/* BOTTOM TOOLBAR */
 .toolbar {
     display: flex;
     justify-content: space-between;
@@ -148,7 +145,7 @@ html, body {
     color: #a7f3d0;
 }
 
-/* 6. THE ENCHANTED VAULT SIDEBAR SYSTEM */
+/* SIDEBAR SYSTEM */
 .sidebar {
     position: fixed;
     top: 0;
@@ -196,7 +193,7 @@ html, body {
     color: #ef4444;
 }
 
-/* 7. RECENT DRAFTS INTERACTIVE LIST LAYOUT */
+/* VAULT LIST */
 .drafts-list {
     list-style: none;
     overflow-y: auto;
@@ -250,7 +247,7 @@ html, body {
     border-radius: 2px;
 }
 
-/* 8. PROFESSIONAL TOASTS */
+/* UI SLIDE-UP TOASTS */
 .toast-container {
     position: fixed;
     bottom: calc(80px + env(safe-area-inset-bottom));
