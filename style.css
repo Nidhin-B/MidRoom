@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — ORIGINAL AMBIENT VOID CORE STYLES (RESTORED)
+   MIDROOM — ORIGINAL IMMERSIVE EMERALD VOID (REMASTERED)
    ========================================================================= */
 
 * {
@@ -10,7 +10,7 @@
 }
 
 html, body {
-    background: #050a07; /* Original dark slate moss-tinted void */
+    background-color: #030705; /* Deep slate forest void base */
     color: #cbd5e1; 
     height: 100vh;
     height: 100dvh; 
@@ -21,16 +21,19 @@ html, body {
     touch-action: manipulation;
 }
 
+/* THE BACKGROUND CANVAS LAYER */
 #ambient-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 0;
+    z-index: 1; /* Locked behind the text elements */
     pointer-events: none;
+    background-color: #030705;
 }
 
+/* INTERFACE CONTAINERS (Forced transparent to let particles shine through) */
 .canvas-container {
     flex: 1;
     display: flex;
@@ -39,8 +42,8 @@ html, body {
     width: 100%;
     padding: 24px 24px; 
     position: relative;
-    z-index: 1;
-    background: transparent; 
+    z-index: 2; /* Sits cleanly above the canvas */
+    background: transparent !important; 
 }
 
 /* TOP NAVIGATION */
@@ -53,6 +56,7 @@ html, body {
     margin: 0 auto;
     flex-shrink: 0; 
     padding: calc(15px + env(safe-area-inset-top)) 0 15px 0; 
+    background: transparent;
 }
 
 .nav-controls {
@@ -61,9 +65,9 @@ html, body {
 }
 
 .nav-btn {
-    background: transparent;
+    background: rgba(20, 36, 28, 0.3);
     border: 1px solid #14241c;
-    color: #3f6356;
+    color: #4b7364;
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
@@ -75,27 +79,27 @@ html, body {
 .nav-btn:hover {
     border-color: #52796f;
     color: #cbd5e1;
-    background: rgba(82, 121, 111, 0.05);
+    background: rgba(82, 121, 111, 0.15);
 }
 
 .status-indicator {
     font-size: 0.85rem;
-    color: #1f3a2d;
+    color: #355e4c;
     letter-spacing: 1px;
     font-weight: 500;
 }
 
-/* INPUT TEXT AREA */
+/* WRITING AREA */
 #text-input {
     flex: 1;
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    background: transparent;
+    background: transparent !important;
     border: none;
     outline: none;
     resize: none;
-    color: #cbd5e1;
+    color: #e2e8f0;
     font-size: 1.25rem; 
     line-height: 1.8;
     padding: 30px 0;
@@ -103,7 +107,7 @@ html, body {
 }
 
 #text-input::placeholder {
-    color: #14241c;
+    color: #1a3327;
     font-style: italic;
 }
 
@@ -116,13 +120,14 @@ html, body {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px 0 calc(15px + env(safe-area-inset-bottom)) 0;
-    border-top: 1px solid #0b1410;
+    border-top: 1px solid #0f2117;
     flex-shrink: 0;
+    background: transparent;
 }
 
 .stats {
     font-size: 0.85rem;
-    color: #3f6356;
+    color: #4b7364;
     font-weight: 500;
 }
 
@@ -134,7 +139,7 @@ html, body {
 .action-btn {
     background: transparent;
     border: none;
-    color: #3f6356;
+    color: #4b7364;
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 500;
@@ -145,15 +150,15 @@ html, body {
     color: #a7f3d0;
 }
 
-/* SIDEBAR SYSTEM */
+/* SIDEBAR ARCHIVE */
 .sidebar {
     position: fixed;
     top: 0;
     left: 0;
     width: 300px;
     height: 100%;
-    background: #030504;
-    border-right: 1px solid #0b1410;
+    background: #020504;
+    border-right: 1px solid #0f2117;
     z-index: 10;
     transform: translateX(-100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -183,7 +188,7 @@ html, body {
 .icon-btn {
     background: transparent;
     border: none;
-    color: #1f3a2d;
+    color: #2b4c3d;
     font-size: 1.3rem;
     cursor: pointer;
     line-height: 1;
@@ -193,7 +198,7 @@ html, body {
     color: #ef4444;
 }
 
-/* VAULT LIST */
+/* VAULT DRAFT FILE LIST */
 .drafts-list {
     list-style: none;
     overflow-y: auto;
@@ -222,7 +227,7 @@ html, body {
 .delete-draft-btn {
     background: transparent;
     border: none;
-    color: #1f3a2d;
+    color: #2b4c3d;
     font-size: 1.1rem;
     cursor: pointer;
     padding: 0 4px;
@@ -243,17 +248,17 @@ html, body {
 }
 
 .drafts-list::-webkit-scrollbar-thumb {
-    background: #0b1410;
+    background: #0f2117;
     border-radius: 2px;
 }
 
-/* UI SLIDE-UP TOASTS */
+/* NOTIFICATION TOASTS */
 .toast-container {
     position: fixed;
     bottom: calc(80px + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: #050a07;
+    background: #040a07;
     border: 1px solid #14241c;
     color: #a7f3d0;
     padding: 10px 24px;
