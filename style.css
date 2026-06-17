@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — FULL CODE (CLEAN TOP-LIGHT AMBIENT GRADIENT)
+   MIDROOM — FULL CODE (PERFECTLY BALANCED SMOOTH TRANSITION)
    ========================================================================= */
 
 * {
@@ -21,7 +21,7 @@ html, body {
     touch-action: manipulation;
 }
 
-/* CLEAN TOP-LIGHT BACKGROUND (SMOOTH VIGNETTE FADE) */
+/* BALANCED TOP-LIGHT BACKGROUND (SMOOTH SEAMLESS FALLOFF) */
 #ambient-canvas {
     position: fixed;
     top: 0;
@@ -32,16 +32,17 @@ html, body {
     pointer-events: none;
     background-color: #020403;
     
-    /* Smooth pool of ambient light at the top fading completely to black at the bottom */
+    /* Stretched color distribution stops to prevent sudden cutoffs */
     background-image: linear-gradient(
         to bottom,
-        rgba(35, 78, 59, 0.4) 0%,     /* Clear ambient glow at the top */
-        rgba(15, 36, 26, 0.15) 35%,   /* Softly fading out through the typing space */
-        #020403 75%                   /* Deep, absolute dark at the bottom toolbar */
+        rgba(35, 78, 59, 0.45) 0%,   /* Rich ambient glow right behind the top navbar */
+        rgba(22, 53, 40, 0.25) 20%,   /* Smooth, easing transition into the mid-screen */
+        rgba(12, 31, 23, 0.1) 45%,    /* Very faint, atmospheric glow behind your text typing */
+        #020403 80%                  /* Dissolves completely into pure void at the bottom toolbar */
     );
 }
 
-/* UI GRID WRAPPER (Kept completely transparent to show background) */
+/* UI GRID WRAPPER */
 .canvas-container {
     flex: 1;
     display: flex;
