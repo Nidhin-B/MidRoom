@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — FULL CODE (PERFECTLY BALANCED SMOOTH TRANSITION)
+   MIDROOM — EXACT BACKGROUND RESTORED FROM 1000323921_2.JPG
    ========================================================================= */
 
 * {
@@ -21,7 +21,7 @@ html, body {
     touch-action: manipulation;
 }
 
-/* BALANCED TOP-LIGHT BACKGROUND (SMOOTH SEAMLESS FALLOFF) */
+/* EXACT MATCH TO IMAGE 2: Radial ambient bloom centered at the top-mid */
 #ambient-canvas {
     position: fixed;
     top: 0;
@@ -32,13 +32,12 @@ html, body {
     pointer-events: none;
     background-color: #020403;
     
-    /* Stretched color distribution stops to prevent sudden cutoffs */
-    background-image: linear-gradient(
-        to bottom,
-        rgba(35, 78, 59, 0.45) 0%,   /* Rich ambient glow right behind the top navbar */
-        rgba(22, 53, 40, 0.25) 20%,   /* Smooth, easing transition into the mid-screen */
-        rgba(12, 31, 23, 0.1) 45%,    /* Very faint, atmospheric glow behind your text typing */
-        #020403 80%                  /* Dissolves completely into pure void at the bottom toolbar */
+    /* Creates the smooth circular green mist behind the main text area */
+    background-image: radial-gradient(
+        ellipse 80% 60% at 50% 15%,
+        rgba(32, 69, 52, 0.45) 0%,   /* Rich, soft green center core */
+        rgba(13, 31, 23, 0.2) 50%,    /* Smoothly dissolving outward */
+        rgba(2, 4, 3, 0) 100%         /* Perfectly blends into pure pitch black */
     );
 }
 
