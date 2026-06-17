@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MIDROOM — INTERFACE HUD STYLING RESTORATION (HOLLOW KNIGHT VIBE)
+   MIDROOM — FULL STYLE WITH VOLUMETRIC GOD RAYS BACKGROUND
    ========================================================================= */
 
 * {
@@ -10,7 +10,7 @@
 }
 
 html, body {
-    background-color: #020403;
+    background-color: #010302;
     color: #cbd5e1;
     height: 100vh;
     height: 100dvh;
@@ -21,7 +21,7 @@ html, body {
     touch-action: manipulation;
 }
 
-/* DEEP VIGNETTE AMBIENCE CANVAS BACKGROUND */
+/* CINEMATIC GOD RAYS LAYER (SHAFTS OF LIGHT STREAMING DOWN) */
 #ambient-canvas {
     position: fixed;
     top: 0;
@@ -30,17 +30,29 @@ html, body {
     height: 100%;
     z-index: 1;
     pointer-events: none;
-    background-color: #020403;
-    background-image: linear-gradient(
-        to top,
-        rgba(2, 4, 3, 1) 0%,
-        rgba(5, 14, 10, 0.95) 45%,
-        rgba(12, 33, 24, 0.75) 80%,
-        rgba(18, 48, 35, 0.5) 100%
-    );
+    background-color: #010302;
+    
+    /* Blends multiple light shafts into a cohesive atmospheric overlay */
+    background-image: 
+        /* Central main glowing spotlight beam */
+        radial-gradient(circle at 50% -10%, rgba(28, 69, 52, 0.45) 0%, rgba(10, 26, 19, 0.1) 60%, transparent 80%),
+        
+        /* Left angled light ray */
+        linear-gradient(78deg, transparent 20%, rgba(22, 59, 44, 0.25) 28%, rgba(22, 59, 44, 0.25) 34%, transparent 45%),
+        
+        /* Sharp central-right light column */
+        linear-gradient(96deg, transparent 45%, rgba(25, 71, 53, 0.3) 52%, rgba(25, 71, 53, 0.3) 58%, transparent 68%),
+        
+        /* Soft wide right angled beam */
+        linear-gradient(115deg, transparent 60%, rgba(18, 48, 36, 0.2) 68%, rgba(18, 48, 36, 0.2) 76%, transparent 85%),
+        
+        /* Deep void mask that fades the bottom out into pitch black abyss */
+        linear-gradient(to top, #010302 12%, rgba(1, 3, 2, 0.8) 45%, transparent 100%);
+
+    background-blend-mode: screen;
 }
 
-/* UI CONSOLE LAYERING GRID */
+/* UI GRID WRAPPER (Kept completely transparent to show background) */
 .canvas-container {
     flex: 1;
     display: flex;
@@ -53,7 +65,7 @@ html, body {
     background: transparent !important;
 }
 
-/* HEADER NAVIGATION */
+/* TOP INTERFACE BAR */
 .top-nav {
     display: flex;
     justify-content: space-between;
@@ -96,7 +108,7 @@ html, body {
     font-weight: 500;
 }
 
-/* INPUT COMPONENT SPECIFICS */
+/* TEXT AREA AREA */
 #text-input {
     flex: 1;
     width: 100%;
@@ -118,7 +130,7 @@ html, body {
     font-style: italic;
 }
 
-/* HUD BASEBAR TOOLBAR */
+/* BOTTOM HUD FOOTER BAR */
 .toolbar {
     display: flex;
     justify-content: space-between;
@@ -157,7 +169,7 @@ html, body {
     color: #a7f3d0 !important;
 }
 
-/* VAULT DRAG PANEL SYSTEM */
+/* SIDE PANEL VAULT SYSTEM */
 .sidebar {
     position: fixed;
     top: 0;
@@ -228,7 +240,7 @@ html, body {
     cursor: pointer;
 }
 
-/* ALERT LOG HOUSING */
+/* POPUP TOAST SYSTEM */
 .toast-container {
     position: fixed;
     bottom: calc(80px + env(safe-area-inset-bottom));
