@@ -1,8 +1,8 @@
 /* ==========================================================================
-   MIDROOM — CORE CANVAS ENGINES, AUTO-SAVE VAULT & TOAST NOTIFICATIONS
-   ========================================================================== */
+   MIDROOM — CANVAS ENGINE, STORAGE VAULT, & ACTIVE CHAMBER AUDIO SUITE
+   ========================================================================= */
 
-// 1. DOM SELECTORS
+// 1. GLOBAL UI ELEMENT SELECTORS
 const textInput = document.getElementById('text-input');
 const wordCountSpan = document.getElementById('word-count');
 const menuToggle = document.getElementById('menu-toggle');
@@ -16,7 +16,7 @@ const copyBtn = document.getElementById('copy-btn');
 const downloadBtn = document.getElementById('download-btn');
 const toast = document.getElementById('toast-notification');
 
-// NEW SETTINGS INTERFACE SELECTORS
+// SETTINGS CONTROL SYSTEM SELECTORS
 const settingsToggle = document.getElementById('settings-toggle');
 const settingsModal = document.getElementById('settings-modal');
 const closeSettings = document.getElementById('close-settings');
@@ -26,12 +26,28 @@ const audioCards = document.querySelectorAll('.audio-card');
 const scaleButtons = document.querySelectorAll('.scale-btn');
 const particleSwitch = document.getElementById('particle-switch');
 
-// TRACKER FOR CURRENT ACTIVE WORKING FILE
+// CORE DATA STATE TRACKERS
 let currentDraftId = null;
 let autoSaveTimer = null;
-let particlesEnabled = true; // State flag linked to settings loop
+let particlesEnabled = true;
 
-// 2. REAL-TIME WORD COUNTER & PROFESSIONAL AUTO-SAVE PIPELINE
+// 2. PATH B AMBIENT AUDIO ENGINE STREAM CONFIGURATION
+// Uses permanent, secure open-source streams hosted on cloud architectures
+const audioStreams = {
+    lofi: new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'),
+    rain: new Audio('https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg'),
+    void: new Audio('https://actions.google.com/sounds/v1/ambiences/steady_drone.ogg')
+};
+
+// Configure seamless background ambient looping
+audioStreams.lofi.loop = true;
+audioStreams.rain.loop = true;
+audioStreams.void.loop = true;
+
+// Standalone tactile SFX file path mapped to keypress frequencies
+const keyboardClickSFXUrl = 'https://actions.google.com/sounds/v1/office/typewriter_single_click.ogg';
+
+// 3. REAL-TIME WORD COUPLING & INLINE SYSTEM NOTIFICATIONS
 textInput.addEventListener('input', () => {
     const text = textInput.value.trim();
     const words = text === '' ? 0 : text.split(/\s+/).length;
@@ -56,7 +72,135 @@ function showToast(message) {
     }, 2500);
 }
 
-// 3. ENCHANTED VAULT SIDEBAR & MODAL ROUTING INTERCEPTORS
+// 4. PERSISTENT SETTINGS PROFILE ENGINE (LOCALSTORAGE)
+function saveChamberSettings() {
+    const activeSounds = [];
+    audioCards.forEach(card => {
+        if (card.classList.contains('active')) {
+            activeSounds.push(card.getAttribute('data-sound'));
+        }
+    });
+
+    const activeScaleBtn = document.querySelector('.scale-btn.active');
+    const textScale = activeScaleBtn ? activeScaleBtn.getAttribute('data-size') : 'medium';
+
+    const settingsProfile = {
+        volume: masterVolume.value,
+        activeSounds: activeSounds,
+        textScale: textScale,
+        particlesEnabled: particlesEnabled
+    };
+
+    localStorage.setItem('midroom_settings', JSON.stringify(settingsProfile));
+}
+
+function loadChamberSettings() {
+    const savedData = localStorage.getItem('midroom_settings');
+    if (!savedData) return;
+
+    const settings = JSON.parse(savedData);
+
+    // Synchronize Master Audio Volume States
+    masterVolume.value = settings.volume !== undefined ? settings.volume : 50;
+    volumeVal.textContent = `${masterVolume.value}%`;
+    const targetVolume = masterVolume.value / 100;
+
+    // Apply Active State Volume Matrix
+    for (let track in audioStreams) {
+        audioStreams[track].volume = targetVolume;
+    }
+
+    // Synchronize Font Interface Scaling Layouts
+    scaleButtons.forEach(btn => {
+        if (btn.getAttribute('data-size') === settings.textScale) {
+            btn.classList.add('active');
+            textInput.classList.remove('font-small', 'font-medium', 'font-large');
+            textInput.classList.add(`font-${settings.textScale}`);
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    // Synchronize Spore Particle Engine States
+    particlesEnabled = settings.particlesEnabled !== undefined ? settings.particlesEnabled : true;
+    particleSwitch.checked = particlesEnabled;
+
+    // Restore Sound Suite Card Visual Toggles and Start Streams Gracefully
+    audioCards.forEach(card => {
+        const soundType = card.getAttribute('data-sound');
+        if (settings.activeSounds && settings.activeSounds.includes(soundType)) {
+            card.classList.add('active');
+            
+            // Background audio streams loop continuously if browser autoplay rules allow
+            if (audioStreams[soundType]) {
+                audioStreams[soundType].play().catch(() => {
+                    console.log("Audio pipeline queued: Waiting for user cursor tap authorization.");
+                });
+            }
+        } else {
+            card.classList.remove('active');
+        }
+    });
+}
+
+// 5. SETTINGS CORE INTERACTION CONTROL LISTENERS
+masterVolume.addEventListener('input', (e) => {
+    const calculatedVolume = e.target.value / 100;
+    volumeVal.textContent = `${e.target.value}%`;
+    
+    for (let track in audioStreams) {
+        audioStreams[track].volume = calculatedVolume;
+    }
+    saveChamberSettings();
+});
+
+audioCards.forEach(card => {
+    card.addEventListener('click', () => {
+        card.classList.toggle('active');
+        const soundType = card.getAttribute('data-sound');
+
+        if (audioStreams[soundType]) {
+            if (card.classList.contains('active')) {
+                audioStreams[soundType].volume = masterVolume.value / 100;
+                audioStreams[soundType].play().catch(err => console.log("Stream delivery interrupted:", err));
+            } else {
+                audioStreams[soundType].pause();
+            }
+        }
+        saveChamberSettings();
+    });
+});
+
+// TACTILE MECHANICAL SFX REAL-TIME KEYBOARD INTERCEPTOR
+textInput.addEventListener('keydown', (e) => {
+    const keyboardCard = document.querySelector('.audio-card[data-sound="keyboard"]');
+    // Guard statement tracks whether user enabled tactile clicks
+    if (keyboardCard && keyboardCard.classList.contains('active')) {
+        // Instantiate real-time key sounds to bypass native frame delay limits
+        const clickInstance = new Audio(keyboardClickSFXUrl);
+        clickInstance.volume = masterVolume.value / 100;
+        clickInstance.play().catch(() => {});
+    }
+});
+
+scaleButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        scaleButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        textInput.classList.remove('font-small', 'font-medium', 'font-large');
+        const selectedScale = btn.getAttribute('data-size');
+        textInput.classList.add(`font-${selectedScale}`);
+        saveChamberSettings();
+    });
+});
+
+particleSwitch.addEventListener('change', (e) => {
+    particlesEnabled = e.target.checked;
+    saveChamberSettings();
+});
+
+// 6. MODAL NAVIGATION & ROUTING INTERCEPTORS
 menuToggle.addEventListener('click', () => {
     renderDrafts();
     sidebar.classList.add('active');
@@ -71,9 +215,8 @@ textInput.addEventListener('focus', () => {
     settingsModal.classList.remove('active');
 });
 
-// SETTINGS OVERLAY UI TOGGLE HOOKS
 settingsToggle.addEventListener('click', () => {
-    sidebar.classList.remove('active'); // Close vault out of view
+    sidebar.classList.remove('active'); 
     settingsModal.classList.add('active');
 });
 
@@ -81,17 +224,14 @@ closeSettings.addEventListener('click', () => {
     settingsModal.classList.remove('active');
 });
 
-// Click outside content area to close modal
 settingsModal.addEventListener('click', (e) => {
     if (e.target === settingsModal) {
         settingsModal.classList.remove('active');
     }
 });
 
-// NEW CANVAS RESET MECHANIC
 newCanvasBtn.addEventListener('click', () => {
     if (textInput.value.trim() === "") return;
-    
     autoSaveDraft();
     
     textInput.value = "";
@@ -103,35 +243,7 @@ newCanvasBtn.addEventListener('click', () => {
     showToast("Opened a fresh canvas void");
 });
 
-// 4. SETTINGS CONTROL FRAMEWORK INTERACTION LOOPS (AUDIO LOGIC UN-IMPLEMENTED)
-masterVolume.addEventListener('input', (e) => {
-    volumeVal.textContent = `${e.target.value}%`;
-});
-
-audioCards.forEach(card => {
-    card.addEventListener('click', () => {
-        // Simple state layout engine to visualize activation toggle
-        card.classList.toggle('active');
-    });
-});
-
-scaleButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        scaleButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        // Remove tracking font classes entirely before update
-        textInput.classList.remove('font-small', 'font-medium', 'font-large');
-        const pickedSize = btn.getAttribute('data-size');
-        textInput.classList.add(`font-${pickedSize}`);
-    });
-});
-
-particleSwitch.addEventListener('change', (e) => {
-    particlesEnabled = e.target.checked;
-});
-
-// 5. STORAGE PRIMITIVES MANAGEMENT (LOCALSTORAGE AUTO-SAVE INTEGRATED)
+// 7. STORAGE PRIMITIVES AND MANIFEST DATABASE METHODS
 function getDrafts() {
     const drafts = localStorage.getItem('midroom_drafts');
     return drafts ? JSON.parse(drafts) : [];
@@ -212,7 +324,6 @@ function renameDraft(id, newTitle) {
 function loadDraft(draftObj) {
     currentDraftId = draftObj.id;
     textInput.value = draftObj.content;
-    
     textInput.dispatchEvent(new Event('input')); 
     
     statusIndicator.textContent = "Editing Draft";
@@ -320,7 +431,7 @@ function renderDrafts() {
     });
 }
 
-// 6. UTILITY ACTION ACCESSORS
+// 8. UTILITY ACTION ACCESSORS
 saveBtn.addEventListener('click', manualSaveDraftToVault);
 
 copyBtn.addEventListener('click', () => {
@@ -345,9 +456,7 @@ downloadBtn.addEventListener('click', () => {
     showToast("Downloaded .txt file");
 });
 
-/* ==========================================================================
-   7. UPGRADED MULTI-TONE AMBIENT PARTICLE ENGINE
-   ========================================================================== */
+// 9. UPGRADED MULTI-TONE AMBIENT PARTICLE ENGINE
 const canvas = document.getElementById('ambient-canvas');
 const ctx = canvas.getContext('2d');
 
@@ -413,8 +522,6 @@ function initParticles() {
 
 function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Check global toggle switch value from configuration overlay
     if (particlesEnabled) {
         for (let i = 0; i < particlesArray.length; i++) {
             particlesArray[i].update();
@@ -424,5 +531,7 @@ function animateParticles() {
     requestAnimationFrame(animateParticles);
 }
 
+// Initializing settings profile and canvas animation frames loop
 initParticles();
 animateParticles();
+loadChamberSettings();
