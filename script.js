@@ -16,18 +16,27 @@ const copyBtn = document.getElementById('copy-btn');
 const downloadBtn = document.getElementById('download-btn');
 const toast = document.getElementById('toast-notification');
 
+// NEW SETTINGS INTERFACE SELECTORS
+const settingsToggle = document.getElementById('settings-toggle');
+const settingsModal = document.getElementById('settings-modal');
+const closeSettings = document.getElementById('close-settings');
+const masterVolume = document.getElementById('master-volume');
+const volumeVal = document.getElementById('volume-val');
+const audioCards = document.querySelectorAll('.audio-card');
+const scaleButtons = document.querySelectorAll('.scale-btn');
+const particleSwitch = document.getElementById('particle-switch');
+
 // TRACKER FOR CURRENT ACTIVE WORKING FILE
 let currentDraftId = null;
 let autoSaveTimer = null;
+let particlesEnabled = true; // State flag linked to settings loop
 
 // 2. REAL-TIME WORD COUNTER & PROFESSIONAL AUTO-SAVE PIPELINE
 textInput.addEventListener('input', () => {
-    // Word counter execution
     const text = textInput.value.trim();
     const words = text === '' ? 0 : text.split(/\s+/).length;
     wordCountSpan.textContent = words;
 
-    // Trigger professional background auto-save loop
     if (text.length > 0) {
         statusIndicator.textContent = "typing...";
         statusIndicator.style.color = "#4f7466";
@@ -35,11 +44,10 @@ textInput.addEventListener('input', () => {
         clearTimeout(autoSaveTimer);
         autoSaveTimer = setTimeout(() => {
             autoSaveDraft();
-        }, 1500); // Wait for 1.5 seconds of absolute silence to save
+        }, 1500);
     }
 });
 
-// PROFESSIONAL SYSTEM TOAST NOTIFICATION BOX
 function showToast(message) {
     toast.textContent = message;
     toast.classList.add('show');
@@ -48,7 +56,7 @@ function showToast(message) {
     }, 2500);
 }
 
-// 3. ENCHANTED VAULT SIDEBAR & NEW PAGE CANVAS RESET HOOKS
+// 3. ENCHANTED VAULT SIDEBAR & MODAL ROUTING INTERCEPTORS
 menuToggle.addEventListener('click', () => {
     renderDrafts();
     sidebar.classList.add('active');
@@ -60,16 +68,32 @@ closeSidebar.addEventListener('click', () => {
 
 textInput.addEventListener('focus', () => {
     sidebar.classList.remove('active');
+    settingsModal.classList.remove('active');
+});
+
+// SETTINGS OVERLAY UI TOGGLE HOOKS
+settingsToggle.addEventListener('click', () => {
+    sidebar.classList.remove('active'); // Close vault out of view
+    settingsModal.classList.add('active');
+});
+
+closeSettings.addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+});
+
+// Click outside content area to close modal
+settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) {
+        settingsModal.classList.remove('active');
+    }
 });
 
 // NEW CANVAS RESET MECHANIC
 newCanvasBtn.addEventListener('click', () => {
     if (textInput.value.trim() === "") return;
     
-    // Auto-save whatever is currently active before clearing
     autoSaveDraft();
     
-    // Wipe layout elements clean
     textInput.value = "";
     currentDraftId = null;
     wordCountSpan.textContent = "0";
@@ -79,7 +103,35 @@ newCanvasBtn.addEventListener('click', () => {
     showToast("Opened a fresh canvas void");
 });
 
-// 4. STORAGE PRIMITIVES MANAGEMENT (LOCALSTORAGE AUTO-SAVE INTEGRATED)
+// 4. SETTINGS CONTROL FRAMEWORK INTERACTION LOOPS (AUDIO LOGIC UN-IMPLEMENTED)
+masterVolume.addEventListener('input', (e) => {
+    volumeVal.textContent = `${e.target.value}%`;
+});
+
+audioCards.forEach(card => {
+    card.addEventListener('click', () => {
+        // Simple state layout engine to visualize activation toggle
+        card.classList.toggle('active');
+    });
+});
+
+scaleButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        scaleButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Remove tracking font classes entirely before update
+        textInput.classList.remove('font-small', 'font-medium', 'font-large');
+        const pickedSize = btn.getAttribute('data-size');
+        textInput.classList.add(`font-${pickedSize}`);
+    });
+});
+
+particleSwitch.addEventListener('change', (e) => {
+    particlesEnabled = e.target.checked;
+});
+
+// 5. STORAGE PRIMITIVES MANAGEMENT (LOCALSTORAGE AUTO-SAVE INTEGRATED)
 function getDrafts() {
     const drafts = localStorage.getItem('midroom_drafts');
     return drafts ? JSON.parse(drafts) : [];
@@ -94,7 +146,6 @@ function autoSaveDraft() {
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     if (currentDraftId === null) {
-        // Create an entirely new working database entry
         currentDraftId = Date.now();
         const newDraft = {
             id: currentDraftId,
@@ -104,7 +155,6 @@ function autoSaveDraft() {
         };
         drafts.unshift(newDraft);
     } else {
-        // Update the pre-existing file entry seamlessly
         drafts = drafts.map(draft => {
             if (draft.id === currentDraftId) {
                 draft.title = firstLine + '...';
@@ -120,7 +170,6 @@ function autoSaveDraft() {
     statusIndicator.style.color = "#a7f3d0";
 }
 
-// Manual Save button trigger wraps gracefully into auto-save engine
 function manualSaveDraftToVault() {
     if (!textInput.value.trim()) {
         showToast("Cannot save an empty canvas");
@@ -136,7 +185,6 @@ function deleteDraft(id, event) {
     drafts = drafts.filter(draft => draft.id !== id);
     localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
     
-    // If we delete the file we are actively writing on, unlink tracker safely
     if (currentDraftId === id) {
         currentDraftId = null;
     }
@@ -165,7 +213,6 @@ function loadDraft(draftObj) {
     currentDraftId = draftObj.id;
     textInput.value = draftObj.content;
     
-    // Fire off manual event handler to recalibrate word indicators
     textInput.dispatchEvent(new Event('input')); 
     
     statusIndicator.textContent = "Editing Draft";
@@ -209,7 +256,7 @@ function renderDrafts() {
             if (clickCount === 1) {
                 clickTimer = setTimeout(() => {
                     clickCount = 0;
-                    loadDraft(draft); // Load full object details cleanly
+                    loadDraft(draft); 
                 }, 250);
             } else if (clickCount === 2) {
                 clearTimeout(clickTimer);
@@ -273,7 +320,7 @@ function renderDrafts() {
     });
 }
 
-// 5. UTILITY ACTION ACCESSORS
+// 6. UTILITY ACTION ACCESSORS
 saveBtn.addEventListener('click', manualSaveDraftToVault);
 
 copyBtn.addEventListener('click', () => {
@@ -298,9 +345,8 @@ downloadBtn.addEventListener('click', () => {
     showToast("Downloaded .txt file");
 });
 
-
 /* ==========================================================================
-   6. UPGRADED MULTI-TONE AMBIENT PARTICLE ENGINE
+   7. UPGRADED MULTI-TONE AMBIENT PARTICLE ENGINE
    ========================================================================== */
 const canvas = document.getElementById('ambient-canvas');
 const ctx = canvas.getContext('2d');
@@ -367,9 +413,13 @@ function initParticles() {
 
 function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < particlesArray.length; i++) {
-        particlesArray[i].update();
-        particlesArray[i].draw();
+    
+    // Check global toggle switch value from configuration overlay
+    if (particlesEnabled) {
+        for (let i = 0; i < particlesArray.length; i++) {
+            particlesArray[i].update();
+            particlesArray[i].draw();
+        }
     }
     requestAnimationFrame(animateParticles);
 }
