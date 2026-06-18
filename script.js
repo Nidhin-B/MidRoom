@@ -2,7 +2,7 @@
    MIDROOM — CANVAS ENGINE, STORAGE VAULT, & ACTIVE CHAMBER AUDIO SUITE
    ========================================================================= */
 
-// 1. GLOBAL UI ELEMENT SELECTORS
+// 1. GLOBAL UI ELEMENT SELECTORS (SAFE COUPLING)
 const textInput = document.getElementById('text-input');
 const wordCountSpan = document.getElementById('word-count');
 const menuToggle = document.getElementById('menu-toggle');
@@ -30,19 +30,24 @@ let currentDraftId = null;
 let autoSaveTimer = null;
 let particlesEnabled = true;
 
-// 2. HOSTED NCS MUSIC INTEGRATION MATRIX (EXACT FILENAMES MATCHED)
-const audioStreams = {
-    lofi: new Audio('sakuracloud - miffy cafe  [NCS Release].mp3'),
-    rain: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3'),
-    void: new Audio('Aisake, Dosi - Cruising [NCS Release].mp3')
-};
+// 2. CRASH-PROOF AUDIO ENGINE MATRIX
+const audioStreams = {};
 
-// Configure seamless background ambient looping
-audioStreams.lofi.loop = true;
-audioStreams.rain.loop = true;
-audioStreams.void.loop = true;
+try {
+    audioStreams.lofi = new Audio(encodeURI('sakuracloud - miffy cafe  [NCS Release].mp3'));
+    audioStreams.lofi.loop = true;
+} catch (e) { console.log("LoFi stream bypassed."); }
 
-// Crisp mechanical layout keypress stream
+try {
+    audioStreams.rain = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3');
+    audioStreams.rain.loop = true;
+} catch (e) { console.log("Rain stream bypassed."); }
+
+try {
+    audioStreams.void = new Audio(encodeURI('Aisake, Dosi - Cruising [NCS Release].mp3'));
+    audioStreams.void.loop = true;
+} catch (e) { console.log("Void stream bypassed."); }
+
 const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
 
 // 3. TEXT-MATCHING CARD AUTO-DETECTION ENGINE
@@ -60,24 +65,51 @@ function getSoundType(card) {
     return null;
 }
 
-// 4. REAL-TIME WORD COUPLING & INLINE SYSTEM NOTIFICATIONS
-textInput.addEventListener('input', () => {
-    const text = textInput.value.trim();
-    const words = text === '' ? 0 : text.split(/\s+/).length;
-    wordCountSpan.textContent = words;
+// 4. REAL-TIME WORD COUPLING & INLINE NOTIFICATIONS
+if (textInput) {
+    textInput.addEventListener('input', () => {
+        const text = textInput.value.trim();
+        const words = text === '' ? 0 : text.split(/\s+/).length;
+        if (wordCountSpan) wordCountSpan.textContent = words;
 
-    if (text.length > 0) {
-        statusIndicator.textContent = "typing...";
-        statusIndicator.style.color = "#4f7466";
-        
-        clearTimeout(autoSaveTimer);
-        autoSaveTimer = setTimeout(() => {
-            autoSaveDraft();
-        }, 1500);
-    }
-});
+        if (text.length > 0) {
+            if (statusIndicator) {
+                statusIndicator.textContent = "typing...";
+                statusIndicator.style.color = "#4f7466";
+            }
+            
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(() => {
+                autoSaveDraft();
+            }, 1500);
+        }
+    });
+
+    textInput.addEventListener('focus', () => {
+        if (sidebar) sidebar.classList.remove('active');
+        if (settingsModal) settingsModal.classList.remove('active');
+    });
+
+    textInput.addEventListener('keydown', (e) => {
+        let isKeyboardActive = false;
+        audioCards.forEach(card => {
+            if (getSoundType(card) === 'keyboard' && card.classList.contains('active')) {
+                isKeyboardActive = true;
+            }
+        });
+
+        if (isKeyboardActive) {
+            try {
+                const clickInstance = new Audio(keyboardClickSFXUrl);
+                if (masterVolume) clickInstance.volume = masterVolume.value / 100;
+                clickInstance.play().catch(() => {});
+            } catch(err) {}
+        }
+    });
+}
 
 function showToast(message) {
+    if (!toast) return;
     toast.textContent = message;
     toast.classList.add('show');
     setTimeout(() => {
@@ -85,7 +117,7 @@ function showToast(message) {
     }, 2500);
 }
 
-// 5. PERSISTENT SETTINGS PROFILE ENGINE (LOCALSTORAGE)
+// 5. PERSISTENT SETTINGS PROFILE ENGINE
 function saveChamberSettings() {
     const activeSounds = [];
     audioCards.forEach(card => {
@@ -99,7 +131,7 @@ function saveChamberSettings() {
     const textScale = activeScaleBtn ? activeScaleBtn.getAttribute('data-size') : 'medium';
 
     const settingsProfile = {
-        volume: masterVolume.value,
+        volume: masterVolume ? masterVolume.value : 50;
         activeSounds: activeSounds,
         textScale: textScale,
         particlesEnabled: particlesEnabled
@@ -114,41 +146,37 @@ function loadChamberSettings() {
 
     const settings = JSON.parse(savedData);
 
-    // Synchronize Master Audio Volume States
-    masterVolume.value = settings.volume !== undefined ? settings.volume : 50;
-    volumeVal.textContent = `${masterVolume.value}%`;
-    const targetVolume = masterVolume.value / 100;
+    if (masterVolume) {
+        masterVolume.value = settings.volume !== undefined ? settings.volume : 50;
+        if (volumeVal) volumeVal.textContent = `${masterVolume.value}%`;
+        const targetVolume = masterVolume.value / 100;
 
-    // Apply Active State Volume Matrix
-    for (let track in audioStreams) {
-        audioStreams[track].volume = targetVolume;
+        for (let track in audioStreams) {
+            if (audioStreams[track]) audioStreams[track].volume = targetVolume;
+        }
     }
 
-    // Synchronize Font Interface Scaling Layouts
-    scaleButtons.forEach(btn => {
-        if (btn.getAttribute('data-size') === settings.textScale) {
-            btn.classList.add('active');
-            textInput.classList.remove('font-small', 'font-medium', 'font-large');
-            textInput.classList.add(`font-${settings.textScale}`);
-        } else {
-            btn.classList.remove('active');
-        }
-    });
+    if (scaleButtons && textInput) {
+        scaleButtons.forEach(btn => {
+            if (btn.getAttribute('data-size') === settings.textScale) {
+                btn.classList.add('active');
+                textInput.classList.remove('font-small', 'font-medium', 'font-large');
+                textInput.classList.add(`font-${settings.textScale}`);
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
 
-    // Synchronize Spore Particle Engine States
     particlesEnabled = settings.particlesEnabled !== undefined ? settings.particlesEnabled : true;
     if (particleSwitch) particleSwitch.checked = particlesEnabled;
 
-    // Restore Sound Suite Card Visual Toggles and Start Streams Gracefully
     audioCards.forEach(card => {
         const soundType = getSoundType(card);
         if (settings.activeSounds && settings.activeSounds.includes(soundType)) {
             card.classList.add('active');
-            
             if (audioStreams[soundType]) {
-                audioStreams[soundType].play().catch(() => {
-                    console.log("Audio pipeline queued: Waiting for user cursor tap authorization.");
-                });
+                audioStreams[soundType].play().catch(() => {});
             }
         } else {
             card.classList.remove('active');
@@ -156,16 +184,18 @@ function loadChamberSettings() {
     });
 }
 
-// 6. SETTINGS CORE INTERACTION CONTROL LISTENERS
-masterVolume.addEventListener('input', (e) => {
-    const calculatedVolume = e.target.value / 100;
-    volumeVal.textContent = `${e.target.value}%`;
-    
-    for (let track in audioStreams) {
-        audioStreams[track].volume = calculatedVolume;
-    }
-    saveChamberSettings();
-});
+// 6. INTERACTION CONTROL LISTENERS
+if (masterVolume) {
+    masterVolume.addEventListener('input', (e) => {
+        const calculatedVolume = e.target.value / 100;
+        if (volumeVal) volumeVal.textContent = `${e.target.value}%`;
+        
+        for (let track in audioStreams) {
+            if (audioStreams[track]) audioStreams[track].volume = calculatedVolume;
+        }
+        saveChamberSettings();
+    });
+}
 
 audioCards.forEach(card => {
     card.addEventListener('click', () => {
@@ -174,8 +204,8 @@ audioCards.forEach(card => {
 
         if (soundType && audioStreams[soundType]) {
             if (card.classList.contains('active')) {
-                audioStreams[soundType].volume = masterVolume.value / 100;
-                audioStreams[soundType].play().catch(err => console.log("Stream delivery interrupted:", err));
+                if (masterVolume) audioStreams[soundType].volume = masterVolume.value / 100;
+                audioStreams[soundType].play().catch(() => {});
             } else {
                 audioStreams[soundType].pause();
             }
@@ -184,33 +214,19 @@ audioCards.forEach(card => {
     });
 });
 
-// TACTILE MECHANICAL SFX REAL-TIME KEYBOARD INTERCEPTOR
-textInput.addEventListener('keydown', (e) => {
-    let isKeyboardActive = false;
-    audioCards.forEach(card => {
-        if (getSoundType(card) === 'keyboard' && card.classList.contains('active')) {
-            isKeyboardActive = true;
-        }
+if (scaleButtons && textInput) {
+    scaleButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            scaleButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            textInput.classList.remove('font-small', 'font-medium', 'font-large');
+            const selectedScale = btn.getAttribute('data-size');
+            textInput.classList.add(`font-${selectedScale}`);
+            saveChamberSettings();
+        });
     });
-
-    if (isKeyboardActive) {
-        const clickInstance = new Audio(keyboardClickSFXUrl);
-        clickInstance.volume = masterVolume.value / 100;
-        clickInstance.play().catch(() => {});
-    }
-});
-
-scaleButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        scaleButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        textInput.classList.remove('font-small', 'font-medium', 'font-large');
-        const selectedScale = btn.getAttribute('data-size');
-        textInput.classList.add(`font-${selectedScale}`);
-        saveChamberSettings();
-    });
-});
+}
 
 if (particleSwitch) {
     particleSwitch.addEventListener('change', (e) => {
@@ -219,48 +235,56 @@ if (particleSwitch) {
     });
 }
 
-// 7. MODAL NAVIGATION & ROUTING INTERCEPTORS
-menuToggle.addEventListener('click', () => {
-    renderDrafts();
-    sidebar.classList.add('active');
-});
+// 7. MODAL NAVIGATION ROUTING
+if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+        renderDrafts();
+        if (sidebar) sidebar.classList.add('active');
+    });
+}
 
-closeSidebar.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-});
+if (closeSidebar) {
+    closeSidebar.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+    });
+}
 
-textInput.addEventListener('focus', () => {
-    sidebar.classList.remove('active');
-    settingsModal.classList.remove('active');
-});
+if (settingsToggle) {
+    settingsToggle.addEventListener('click', () => {
+        if (sidebar) sidebar.classList.remove('active'); 
+        if (settingsModal) settingsModal.classList.add('active');
+    });
+}
 
-settingsToggle.addEventListener('click', () => {
-    sidebar.classList.remove('active'); 
-    settingsModal.classList.add('active');
-});
-
-closeSettings.addEventListener('click', () => {
-    settingsModal.classList.remove('active');
-});
-
-settingsModal.addEventListener('click', (e) => {
-    if (e.target === settingsModal) {
+if (closeSettings) {
+    closeSettings.addEventListener('click', () => {
         settingsModal.classList.remove('active');
-    }
-});
+    });
+}
 
-newCanvasBtn.addEventListener('click', () => {
-    if (textInput.value.trim() === "") return;
-    autoSaveDraft();
-    
-    textInput.value = "";
-    currentDraftId = null;
-    wordCountSpan.textContent = "0";
-    statusIndicator.textContent = "Private Room";
-    statusIndicator.style.color = "";
-    
-    showToast("Opened a fresh canvas void");
-});
+if (settingsModal) {
+    settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) {
+            settingsModal.classList.remove('active');
+        }
+    });
+}
+
+if (newCanvasBtn) {
+    newCanvasBtn.addEventListener('click', () => {
+        if (!textInput || textInput.value.trim() === "") return;
+        autoSaveDraft();
+        
+        textInput.value = "";
+        currentDraftId = null;
+        if (wordCountSpan) wordCountSpan.textContent = "0";
+        if (statusIndicator) {
+            statusIndicator.textContent = "Private Room";
+            statusIndicator.style.color = "";
+        }
+        showToast("Opened a fresh canvas void");
+    });
+}
 
 // 8. STORAGE PRIMITIVES AND MANIFEST DATABASE METHODS
 function getDrafts() {
@@ -268,7 +292,58 @@ function getDrafts() {
     return drafts ? JSON.parse(drafts) : [];
 }
 
+function renderDrafts() {
+    if (!draftsList) return;
+    const drafts = getDrafts();
+    draftsList.innerHTML = '';
+    
+    if (drafts.length === 0) {
+        draftsList.innerHTML = '<li style="padding: 15px; text-align: center; opacity: 0.5;">Vault is empty</li>';
+        return;
+    }
+    
+    drafts.forEach(draft => {
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.justifyContent = 'space-between';
+        li.style.alignItems = 'center';
+        li.style.padding = '10px';
+        li.style.cursor = 'pointer';
+        li.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+        
+        const info = document.createElement('div');
+        info.style.flex = '1';
+        info.addEventListener('click', () => loadDraft(draft));
+        
+        const title = document.createElement('span');
+        title.textContent = draft.title || 'Untitled';
+        title.style.display = 'block';
+        
+        const time = document.createElement('span');
+        time.textContent = draft.time || '';
+        time.style.fontSize = '0.8em';
+        time.style.opacity = '0.5';
+        
+        info.appendChild(title);
+        info.appendChild(time);
+        
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '×';
+        delBtn.style.background = 'none';
+        delBtn.style.border = 'none';
+        delBtn.style.color = '#ef4444';
+        delBtn.style.fontSize = '1.2em';
+        delBtn.style.cursor = 'pointer';
+        delBtn.addEventListener('click', (e) => deleteDraft(draft.id, e));
+        
+        li.appendChild(info);
+        li.appendChild(delBtn);
+        draftsList.appendChild(li);
+    });
+}
+
 function autoSaveDraft() {
+    if (!textInput) return;
     const text = textInput.value.trim();
     if (!text) return;
 
@@ -297,21 +372,25 @@ function autoSaveDraft() {
     }
 
     localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
-    statusIndicator.textContent = "Saved to Vault";
-    statusIndicator.style.color = "#a7f3d0";
+    if (statusIndicator) {
+        statusIndicator.textContent = "Saved to Vault";
+        statusIndicator.style.color = "#a7f3d0";
+    }
 }
 
-function manualSaveDraftToVault() {
-    if (!textInput.value.trim()) {
-        showToast("Cannot save an empty canvas");
-        return;
-    }
-    autoSaveDraft();
-    showToast("Draft securely cataloged");
+if (saveBtn) {
+    saveBtn.addEventListener('click', () => {
+        if (!textInput || !textInput.value.trim()) {
+            showToast("Cannot save an empty canvas");
+            return;
+        }
+        autoSaveDraft();
+        showToast("Draft securely cataloged");
+    });
 }
 
 function deleteDraft(id, event) {
-    event.stopPropagation(); 
+    if (event) event.stopPropagation(); 
     let drafts = getDrafts();
     drafts = drafts.filter(draft => draft.id !== id);
     localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
@@ -324,21 +403,126 @@ function deleteDraft(id, event) {
     showToast("Draft turned to ash");
 }
 
-function renameDraft(id, newTitle) {
-    const trimmedTitle = newTitle.trim();
-    if (!trimmedTitle) return; 
-
-    let drafts = getDrafts();
-    drafts = drafts.map(draft => {
-        if (draft.id === id) {
-            draft.title = trimmedTitle;
-        }
-        return draft;
-    });
-    localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
-    renderDrafts();
-    showToast("Vault index updated");
+function loadDraft(draftObj) {
+    if (!textInput) return;
+    currentDraftId = draftObj.id;
+    textInput.value = draftObj.content;
+    textInput.dispatchEvent(new Event('input')); 
+    
+    if (statusIndicator) {
+        statusIndicator.textContent = "Editing Draft";
+        statusIndicator.style.color = "#52796f";
+    }
+    
+    if (sidebar) sidebar.classList.remove('active');
+    showToast(`Loaded: ${draftObj.title}`);
 }
 
-function loadDraft(draftObj) {
-    current
+// 9. UTILITY ACTION ACCESSORS
+if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+        if (!textInput || !textInput.value) return;
+        navigator.clipboard.writeText(textInput.value);
+        showToast("Copied to clipboard");
+    });
+}
+
+if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+        if (!textInput || !textInput.value) return;
+        const text = textInput.value;
+
+        const blob = new Blob([text], { type: 'text/plain' });
+        const anchor = document.createElement('a');
+        anchor.download = `midroom_draft_${Date.now()}.txt`;
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.target = '_blank';
+        anchor.style.display = 'none';
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        showToast("Downloaded .txt file");
+    });
+}
+
+// 10. UPGRADED MULTI-TONE AMBIENT PARTICLE ENGINE
+const canvas = document.getElementById('ambient-canvas');
+if (canvas) {
+    const ctx = canvas.getContext('2d');
+    let particlesArray = [];
+    const maxParticles = 45; 
+    const forestColors = ['#3f5e52', '#52796f', '#71978c', '#2f4f43'];
+
+    function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class SporeParticle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height; 
+            this.size = Math.random() * 2.8 + 0.4; 
+            this.speedX = Math.random() * 0.3 - 0.15; 
+            this.speedY = -(Math.random() * 0.4 + 0.1); 
+            this.alpha = Math.random() * 0.4 + 0.05; 
+            this.fadeSpeed = Math.random() * 0.004 + 0.001;
+            this.color = forestColors[Math.floor(Math.random() * forestColors.length)];
+        }
+
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+
+            if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 20;
+                this.alpha = 0; 
+            }
+
+            if (this.alpha < 0.5) {
+                this.alpha += this.fadeSpeed;
+            }
+        }
+
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.shadowBlur = this.size * 3;
+            ctx.shadowColor = '#1f3a2b';
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
+    function initParticles() {
+        particlesArray = [];
+        for (let i = 0; i < maxParticles; i++) {
+            let p = new SporeParticle();
+            p.y = Math.random() * canvas.height; 
+            particlesArray.push(p);
+        }
+    }
+
+    function animateParticles() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (particlesEnabled) {
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+        }
+        requestAnimationFrame(animateParticles);
+    }
+
+    initParticles();
+    animateParticles();
+}
+
+// Final systems initialization
+loadChamberSettings();
