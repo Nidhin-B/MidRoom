@@ -1,58 +1,51 @@
 /* ==========================================================================
-   MIDROOM — PERMANENT COLOR & INTERFACE RESTORATION (TYPO FIXED)
+   MIDROOM — AMBIENT FANTASY WRITING CANVAS CORE STYLES (RESTORED)
    ========================================================================= */
 
+/* 1. RESET & UNIVERSAL SYSTEM VARIABLES */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     font-family: Georgia, Cambria, "Times New Roman", Times, serif;
-    -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
-    background-color: #020503; 
-    color: #cbd5e1;
+    background: linear-gradient(180deg, #0d1e16 0%, #060a08 60%, #020403 100%); 
+    color: #cbd5e1; 
     height: 100vh;
-    height: 100dvh;
+    height: 100dvh; 
     width: 100vw;
     display: flex;
     overflow: hidden;
     -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
 }
 
-/* THE GRADIENT IS FIXED: No more broken syntax */
 #ambient-canvas {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    z-index: -1; 
-    pointer-events: none; 
-    background-color: #020503;
-    background-image: radial-gradient(
-        ellipse 85% 70% at 50% 0%,
-        rgba(26, 61, 46, 0.45) 0%,   /* Dark emerald core */
-        rgba(10, 28, 20, 0.22) 50%,  /* Atmospheric transition fade */
-        rgba(2, 5, 3, 0) 100%        /* FIXED: Changed from broken 100__ to 100% */
-    );
-    background-size: 100% 100%;
-    background-position: center top;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
 }
 
+/* 2. THE WRITING VOID CONTAINER LAYOUT */
 .canvas-container {
-    position: relative;
-    z-index: 2;
     flex: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
-    padding: 16px 24px;
+    padding: 24px 24px; 
+    position: relative;
+    z-index: 1;
+    background: rgba(10, 15, 13, 0.35); 
 }
 
+/* 3. TOP NAVIGATION HEADER */
 .top-nav {
     display: flex;
     justify-content: space-between;
@@ -60,60 +53,64 @@ html, body {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    flex-shrink: 0;
-    padding-top: env(safe-area-inset-top);
-    height: 60px;
+    flex-shrink: 0; 
+    padding: calc(15px + env(safe-area-inset-top)) 0 15px 0; 
 }
 
 .nav-controls {
     display: flex;
-    gap: 12px;
+    gap: 10px;
 }
 
 .nav-btn {
-    background: rgba(16, 36, 28, 0.4) !important;
-    border: 1px solid #142e23 !important;
-    color: #4b8568 !important;
+    background: transparent;
+    border: 1px solid #1f3a2b;
+    color: #52796f;
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
 }
 
-.nav-btn:hover, .nav-btn:active {
-    border-color: #5fa383 !important;
-    color: #cbd5e1 !important;
-    background: rgba(75, 133, 104, 0.2) !important;
+.nav-btn:hover {
+    border-color: #52796f;
+    color: #cbd5e1;
+    background: rgba(82, 121, 111, 0.05);
 }
 
 .status-indicator {
     font-size: 0.85rem;
-    color: #3b6b53;
+    color: #355245;
     letter-spacing: 1px;
+    font-weight: 500;
+    transition: color 0.3s ease;
 }
 
+/* 4. THE MAIN CENTRAL TEXT INPUT FIELD */
 #text-input {
     flex: 1;
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    background: transparent !important;
-    border: none !important;
-    outline: none !important;
+    background: transparent;
+    border: none;
+    outline: none;
     resize: none;
-    color: #e2e8f0;
-    font-size: 1.25rem;
+    color: #cbd5e1;
+    font-size: 1.25rem; 
     line-height: 1.8;
-    padding: 24px 0;
+    padding: 30px 0;
+    letter-spacing: 0.2px;
 }
 
 #text-input::placeholder {
-    color: #163326;
+    color: #1a3325;
     font-style: italic;
 }
 
+/* 5. FIXED UNIVERSAL BOTTOM TOOLBAR LAYOUT */
 .toolbar {
     display: flex;
     justify-content: space-between;
@@ -121,15 +118,15 @@ html, body {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    border-top: 1px solid #0c1f17;
-    height: 60px;
+    padding: 20px 0 calc(15px + env(safe-area-inset-bottom)) 0;
+    border-top: 1px solid #101c16;
     flex-shrink: 0;
 }
 
 .stats {
     font-size: 0.85rem;
-    color: #4b8568;
+    color: #4f7466;
+    font-weight: 500;
 }
 
 .actions {
@@ -138,31 +135,31 @@ html, body {
 }
 
 .action-btn {
-    background: transparent !important;
-    border: none !important;
-    color: #4b8568 !important;
+    background: transparent;
+    border: none;
+    color: #4f7466;
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 500;
     transition: color 0.2s ease;
 }
 
-.action-btn:hover, .action-btn:active {
-    color: #86efac !important;
+.action-btn:hover {
+    color: #a7f3d0;
 }
 
-/* Sidebar Styling */
+/* 6. THE ENCHANTED VAULT SIDEBAR SYSTEM */
 .sidebar {
     position: fixed;
     top: 0;
     left: 0;
-    width: 280px;
+    width: 300px;
     height: 100%;
-    background: #010402;
-    border-right: 1px solid #0c1f17;
+    background: #060a08;
+    border-right: 1px solid #14241c;
     z-index: 10;
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     padding: 24px;
@@ -176,105 +173,108 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: 30px;
 }
 
 .sidebar-header h3 {
-    color: #4b8568;
-    font-size: 0.9rem;
+    color: #52796f;
+    font-size: 0.95rem;
+    font-weight: 500;
     letter-spacing: 1px;
 }
 
-.sidebar-hint {
-    color: #1e4231;
-    font-size: 0.75rem;
-    font-style: italic;
-    margin-bottom: 20px;
-}
-
 .icon-btn {
-    background: transparent !important;
-    border: none !important;
-    color: #4b8568 !important;
-    font-size: 1.5rem;
+    background: transparent;
+    border: none;
+    color: #355245;
+    font-size: 1.3rem;
     cursor: pointer;
+    line-height: 1;
 }
 
+.icon-btn:hover {
+    color: #ef4444;
+}
+
+/* 7. RECENT DRAFTS INTERACTIVE LIST LAYOUT */
 .drafts-list {
     list-style: none;
     overflow-y: auto;
     flex: 1;
 }
 
-.draft-item {
+.drafts-list li {
     padding: 12px 14px;
-    background: rgba(20, 46, 35, 0.15);
-    border: 1px solid #0c1f17;
+    background: rgba(45, 90, 68, 0.08); 
     border-radius: 6px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     cursor: pointer;
-    display: flex;
+    font-size: 0.85rem;
+    display: flex; 
     justify-content: space-between;
     align-items: center;
     transition: all 0.2s ease;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
-.draft-item.selected {
-    background: rgba(38, 89, 67, 0.15);
-    border-color: #3b6b53;
-}
-
-.draft-details {
-    flex: 1;
-    overflow: hidden;
-    padding-right: 8px;
-}
-
-.draft-title-text {
-    font-size: 0.85rem;
-    color: #cbd5e1;
-    display: inline-block;
-    width: 100%;
-    outline: none;
-    padding: 2px 0;
-    border-bottom: 1px dashed transparent;
-}
-
-.draft-title-text[contenteditable="true"] {
-    border-bottom-color: #3b6b53;
-    color: #e2e8f0;
-    background: rgba(12, 31, 23, 0.4);
-    padding-left: 4px;
+.drafts-list li:hover {
+    background: rgba(53, 114, 88, 0.2);
+    color: #a7f3d0; 
 }
 
 .delete-draft-btn {
-    background: transparent !important;
-    border: none !important;
-    color: #4b8568 !important;
-    font-size: 1.2rem;
+    background: transparent;
+    border: none;
+    color: #355245;
+    font-size: 1.1rem;
     cursor: pointer;
-    padding: 4px;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .delete-draft-btn:hover {
-    color: #ef4444 !important;
+    color: #ef4444; 
+    transform: scale(1.2);
 }
 
+.drafts-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.drafts-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.drafts-list::-webkit-scrollbar-thumb {
+    background: #14241c;
+    border-radius: 2px;
+}
+
+/* ==========================================================================
+   8. PROFESSIONAL UX ADDITIONS (TOASTS)
+   ========================================================================== */
 .toast-container {
     position: fixed;
     bottom: calc(80px + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%) translateY(20px);
-    background: #030a06;
-    border: 1px solid #142e23;
-    color: #86efac;
+    background: #0d1e16;
+    border: 1px solid #1f3a2b;
+    color: #a7f3d0;
     padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 0.8rem;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-family: sans-serif;
+    letter-spacing: 0.3px;
     z-index: 100;
     opacity: 0;
     pointer-events: none;
-    transition: all 0.25s ease;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
 }
 
 .toast-container.show {
