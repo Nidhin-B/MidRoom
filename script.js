@@ -22,7 +22,6 @@ const settingsModal = document.getElementById('settings-modal');
 const closeSettings = document.getElementById('close-settings');
 const masterVolume = document.getElementById('master-volume');
 const volumeVal = document.getElementById('volume-val');
-const audioCards = document.querySelectorAll('.audio-card');
 const scaleButtons = document.querySelectorAll('.scale-btn');
 const particleSwitch = document.getElementById('particle-switch');
 
@@ -31,12 +30,11 @@ let currentDraftId = null;
 let autoSaveTimer = null;
 let particlesEnabled = true;
 
-// 2. PATH B AMBIENT AUDIO ENGINE STREAM CONFIGURATION
-// Uses permanent, secure open-source streams hosted on cloud architectures
+// 2. ULTRA-RELIABLE MP3 AMBIENT AUDIO ENGINE CONFIGURATION
 const audioStreams = {
-    lofi: new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'),
-    rain: new Audio('https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg'),
-    void: new Audio('https://actions.google.com/sounds/v1/ambiences/steady_drone.ogg')
+    lofi: new Audio('https://assets.mixkit.co/music/preview/mixkit-serene-view-1103.mp3'),
+    rain: new Audio('https://www.soundjay.com/nature/sounds/rain-01.mp3'),
+    void: new Audio('https://www.soundjay.com/mechanical/sounds/factory-hum-1.mp3')
 };
 
 // Configure seamless background ambient looping
@@ -44,10 +42,26 @@ audioStreams.lofi.loop = true;
 audioStreams.rain.loop = true;
 audioStreams.void.loop = true;
 
-// Standalone tactile SFX file path mapped to keypress frequencies
-const keyboardClickSFXUrl = 'https://actions.google.com/sounds/v1/office/typewriter_single_click.ogg';
+// Crisp mechanical switch audio target
+const keyboardClickSFXUrl = 'https://www.soundjay.com/mechanical/sounds/typewriter-key-1.mp3';
 
-// 3. REAL-TIME WORD COUPLING & INLINE SYSTEM NOTIFICATIONS
+// 3. TEXT-MATCHING CARD AUTO-DETECTION ENGINE
+// Scans the modal to bind listeners dynamically regardless of your custom HTML class setups
+let audioCards = Array.from(document.querySelectorAll('#settings-modal button, #settings-modal div, .audio-card, .sound-btn')).filter(el => {
+    const text = (el.innerText || el.textContent).toLowerCase();
+    return /lofi|rain|void|mechanical|sfx/i.test(text) && el.children.length < 3;
+});
+
+function getSoundType(card) {
+    const text = (card.innerText || card.textContent).toLowerCase();
+    if (text.includes('lofi')) return 'lofi';
+    if (text.includes('rain')) return 'rain';
+    if (text.includes('void')) return 'void';
+    if (text.includes('mechanical') || text.includes('sfx')) return 'keyboard';
+    return null;
+}
+
+// 4. REAL-TIME WORD COUPLING & INLINE SYSTEM NOTIFICATIONS
 textInput.addEventListener('input', () => {
     const text = textInput.value.trim();
     const words = text === '' ? 0 : text.split(/\s+/).length;
@@ -72,12 +86,13 @@ function showToast(message) {
     }, 2500);
 }
 
-// 4. PERSISTENT SETTINGS PROFILE ENGINE (LOCALSTORAGE)
+// 5. PERSISTENT SETTINGS PROFILE ENGINE (LOCALSTORAGE)
 function saveChamberSettings() {
     const activeSounds = [];
     audioCards.forEach(card => {
         if (card.classList.contains('active')) {
-            activeSounds.push(card.getAttribute('data-sound'));
+            const soundType = getSoundType(card);
+            if (soundType) activeSounds.push(soundType);
         }
     });
 
@@ -123,11 +138,11 @@ function loadChamberSettings() {
 
     // Synchronize Spore Particle Engine States
     particlesEnabled = settings.particlesEnabled !== undefined ? settings.particlesEnabled : true;
-    particleSwitch.checked = particlesEnabled;
+    if (particleSwitch) particleSwitch.checked = particlesEnabled;
 
     // Restore Sound Suite Card Visual Toggles and Start Streams Gracefully
     audioCards.forEach(card => {
-        const soundType = card.getAttribute('data-sound');
+        const soundType = getSoundType(card);
         if (settings.activeSounds && settings.activeSounds.includes(soundType)) {
             card.classList.add('active');
             
@@ -143,7 +158,7 @@ function loadChamberSettings() {
     });
 }
 
-// 5. SETTINGS CORE INTERACTION CONTROL LISTENERS
+// 6. SETTINGS CORE INTERACTION CONTROL LISTENERS
 masterVolume.addEventListener('input', (e) => {
     const calculatedVolume = e.target.value / 100;
     volumeVal.textContent = `${e.target.value}%`;
@@ -157,9 +172,9 @@ masterVolume.addEventListener('input', (e) => {
 audioCards.forEach(card => {
     card.addEventListener('click', () => {
         card.classList.toggle('active');
-        const soundType = card.getAttribute('data-sound');
+        const soundType = getSoundType(card);
 
-        if (audioStreams[soundType]) {
+        if (soundType && audioStreams[soundType]) {
             if (card.classList.contains('active')) {
                 audioStreams[soundType].volume = masterVolume.value / 100;
                 audioStreams[soundType].play().catch(err => console.log("Stream delivery interrupted:", err));
@@ -173,10 +188,14 @@ audioCards.forEach(card => {
 
 // TACTILE MECHANICAL SFX REAL-TIME KEYBOARD INTERCEPTOR
 textInput.addEventListener('keydown', (e) => {
-    const keyboardCard = document.querySelector('.audio-card[data-sound="keyboard"]');
-    // Guard statement tracks whether user enabled tactile clicks
-    if (keyboardCard && keyboardCard.classList.contains('active')) {
-        // Instantiate real-time key sounds to bypass native frame delay limits
+    let isKeyboardActive = false;
+    audioCards.forEach(card => {
+        if (getSoundType(card) === 'keyboard' && card.classList.contains('active')) {
+            isKeyboardActive = true;
+        }
+    });
+
+    if (isKeyboardActive) {
         const clickInstance = new Audio(keyboardClickSFXUrl);
         clickInstance.volume = masterVolume.value / 100;
         clickInstance.play().catch(() => {});
@@ -195,12 +214,14 @@ scaleButtons.forEach(btn => {
     });
 });
 
-particleSwitch.addEventListener('change', (e) => {
-    particlesEnabled = e.target.checked;
-    saveChamberSettings();
-});
+if (particleSwitch) {
+    particleSwitch.addEventListener('change', (e) => {
+        particlesEnabled = e.target.checked;
+        saveChamberSettings();
+    });
+}
 
-// 6. MODAL NAVIGATION & ROUTING INTERCEPTORS
+// 7. MODAL NAVIGATION & ROUTING INTERCEPTORS
 menuToggle.addEventListener('click', () => {
     renderDrafts();
     sidebar.classList.add('active');
@@ -243,7 +264,7 @@ newCanvasBtn.addEventListener('click', () => {
     showToast("Opened a fresh canvas void");
 });
 
-// 7. STORAGE PRIMITIVES AND MANIFEST DATABASE METHODS
+// 8. STORAGE PRIMITIVES AND MANIFEST DATABASE METHODS
 function getDrafts() {
     const drafts = localStorage.getItem('midroom_drafts');
     return drafts ? JSON.parse(drafts) : [];
@@ -431,7 +452,7 @@ function renderDrafts() {
     });
 }
 
-// 8. UTILITY ACTION ACCESSORS
+// 9. UTILITY ACTION ACCESSORS
 saveBtn.addEventListener('click', manualSaveDraftToVault);
 
 copyBtn.addEventListener('click', () => {
@@ -456,7 +477,7 @@ downloadBtn.addEventListener('click', () => {
     showToast("Downloaded .txt file");
 });
 
-// 9. UPGRADED MULTI-TONE AMBIENT PARTICLE ENGINE
+// 10. UPGRADED MULTI-TONE AMBIENT PARTICLE ENGINE
 const canvas = document.getElementById('ambient-canvas');
 const ctx = canvas.getContext('2d');
 
