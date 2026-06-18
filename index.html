@@ -40,8 +40,68 @@
             <h3>THE VAULT</h3>
             <button class="icon-btn" id="close-sidebar">&times;</button>
         </header>
-        <ul class="drafts-list" id="drafts-list">
-            </ul>
+        <ul class="drafts-list" id="drafts-list"></ul>
+        
+        <div class="sidebar-footer">
+            <button class="nav-btn" id="settings-toggle">Chamber Settings</button>
+        </div>
+    </div>
+
+    <div class="settings-modal" id="settings-modal">
+        <div class="settings-content">
+            <header class="settings-header">
+                <h3>CHAMBER SETTINGS</h3>
+                <button class="icon-btn" id="close-settings">&times;</button>
+            </header>
+
+            <div class="settings-section">
+                <h4>Ambient Audio Suite</h4>
+                <div class="control-group">
+                    <div class="label-row">
+                        <label>Master Volume</label>
+                        <span id="volume-val">50%</span>
+                    </div>
+                    <input type="range" class="volume-slider" id="master-volume" min="0" max="100" value="50">
+                </div>
+                <div class="audio-grid">
+                    <div class="audio-card" data-sound="lofi">
+                        <span class="card-status"></span>
+                        <span class="card-name">LoFi Beats</span>
+                    </div>
+                    <div class="audio-card" data-sound="rain">
+                        <span class="card-status"></span>
+                        <span class="card-name">Rain on Canopy</span>
+                    </div>
+                    <div class="audio-card" data-sound="void">
+                        <span class="card-status"></span>
+                        <span class="card-name">Deep Void Hum</span>
+                    </div>
+                    <div class="audio-card" data-sound="keyboard">
+                        <span class="card-status"></span>
+                        <span class="card-name">Mechanical SFX</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h4>Aesthetic Tuning</h4>
+                <div class="control-group">
+                    <label>Text Scaling</label>
+                    <div class="toggle-group">
+                        <button class="scale-btn" data-size="small">Small</button>
+                        <button class="scale-btn active" data-size="medium">Medium</button>
+                        <button class="scale-btn" data-size="large">Large</button>
+                    </div>
+                </div>
+                <div class="control-group split-row">
+                    <label for="particle-switch">Spore Particle Engine</label>
+                    <label class="switch-container">
+                        <input type="checkbox" id="particle-switch" checked>
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="toast-container" id="toast-notification">Notification</div>
