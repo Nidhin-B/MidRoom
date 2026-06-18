@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>MidRoom — Atmospheric Vault</title>
-    <link rel="stylesheet" href="style.css?v=45">
+    <title>Midroom — Ambient Writing Canvas</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <canvas id="ambient-canvas"></canvas>
 
-    <div class="canvas-container">
+    <main class="canvas-container">
         
-        <header class="top-nav">
+        <nav class="top-nav">
             <div class="nav-controls">
                 <button class="nav-btn" id="menu-toggle">Menu</button>
-                <button class="nav-btn" id="new-canvas-btn">+</button>
+                <button class="nav-btn" id="new-canvas-btn" title="Open Clean Canvas">+</button>
             </div>
-            <div class="status-indicator" id="status-indicator">Private Room</div>
-        </header>
+            <span class="status-indicator" id="status-indicator">Private Room</span>
+        </nav>
 
-        <textarea id="text-input" placeholder="Type your thoughts into the void..." spellcheck="false"></textarea>
+        <textarea id="text-input" placeholder="Type your thoughts into the void..." autofocus spellcheck="false"></textarea>
 
         <footer class="toolbar">
             <div class="stats">
@@ -33,19 +33,19 @@
             </div>
         </footer>
 
-    </div>
+    </main>
 
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
+    <div class="sidebar" id="sidebar">
+        <header class="sidebar-header">
             <h3>THE VAULT</h3>
             <button class="icon-btn" id="close-sidebar">&times;</button>
-        </div>
-        <p class="sidebar-hint">Double-tap an item text to rename inline</p>
-        <ul class="drafts-list" id="drafts-list"></ul>
-    </aside>
+        </header>
+        <ul class="drafts-list" id="drafts-list">
+            </ul>
+    </div>
 
-    <div id="toast-notification" class="toast-container"></div>
+    <div class="toast-container" id="toast-notification">Notification</div>
 
-    <script src="script.js?v=45"></script>
+    <script src="script.js"></script>
 </body>
 </html>
