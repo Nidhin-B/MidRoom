@@ -30,11 +30,11 @@ let currentDraftId = null;
 let autoSaveTimer = null;
 let particlesEnabled = true;
 
-// 2. ULTRA-RELIABLE MP3 AMBIENT AUDIO ENGINE CONFIGURATION
+// 2. CORS-FRIENDLY, OPEN-STREAM AUDIO SUITE CONFIGURATION
 const audioStreams = {
     lofi: new Audio('https://assets.mixkit.co/music/preview/mixkit-serene-view-1103.mp3'),
-    rain: new Audio('https://www.soundjay.com/nature/sounds/rain-01.mp3'),
-    void: new Audio('https://www.soundjay.com/mechanical/sounds/factory-hum-1.mp3')
+    rain: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3'),
+    void: new Audio('https://assets.mixkit.co/sfx/preview/mixkit-ambient-hum-in-a-space-station-2665.mp3')
 };
 
 // Configure seamless background ambient looping
@@ -42,21 +42,20 @@ audioStreams.lofi.loop = true;
 audioStreams.rain.loop = true;
 audioStreams.void.loop = true;
 
-// Crisp mechanical switch audio target
-const keyboardClickSFXUrl = 'https://www.soundjay.com/mechanical/sounds/typewriter-key-1.mp3';
+// Crisp mechanical layout keypress stream
+const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
 
 // 3. TEXT-MATCHING CARD AUTO-DETECTION ENGINE
-// Scans the modal to bind listeners dynamically regardless of your custom HTML class setups
 let audioCards = Array.from(document.querySelectorAll('#settings-modal button, #settings-modal div, .audio-card, .sound-btn')).filter(el => {
     const text = (el.innerText || el.textContent).toLowerCase();
-    return /lofi|rain|void|mechanical|sfx/i.test(text) && el.children.length < 3;
+    return /lofi|rain|void|hum|mechanical|sfx/i.test(text) && el.children.length < 3;
 });
 
 function getSoundType(card) {
     const text = (card.innerText || card.textContent).toLowerCase();
     if (text.includes('lofi')) return 'lofi';
     if (text.includes('rain')) return 'rain';
-    if (text.includes('void')) return 'void';
+    if (text.includes('void') || text.includes('hum')) return 'void';
     if (text.includes('mechanical') || text.includes('sfx')) return 'keyboard';
     return null;
 }
@@ -146,7 +145,6 @@ function loadChamberSettings() {
         if (settings.activeSounds && settings.activeSounds.includes(soundType)) {
             card.classList.add('active');
             
-            // Background audio streams loop continuously if browser autoplay rules allow
             if (audioStreams[soundType]) {
                 audioStreams[soundType].play().catch(() => {
                     console.log("Audio pipeline queued: Waiting for user cursor tap authorization.");
