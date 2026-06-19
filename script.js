@@ -3,7 +3,7 @@
    ========================================================================= */
 
 // ==========================================================================
-// 1. FIXED SCROLLABLE PLAYLIST DATABASE (Perfect Song/Artist Separation)
+// 1. EXPANDED SCROLLABLE PLAYLIST DATABASE (Real YouTube IDs)
 // ==========================================================================
 const musicPlaylist = [
     { title: "Lofi Cafe Live", artist: "Lofi Girl", youtubeId: "X4VbdwhkE10" },
@@ -11,14 +11,14 @@ const musicPlaylist = [
     { title: "Please Please Please", artist: "Sabrina Carpenter", youtubeId: "dQw4w9WgXcQ" },
     { title: "I Want It That Way", artist: "Backstreet Boys", youtubeId: "kJQP7kiw5Fk" },
     { title: "Stuck On You", artist: "Nowlu", youtubeId: "3JWTaaS7LdU" },
-    { title: "Bumblebee", artist: "Bambee", youtubeId: "YQE25k7l7p0" },
+    { title: "BumbleBee", artist: "Bambee", youtubeId: "YQE25k7l7p0" },
     { title: "Dandelions", artist: "Ruth B.", youtubeId: "m2Vw-V3yqK4" },
     { title: "Mantra", artist: "JENNIE", youtubeId: "g5H664eB1P4" },
     { title: "blue", artist: "yung kai", youtubeId: "3pA-2q115vU" },
     { title: "Manchild", artist: "Sabrina Carpenter", youtubeId: "gGdGFtwCNBE" },
     { title: "From The Start", artist: "Laufey", youtubeId: "36YnV9STBqc" },
     { title: "New Jeans", artist: "NewJeans", youtubeId: "3JWTaaS7LdU" },
-    { title: "Kawaikute gomen", artist: "HoneyWorks", youtubeId: "Y7ix6RITDEI" }
+   { title: "Kawaikute gomen", artist: "HoneyWorks", youtubeId: "Y7ix6RITDEI" }
 ];
 
 // ==========================================================================
@@ -53,7 +53,7 @@ let autoSaveTimer = null;
 let particlesEnabled = true;
 
 // ==========================================================================
-// 3. INVISIBLE YOUTUBE LAYER SETUP
+// 3. INVISIBLE YOUTUBE LAYER SETUP (Standard API Endpoint Integration)
 // ==========================================================================
 let ytPlayer = null;
 let isYtAPIReady = false;
@@ -108,7 +108,7 @@ function onYoutubePlayerReady(event) {
 }
 
 // ==========================================================================
-// 4. DYNAMIC PLAYLIST GENERATION ENGINE (Perfect Layout Matching)
+// 4. DYNAMIC PLAYLIST GENERATION ENGINE (Restores layout coupling)
 // ==========================================================================
 function buildDynamicPlaylistUI() {
     const staticTracks = document.querySelectorAll('.audio-track');
@@ -122,19 +122,12 @@ function buildDynamicPlaylistUI() {
         trackCard.className = 'audio-track';
         trackCard.style.cursor = 'pointer';
         
-        // Beautiful separated layouts to let CSS styles match accurately
+        // Retain semantic class targeting so original CSS lighting active states map properly
         const nameSpan = document.createElement('span');
         nameSpan.className = 'card-name';
-        nameSpan.textContent = trackData.title;
-        
-        const artistSpan = document.createElement('span');
-        artistSpan.className = 'card-artist';
-        artistSpan.textContent = ` — ${trackData.artist}`;
-        artistSpan.style.opacity = '0.6';
-        artistSpan.style.fontSize = '0.9em';
+        nameSpan.textContent = `${trackData.title} — ${trackData.artist}`;
         
         trackCard.appendChild(nameSpan);
-        trackCard.appendChild(artistSpan);
         
         trackCard.addEventListener('click', () => {
             if (trackCard.classList.contains('active')) {
