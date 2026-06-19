@@ -2,7 +2,7 @@
    MIDROOM — CANVAS ENGINE, STORAGE VAULT, & ACTIVE CHAMBER AUDIO SUITE
    ========================================================================= */
 
-// 1. GLOBAL DOM SELECTORS (Defensive mapping)
+// 1. GLOBAL DOM SELECTORS
 const textInput = document.getElementById('text-input');
 const wordCountSpan = document.getElementById('word-count');
 const menuToggle = document.getElementById('menu-toggle');
@@ -16,7 +16,6 @@ const copyBtn = document.getElementById('copy-btn');
 const downloadBtn = document.getElementById('download-btn');
 const toast = document.getElementById('toast-notification');
 
-// SETTINGS & AUDIO SELECTORS
 const settingsToggle = document.getElementById('settings-toggle');
 const settingsModal = document.getElementById('settings-modal');
 const closeSettings = document.getElementById('close-settings');
@@ -24,7 +23,7 @@ const masterVolume = document.getElementById('master-volume');
 const volumeVal = document.getElementById('volume-val');
 const scaleButtons = document.querySelectorAll('.scale-btn');
 const particleSwitch = document.getElementById('particle-switch');
-const audioCards = document.querySelectorAll('.audio-card');
+const soundButtons = document.querySelectorAll('.sound-btn');
 
 let currentDraftId = null;
 let autoSaveTimer = null;
@@ -33,45 +32,30 @@ let particlesEnabled = true;
 // 2. CRASH-PROOF AUDIO ENGINE MATRIX
 const audioStreams = {};
 
-// Safely parsing your uploaded GitHub repository files
 try {
     audioStreams.lofi = new Audio(encodeURI('sakuracloud - miffy cafe  [NCS Release].mp3'));
     audioStreams.lofi.loop = true;
-} catch (e) { console.log("LoFi stream bypassed."); }
+} catch (e) {}
 
 try {
     audioStreams.rain = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3');
     audioStreams.rain.loop = true;
-} catch (e) { console.log("Rain stream bypassed."); }
+} catch (e) {}
 
 try {
     audioStreams.void = new Audio(encodeURI('Aisake, Dosi - Cruising [NCS Release].mp3'));
     audioStreams.void.loop = true;
-} catch (e) { console.log("Void stream bypassed."); }
+} catch (e) {}
 
 const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
 
-// Helper to trigger the "Now Playing" Whisper text
-function updateNowPlayingWhisper() {
-    const whisper = document.getElementById('now-playing-whisper');
-    if (!whisper) return;
-
-    let activeTracks = [];
-    audioCards.forEach(card => {
-        if (card.classList.contains('active') && card.getAttribute('data-sound') !== 'keyboard') {
-            const title = card.querySelector('.track-title')?.textContent || '';
-            const artist = card.querySelector('.track-artist')?.textContent || '';
-            if (title) activeTracks.push(`${artist} — ${title}`);
-        }
-    });
-
-    if (activeTracks.length > 0) {
-        whisper.textContent = `♪ ${activeTracks.join(' + ')}`;
-        whisper.classList.add('show');
-    } else {
-        whisper.classList.remove('show');
-    }
-}
+// Track Metadata for the Toast Notifications
+const trackDetails = {
+    lofi: "sakuracloud — miffy cafe",
+    rain: "Ambient Canopy Rain",
+    void: "Aisake, Dosi — Cruising",
+    keyboard: "Tactile Mechanical Switches"
+};
 
 // 3. CORE INPUT & REAL-TIME EVENT LISTENERS
 if (textInput) {
@@ -85,11 +69,8 @@ if (textInput) {
                 statusIndicator.textContent = "typing...";
                 statusIndicator.style.color = "#4f7466";
             }
-            
             clearTimeout(autoSaveTimer);
-            autoSaveTimer = setTimeout(() => {
-                autoSaveDraft();
-            }, 1500);
+            autoSaveTimer = setTimeout(autoSaveDraft, 1500);
         }
     });
 
@@ -98,10 +79,10 @@ if (textInput) {
         if (settingsModal) settingsModal.classList.remove('active');
     });
 
-    textInput.addEventListener('keydown', (e) => {
+    textInput.addEventListener('keydown', () => {
         let isKeyboardActive = false;
-        audioCards.forEach(card => {
-            if (card.getAttribute('data-sound') === 'keyboard' && card.classList.contains('active')) {
+        soundButtons.forEach(btn => {
+            if (btn.getAttribute('data-sound') === 'keyboard' && btn.classList.contains('active')) {
                 isKeyboardActive = true;
             }
         });
@@ -126,9 +107,9 @@ function showToast(message) {
 // 4. PERSISTENT SETTINGS PROFILE ENGINE
 function saveChamberSettings() {
     const activeSounds = [];
-    audioCards.forEach(card => {
-        if (card.classList.contains('active')) {
-            activeSounds.push(card.getAttribute('data-sound'));
+    soundButtons.forEach(btn => {
+        if (btn.classList.contains('active')) {
+            activeSounds.push(btn.getAttribute('data-sound'));
         }
     });
 
@@ -136,7 +117,7 @@ function saveChamberSettings() {
     const textScale = activeScaleBtn ? activeScaleBtn.getAttribute('data-size') : 'medium';
 
     const settingsProfile = {
-        volume: masterVolume ? masterVolume.value : 50,
+        volume: masterVolume ? masterVolume.value : 100,
         activeSounds: activeSounds,
         textScale: textScale,
         particlesEnabled: particlesEnabled
@@ -152,7 +133,7 @@ function loadChamberSettings() {
     const settings = JSON.parse(savedData);
 
     if (masterVolume) {
-        masterVolume.value = settings.volume !== undefined ? settings.volume : 50;
+        masterVolume.value = settings.volume !== undefined ? settings.volume : 100;
         if (volumeVal) volumeVal.textContent = `${masterVolume.value}%`;
         const targetVolume = masterVolume.value / 100;
 
@@ -176,19 +157,15 @@ function loadChamberSettings() {
     particlesEnabled = settings.particlesEnabled !== undefined ? settings.particlesEnabled : true;
     if (particleSwitch) particleSwitch.checked = particlesEnabled;
 
-    audioCards.forEach(card => {
-        const soundType = card.getAttribute('data-sound');
+    soundButtons.forEach(btn => {
+        const soundType = btn.getAttribute('data-sound');
         if (settings.activeSounds && settings.activeSounds.includes(soundType)) {
-            card.classList.add('active');
-            if (audioStreams[soundType]) {
-                audioStreams[soundType].play().catch(() => {});
-            }
+            btn.classList.add('active');
+            if (audioStreams[soundType]) audioStreams[soundType].play().catch(() => {});
         } else {
-            card.classList.remove('active');
+            btn.classList.remove('active');
         }
     });
-
-    updateNowPlayingWhisper();
 }
 
 // 5. AUDIO & MODAL LISTENERS
@@ -204,20 +181,27 @@ if (masterVolume) {
     });
 }
 
-audioCards.forEach(card => {
-    card.addEventListener('click', () => {
-        card.classList.toggle('active');
-        const soundType = card.getAttribute('data-sound');
+soundButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        const soundType = btn.getAttribute('data-sound');
 
         if (soundType && audioStreams[soundType]) {
-            if (card.classList.contains('active')) {
+            if (btn.classList.contains('active')) {
                 if (masterVolume) audioStreams[soundType].volume = masterVolume.value / 100;
                 audioStreams[soundType].play().catch(() => {});
+                
+                // This triggers the Toast notification with the Artist info!
+                if (trackDetails[soundType]) {
+                    showToast(`♪ Now Playing: ${trackDetails[soundType]}`);
+                }
             } else {
                 audioStreams[soundType].pause();
             }
+        } else if (soundType === 'keyboard' && btn.classList.contains('active')) {
+             showToast(`♪ Activated: ${trackDetails[soundType]}`);
         }
-        updateNowPlayingWhisper();
+        
         saveChamberSettings();
     });
 });
