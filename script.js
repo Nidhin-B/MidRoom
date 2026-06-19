@@ -17,7 +17,7 @@ const musicPlaylist = [
     { title: "blue", artist: "yung kai", youtubeId: "3pA-2q115vU" },
     { title: "Manchild", artist: "Sabrina Carpenter", youtubeId: "gGdGFtwCNBE" },
     { title: "From The Start", artist: "Laufey", youtubeId: "36YnV9STBqc" },
-    { title: "New Jeans", artist: "NewJeans", youtubeId: "Y7ix6RITDEI" },
+    { title: "New Jeans", artist: "NewJeans", youtubeId: "3JWTaaS7LdU" },
     { title: "Kawaikute gomen", artist: "HoneyWorks", youtubeId: "Y7ix6RITDEI" }
 ];
 
