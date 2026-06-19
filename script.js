@@ -10,7 +10,7 @@ const musicPlaylist = [
     { title: "Espresso", artist: "Sabrina Carpenter", youtubeId: "aSugSGCC12I" },
     { title: "Please Please Please", artist: "Sabrina Carpenter", youtubeId: "dQw4w9WgXcQ" },
     { title: "I Want It That Way", artist: "Backstreet Boys", youtubeId: "kJQP7kiw5Fk" },
-    { title: "Birds of a Feather", artist: "Billie Eilish", youtubeId: "UtF6Jej8yb4" },
+    { title: "Stuck On You", artist: "Nowlu", youtubeId: "3JWTaaS7LdU" },
     { title: "Lofi Study Beats Live", artist: "Lofi Records", youtubeId: "W8a4sUabCUo" },
     { title: "Feather", artist: "Sabrina Carpenter", youtubeId: "2eO0N_S_fks" },
     { title: "Bed Chem", artist: "Sabrina Carpenter", youtubeId: "d2bI9Z_ZId8" },
