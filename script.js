@@ -9,16 +9,16 @@ const musicPlaylist = [
     { title: "Lofi Cafe Live", artist: "Lofi Girl", youtubeId: "X4VbdwhkE10" },
     { title: "Espresso", artist: "Sabrina Carpenter", youtubeId: "aSugSGCC12I" },
     { title: "Please Please Please", artist: "Sabrina Carpenter", youtubeId: "62yox0F5lcA" },
-    { title: "I Want It That Way", artist: "Backstreet Boys", youtubeId: "kJQP7kiw5Fk" },
-    { title: "Stuck On You", artist: "Nowlu", youtubeId: "3JWTaaS7LdU" },
-    { title: "BumbleBee", artist: "Bambee", youtubeId: "YQE25k7l7p0" },
-    { title: "Dandelions", artist: "Ruth B.", youtubeId: "m2Vw-V3yqK4" },
-    { title: "Mantra", artist: "JENNIE", youtubeId: "g5H664eB1P4" },
-    { title: "blue", artist: "yung kai", youtubeId: "3pA-2q115vU" },
-    { title: "Manchild", artist: "Sabrina Carpenter", youtubeId: "gGdGFtwCNBE" },
-    { title: "From The Start", artist: "Laufey", youtubeId: "36YnV9STBqc" },
-    { title: "New Jeans", artist: "NewJeans", youtubeId: "3JWTaaS7LdU" },
-   { title: "Kawaikute gomen", artist: "HoneyWorks", youtubeId: "Y7ix6RITDEI" }
+    { title: "I Want It That Way", artist: "Backstreet Boys", youtubeId: "LwkrXybZ1uo" },
+    { title: "Stuck On You", artist: "Nowlu", youtubeId: "FBcPZieacUg" },
+    { title: "BumbleBee", artist: "Bambee", youtubeId: "UlwfDIf8e3Q" },
+    { title: "Dandelions", artist: "Ruth B.", youtubeId: "HZbsLxL7GeM" },
+    { title: "Mantra", artist: "JENNIE", youtubeId: "ojhuTz2uMwU" },
+    { title: "blue", artist: "yung kai", youtubeId: "MHCsrKA9gh8" },
+    { title: "Manchild", artist: "Sabrina Carpenter", youtubeId: "BlTopk-muo4" },
+    { title: "From The Start", artist: "Laufey", youtubeId: "h8DeZSB2o-c" },
+    { title: "New Jeans", artist: "NewJeans", youtubeId: "Krr2u8BUtLw" },
+   { title: "Kawaikute gomen", artist: "HoneyWorks", youtubeId: "jOkC2FWd2Z8" }
 ];
 
 // ==========================================================================
