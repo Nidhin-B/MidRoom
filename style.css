@@ -32,6 +32,17 @@ html, body {
     pointer-events: none;
 }
 
+/* THE GHOST STREAM PLAYER SYSTEM */
+.hidden-sc-player {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    top: -10px;
+    left: -10px;
+}
+
 /* 2. THE WRITING VOID CONTAINER LAYOUT */
 .canvas-container {
     flex: 1;
@@ -132,6 +143,19 @@ html, body {
     font-size: 0.85rem;
     color: #4f7466;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* MINIMALIST NOW PLAYING HUD HUD STYLING */
+.now-playing-hud {
+    font-family: sans-serif;
+    font-size: 0.78rem;
+    color: #355245;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+    text-transform: lowercase;
 }
 
 .actions {
