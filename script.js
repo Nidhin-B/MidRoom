@@ -3,7 +3,7 @@
    ========================================================================= */
 
 // ==========================================================================
-// 1. EXPANDED SCROLLABLE PLAYLIST DATABASE (Real YouTube IDs)
+// 1. FIXED SCROLLABLE PLAYLIST DATABASE (Perfect Song/Artist Separation)
 // ==========================================================================
 const musicPlaylist = [
     { title: "Lofi Cafe Live", artist: "Lofi Girl", youtubeId: "X4VbdwhkE10" },
@@ -52,7 +52,7 @@ let autoSaveTimer = null;
 let particlesEnabled = true;
 
 // ==========================================================================
-// 3. INVISIBLE YOUTUBE LAYER SETUP (Standard API Endpoint Integration)
+// 3. INVISIBLE YOUTUBE LAYER SETUP
 // ==========================================================================
 let ytPlayer = null;
 let isYtAPIReady = false;
@@ -107,7 +107,7 @@ function onYoutubePlayerReady(event) {
 }
 
 // ==========================================================================
-// 4. DYNAMIC PLAYLIST GENERATION ENGINE (Restores layout coupling)
+// 4. DYNAMIC PLAYLIST GENERATION ENGINE (Perfect Layout Matching)
 // ==========================================================================
 function buildDynamicPlaylistUI() {
     const staticTracks = document.querySelectorAll('.audio-track');
@@ -121,12 +121,19 @@ function buildDynamicPlaylistUI() {
         trackCard.className = 'audio-track';
         trackCard.style.cursor = 'pointer';
         
-        // Retain semantic class targeting so original CSS lighting active states map properly
+        // Beautiful separated layouts to let CSS styles match accurately
         const nameSpan = document.createElement('span');
         nameSpan.className = 'card-name';
-        nameSpan.textContent = `${trackData.title} — ${trackData.artist}`;
+        nameSpan.textContent = trackData.title;
+        
+        const artistSpan = document.createElement('span');
+        artistSpan.className = 'card-artist';
+        artistSpan.textContent = ` — ${trackData.artist}`;
+        artistSpan.style.opacity = '0.6';
+        artistSpan.style.fontSize = '0.9em';
         
         trackCard.appendChild(nameSpan);
+        trackCard.appendChild(artistSpan);
         
         trackCard.addEventListener('click', () => {
             if (trackCard.classList.contains('active')) {
