@@ -19,3 +19,4 @@ soundButtons.forEach(btn => {
         showToast(btn.classList.contains('active') ? "Audio stream engaged" : "Audio stream severed");
     });
 });
+
