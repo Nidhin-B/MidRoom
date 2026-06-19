@@ -50,8 +50,8 @@ try {
 
 const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
 
-// 3. TEXT-MATCHING CARD AUTO-DETECTION ENGINE
-let audioCards = Array.from(document.querySelectorAll('#settings-modal button, #settings-modal div, .audio-card, .sound-btn')).filter(el => {
+// 3. PLAYLIST COUPLING MATRIX ENGINE
+let audioCards = Array.from(document.querySelectorAll('.audio-track')).filter(el => {
     const text = (el.innerText || el.textContent).toLowerCase();
     return /lofi|rain|void|hum|mechanical|sfx/i.test(text) && el.children.length < 3;
 });
