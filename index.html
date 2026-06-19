@@ -12,38 +12,33 @@
     <header class="room-header">
         <button id="menu-toggle">☰</button>
         <span class="room-title">PRIVATE ROOM</span>
-        <div class="header-spacer"></div>
+        <div style="width: 40px;"></div> <!-- Spacer for balance -->
     </header>
 
     <main>
         <textarea id="text-input" placeholder="Start writing..."></textarea>
     </main>
 
-    <!-- Footer persists on the main view -->
     <footer class="room-footer">
         <div class="footer-actions">
-            <button id="save-btn">Save Draft</button>
-            <button id="copy-btn">Copy Text</button>
-            <button id="download-btn">Download .txt</button>
+            <button id="save-btn">Save</button>
+            <button id="copy-btn">Copy</button>
+            <button id="download-btn">Download</button>
         </div>
     </footer>
 
-    <!-- Sidebar "Chamber" (Drafts + Audio) -->
     <div id="sidebar">
         <div class="sidebar-header">
             <h2>CHAMBER</h2>
             <button id="close-sidebar">&times;</button>
         </div>
-        
         <button id="new-canvas-btn">New Canvas</button>
-        
         <div class="sidebar-section">
             <h3>DRAFTS</h3>
             <ul id="drafts-list"></ul>
         </div>
-
         <div class="sidebar-section">
-            <h3>AUDIO SUITE</h3>
+            <h3>AUDIO</h3>
             <input type="range" id="master-volume" min="0" max="100" value="100">
             <div class="sound-grid">
                 <button class="sound-btn" data-sound="lofi">LoFi</button>
