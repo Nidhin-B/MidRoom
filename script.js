@@ -8,7 +8,7 @@
 const musicPlaylist = [
     { title: "Lofi Cafe Live", artist: "Lofi Girl", youtubeId: "X4VbdwhkE10" },
     { title: "Espresso", artist: "Sabrina Carpenter", youtubeId: "aSugSGCC12I" },
-    { title: "Please Please Please", artist: "Sabrina Carpenter", youtubeId: "dQw4w9WgXcQ" },
+    { title: "Please Please Please", artist: "Sabrina Carpenter", youtubeId: "62yox0F5lcA" },
     { title: "I Want It That Way", artist: "Backstreet Boys", youtubeId: "kJQP7kiw5Fk" },
     { title: "Stuck On You", artist: "Nowlu", youtubeId: "3JWTaaS7LdU" },
     { title: "BumbleBee", artist: "Bambee", youtubeId: "YQE25k7l7p0" },
