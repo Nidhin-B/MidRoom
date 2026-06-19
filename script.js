@@ -16,7 +16,7 @@ const musicPlaylist = [
     { title: "Bed Chem", artist: "Sabrina Carpenter", youtubeId: "d2bI9Z_ZId8" },
     { title: "CHIHIRO", artist: "Billie Eilish", youtubeId: "BY_X0YI-JMM" },
     { title: "Synthwave Radio Live", artist: "Lofi Girl", youtubeId: "4xDzrJKXOOY" },
-    { title: "Cozy Winter Lofi", artist: "Chillhop Records", youtubeId: "jfKfPfyJRdk" },
+    { title: "From The Start", artist: "Laufey", youtubeId: "36YnV9STBqc" },
     { title: "New Jeans", artist: "NewJeans", youtubeId: "Y7ix6RITDEI" }
 ];
 
