@@ -17,7 +17,7 @@ const musicPlaylist = [
     { title: "CHIHIRO", artist: "Billie Eilish", youtubeId: "BY_X0YI-JMM" },
     { title: "Synthwave Radio Live", artist: "Lofi Girl", youtubeId: "4xDzrJKXOOY" },
     { title: "Cozy Winter Lofi", artist: "Chillhop Records", youtubeId: "jfKfPfyJRdk" },
-    { title: "Sunflower", artist: "Post Malone", youtubeId: "An9gYSTW3O4" }
+    { title: "New Jeans", artist: "NewJeans", youtubeId: "Y7ix6RITDEI" }
 ];
 
 // ==========================================================================
