@@ -1,41 +1,23 @@
 /* ==========================================================================
-   MIDROOM — INVISIBLE YOUTUBE ENGINE, STORAGE VAULT, & ACTIVE CHAMBER AUDIO
+   MIDROOM — INVISIBLE YOUTUBE ENGINE, STORAGE VAULT, & DYNAMIC PLAYLIST
    ========================================================================= */
 
 // ==========================================================================
-// 1. TRACK DATABASE CONFIGURATION (Extracted IDs from your URLs)
+// 1. EXPANDED SCROLLABLE PLAYLIST DATABASE (Real YouTube IDs)
 // ==========================================================================
 const musicPlaylist = [
-    {
-        title: "Lofi Cafe Live", 
-        artist: "Lofi Girl",
-        youtubeId: "X4VbdwhkE10"
-    },
-    {
-        title: "Espresso", 
-        artist: "Sabrina Carpenter",
-        youtubeId: "aSugSGCC12I"
-    },
-    {
-        title: "Please Please Please", 
-        artist: "Sabrina Carpenter",
-        youtubeId: "cF1Na4AIecM"
-    },
-    {
-        title: "Taste", 
-        artist: "Sabrina Carpenter",
-        youtubeId: "G7KNmW9a75Y"
-    },
-    {
-        title: "Birds of a Feather", 
-        artist: "Billie Eilish",
-        youtubeId: "UtF6Jej8yb4"
-    },
-    {
-        title: "Lofi Study Beats Live", 
-        artist: "Lofi Records",
-        youtubeId: "W8a4sUabCUo"
-    }
+    { title: "Lofi Cafe Live", artist: "Lofi Girl", youtubeId: "X4VbdwhkE10" },
+    { title: "Espresso", artist: "Sabrina Carpenter", youtubeId: "aSugSGCC12I" },
+    { title: "Please Please Please", artist: "Sabrina Carpenter", youtubeId: "cF1Na4AIecM" },
+    { title: "Taste", artist: "Sabrina Carpenter", youtubeId: "G7KNmW9a75Y" },
+    { title: "Birds of a Feather", artist: "Billie Eilish", youtubeId: "UtF6Jej8yb4" },
+    { title: "Lofi Study Beats Live", artist: "Lofi Records", youtubeId: "W8a4sUabCUo" },
+    { title: "Feather", artist: "Sabrina Carpenter", youtubeId: "2eO0N_S_fks" },
+    { title: "Bed Chem", artist: "Sabrina Carpenter", youtubeId: "d2bI9Z_ZId8" },
+    { title: "CHIHIRO", artist: "Billie Eilish", youtubeId: "BY_X0YI-JMM" },
+    { title: "Synthwave Radio Live", artist: "Lofi Girl", youtubeId: "4xDzrJKXOOY" },
+    { title: "Cozy Winter Lofi", artist: "Chillhop Records", youtubeId: "jfKfPfyJRdk" },
+    { title: "Sunflower", artist: "Post Malone", youtubeId: "An9gYSTW3O4" }
 ];
 
 // ==========================================================================
@@ -75,6 +57,7 @@ let particlesEnabled = true;
 let ytPlayer = null;
 let isYtAPIReady = false;
 let activeMusicTrackIndex = null;
+let streamingTrackElements = [];
 
 // Dynamic Injection: Creates the required player slot hidden completely off-screen
 const hiddenPlayerDiv = document.createElement('div');
@@ -115,18 +98,59 @@ window.onYouTubeIframeAPIReady = function() {
 
 function onYoutubePlayerReady(event) {
     isYtAPIReady = true;
-    // Sync starting system volumes directly
     if (masterVolume) {
         ytPlayer.setVolume(masterVolume.value);
     }
-    // Safely execute restoration engine now that communication bridges are green
+    // Generate the scrolling menu list and restore saved states
+    buildDynamicPlaylistUI();
     loadChamberSettings();
 }
 
-// Keyboard feedback audio architecture
-const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
-let audioTracks = Array.from(document.querySelectorAll('.audio-track'));
-const streamingTrackElements = audioTracks.filter(track => track.getAttribute('data-sound') !== 'keyboard');
+// ==========================================================================
+// 4. DYNAMIC PLAYLIST GENERATION ENGINE (Auto-builds list on load)
+// ==========================================================================
+function buildDynamicPlaylistUI() {
+    const staticTracks = document.querySelectorAll('.audio-track');
+    if (staticTracks.length === 0) return;
+    
+    // Find parent container element holding the playlist layout rows
+    const container = staticTracks[0].parentElement;
+    
+    // Wipe out all old elements (clearing the old music and mechanical keyboard row)
+    staticTracks.forEach(track => track.remove());
+    
+    // Build entire expanded library row by row
+    musicPlaylist.forEach((trackData, index) => {
+        const trackCard = document.createElement('div');
+        trackCard.className = 'audio-track';
+        trackCard.style.cursor = 'pointer';
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'card-name';
+        nameSpan.textContent = `${trackData.title} — ${trackData.artist}`;
+        
+        trackCard.appendChild(nameSpan);
+        
+        // Wire track clicking logic up natively
+        trackCard.addEventListener('click', () => {
+            if (trackCard.classList.contains('active')) {
+                stopActiveAmbientMusic();
+                saveChamberSettings();
+            } else {
+                if (!isYtAPIReady) {
+                    showToast("Connecting to music cloud...");
+                    return;
+                }
+                playAmbientMusicStream(index);
+            }
+        });
+        
+        container.appendChild(trackCard);
+    });
+    
+    // Re-index global tracker reference array
+    streamingTrackElements = Array.from(container.querySelectorAll('.audio-track'));
+}
 
 function stopActiveAmbientMusic() {
     if (isYtAPIReady && ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
@@ -157,10 +181,6 @@ function playAmbientMusicStream(index) {
         activeMusicTrackIndex = index;
         targetElement.classList.add('active');
 
-        // Dynamic Text Coupling
-        const cardNameEl = targetElement.querySelector('.card-name');
-        if (cardNameEl) cardNameEl.textContent = trackData.title;
-
         if (nowPlayingHud) {
             nowPlayingHud.textContent = `// listening to: ${trackData.title.toLowerCase()} by ${trackData.artist.toLowerCase()}`;
         }
@@ -171,7 +191,7 @@ function playAmbientMusicStream(index) {
 }
 
 // ==========================================================================
-// 4. REAL-TIME WORD COUPLING & TEXT AREA HANDLERS
+// 5. REAL-TIME WORD COUPLING & TEXT AREA HANDLERS
 // ==========================================================================
 if (textInput) {
     textInput.addEventListener('input', () => {
@@ -196,23 +216,6 @@ if (textInput) {
         if (sidebar) sidebar.classList.remove('active');
         if (settingsModal) settingsModal.classList.remove('active');
     });
-
-    textInput.addEventListener('keydown', (e) => {
-        let isKeyboardActive = false;
-        audioTracks.forEach(track => {
-            if (track.getAttribute('data-sound') === 'keyboard' && track.classList.contains('active')) {
-                isKeyboardActive = true;
-            }
-        });
-
-        if (isKeyboardActive) {
-            try {
-                const clickInstance = new Audio(keyboardClickSFXUrl);
-                if (masterVolume) clickInstance.volume = masterVolume.value / 100;
-                clickInstance.play().catch(() => {});
-            } catch(err) {}
-        }
-    });
 }
 
 function showToast(message) {
@@ -225,23 +228,15 @@ function showToast(message) {
 }
 
 // ==========================================================================
-// 5. PERSISTENT SETTINGS PROFILE ENGINE
+// 6. PERSISTENT SETTINGS PROFILE ENGINE
 // ==========================================================================
 function saveChamberSettings() {
-    let isKeyboardActive = false;
-    audioTracks.forEach(track => {
-        if (track.getAttribute('data-sound') === 'keyboard' && track.classList.contains('active')) {
-            isKeyboardActive = true;
-        }
-    });
-
     const activeScaleBtn = document.querySelector('.scale-btn.active');
     const textScale = activeScaleBtn ? activeScaleBtn.getAttribute('data-size') : 'medium';
 
     const settingsProfile = {
         volume: masterVolume ? masterVolume.value : 50,
         activeMusicIndex: activeMusicTrackIndex,
-        keyboardActive: isKeyboardActive,
         textScale: textScale,
         particlesEnabled: particlesEnabled
     };
@@ -278,20 +273,13 @@ function loadChamberSettings() {
     particlesEnabled = settings.particlesEnabled !== undefined ? settings.particlesEnabled : true;
     if (particleSwitch) particleSwitch.checked = particlesEnabled;
 
-    audioTracks.forEach(track => {
-        if (track.getAttribute('data-sound') === 'keyboard' && settings.keyboardActive) {
-            track.classList.add('active');
-        }
-    });
-
-    // Safely call audio startup if it was playing previously
     if (settings.activeMusicIndex !== null && settings.activeMusicIndex !== undefined && isYtAPIReady) {
         playAmbientMusicStream(settings.activeMusicIndex);
     }
 }
 
 // ==========================================================================
-// 6. INTERACTION CONTROL LISTENERS
+// 7. INTERACTION CONTROL LISTENERS
 // ==========================================================================
 if (masterVolume) {
     masterVolume.addEventListener('input', (e) => {
@@ -303,30 +291,6 @@ if (masterVolume) {
         saveChamberSettings();
     });
 }
-
-audioTracks.forEach(track => {
-    track.addEventListener('click', () => {
-        const isKeyboard = track.getAttribute('data-sound') === 'keyboard';
-
-        if (isKeyboard) {
-            track.classList.toggle('active');
-            saveChamberSettings();
-        } else {
-            const dynamicIndex = streamingTrackElements.indexOf(track);
-            
-            if (track.classList.contains('active')) {
-                stopActiveAmbientMusic();
-                saveChamberSettings();
-            } else {
-                if (!isYtAPIReady) {
-                    showToast("Connecting to music cloud... tap again in a moment");
-                    return;
-                }
-                playAmbientMusicStream(dynamicIndex);
-            }
-        }
-    });
-});
 
 if (scaleButtons && textInput) {
     scaleButtons.forEach(btn => {
@@ -350,7 +314,7 @@ if (particleSwitch) {
 }
 
 // ==========================================================================
-// 7. MODAL NAVIGATION ROUTING
+// 8. MODAL NAVIGATION ROUTING
 // ==========================================================================
 if (menuToggle) {
     menuToggle.addEventListener('click', () => {
@@ -403,7 +367,7 @@ if (newCanvasBtn) {
 }
 
 // ==========================================================================
-// 8. STORAGE PRIMITIVES AND MANIFEST DATABASE METHODS
+// 9. STORAGE PRIMITIVES AND MANIFEST DATABASE METHODS
 // ==========================================================================
 function getDrafts() {
     const drafts = localStorage.getItem('midroom_drafts');
@@ -537,7 +501,7 @@ function loadDraft(draftObj) {
 }
 
 // ==========================================================================
-// 9. UTILITY ACTION ACCESSORS
+// 10. UTILITY ACTION ACCESSORS
 // ==========================================================================
 if (copyBtn) {
     copyBtn.addEventListener('click', () => {
@@ -566,7 +530,7 @@ if (downloadBtn) {
 }
 
 // ==========================================================================
-// 10. MULTI-TONE AMBIENT PARTICLE ENGINE
+// 11. MULTI-TONE AMBIENT PARTICLE ENGINE
 // ==========================================================================
 const canvas = document.getElementById('ambient-canvas');
 if (canvas) {
