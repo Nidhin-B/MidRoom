@@ -108,7 +108,7 @@ function showToast(message) {
 
 // 5. PERSISTENT SETTINGS PROFILE ENGINE
 function saveChamberSettings() {
-    const activeStreamingUrl = null;
+    let activeStreamingUrl = null;
     let activeSoundName = "";
     let isKeyboardActive = false;
 
@@ -116,6 +116,7 @@ function saveChamberSettings() {
         if (track.classList.contains('active')) {
             if (track.hasAttribute('data-sc-url')) {
                 activeSoundName = track.querySelector('.card-name').textContent;
+                activeStreamingUrl = track.getAttribute('data-sc-url');
             } else if (track.getAttribute('data-sound') === 'keyboard') {
                 isKeyboardActive = true;
             }
@@ -128,6 +129,7 @@ function saveChamberSettings() {
     const settingsProfile = {
         volume: masterVolume ? masterVolume.value : 50,
         currentStreamingName: activeSoundName,
+        currentStreamingUrl: activeStreamingUrl,
         keyboardActive: isKeyboardActive,
         textScale: textScale,
         particlesEnabled: particlesEnabled
@@ -163,15 +165,36 @@ function loadChamberSettings() {
     particlesEnabled = settings.particlesEnabled !== undefined ? settings.particlesEnabled : true;
     if (particleSwitch) particleSwitch.checked = particlesEnabled;
 
-    // Restore active states
+    // Restore active audio tracks securely
     audioTracks.forEach(track => {
         if (track.hasAttribute('data-sc-url')) {
             const name = track.querySelector('.card-name').textContent;
-            if (name === settings.currentStreamingName && scWidget) {
+            const url = track.getAttribute('data-sc-url');
+
+            if ((url === settings.currentStreamingUrl || name === settings.currentStreamingName) && scWidget) {
                 track.classList.add('active');
-                const scUrl = track.getAttribute('data-sc-url');
-                scWidget.load(scUrl, { auto_play: true, show_artwork: false, buying: false, sharing: false, download: false });
-                if (nowPlayingHud) nowPlayingHud.textContent = `// listening to: ${name.toLowerCase()}`;
+                
+                // Unbind previous endpoints to stop duplicate queues at startup
+                scWidget.unbind(SC.Widget.Events.READY);
+                scWidget.unbind(SC.Widget.Events.PLAY);
+
+                scWidget.load(url, { auto_play: true, show_artwork: false, buying: false, sharing: false, download: false });
+                
+                scWidget.bind(SC.Widget.Events.READY, () => {
+                    scWidget.setVolume(masterVolume ? masterVolume.value : 50);
+                });
+
+                scWidget.bind(SC.Widget.Events.PLAY, () => {
+                    scWidget.getCurrentSound((sound) => {
+                        if (sound) {
+                            const cardName = track.querySelector('.card-name');
+                            if (cardName) cardName.textContent = sound.title;
+                            if (nowPlayingHud) {
+                                nowPlayingHud.textContent = `// listening to: ${sound.title.toLowerCase()} by ${sound.user.username.toLowerCase()}`;
+                            }
+                        }
+                    });
+                });
             }
         } else if (track.getAttribute('data-sound') === 'keyboard' && settings.keyboardActive) {
             track.classList.add('active');
@@ -191,30 +214,44 @@ if (masterVolume) {
 audioTracks.forEach(track => {
     track.addEventListener('click', () => {
         const isTrackStreaming = track.hasAttribute('data-sc-url');
-        const trackName = track.querySelector('.card-name').textContent;
 
         if (isTrackStreaming) {
             if (track.classList.contains('active')) {
-                // If clicking an already active track, turn it off
                 track.classList.remove('active');
                 if (scWidget) scWidget.pause();
                 if (nowPlayingHud) nowPlayingHud.textContent = "";
             } else {
-                // If switching streams, clear other options since widget plays one stream at a time
                 deactivateStreamingTracks();
                 track.classList.add('active');
                 const targetUrl = track.getAttribute('data-sc-url');
                 
                 if (scWidget) {
+                    // UNBIND GHOST QUEUES: Purges event memory leaks before firing new instance
+                    scWidget.unbind(SC.Widget.Events.READY);
+                    scWidget.unbind(SC.Widget.Events.PLAY);
+
                     scWidget.load(targetUrl, { auto_play: true, show_artwork: false, buying: false, sharing: false, download: false });
+                    
                     scWidget.bind(SC.Widget.Events.READY, () => {
                         scWidget.setVolume(masterVolume ? masterVolume.value : 50);
                     });
+
+                    // DYNAMIC ATTRIBUTION: Extracts metadata from stream loop automatically
+                    scWidget.bind(SC.Widget.Events.PLAY, () => {
+                        scWidget.getCurrentSound((sound) => {
+                            if (sound) {
+                                const cardName = track.querySelector('.card-name');
+                                if (cardName) cardName.textContent = sound.title;
+                                if (nowPlayingHud) {
+                                    nowPlayingHud.textContent = `// listening to: ${sound.title.toLowerCase()} by ${sound.user.username.toLowerCase()}`;
+                                }
+                                saveChamberSettings();
+                            }
+                        });
+                    });
                 }
-                if (nowPlayingHud) nowPlayingHud.textContent = `// listening to: ${trackName.toLowerCase()}`;
             }
         } else {
-            // Pure local toggles (Mechanical SFX engine)
             track.classList.toggle('active');
         }
         saveChamberSettings();
@@ -396,6 +433,7 @@ if (saveBtn) {
     });
 }
 
+// Fix parameter coupling names to maintain consistency with the blueprint map
 function deleteDraft(id, event) {
     if (event) event.stopPropagation(); 
     let drafts = getDrafts();
