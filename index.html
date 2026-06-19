@@ -2,110 +2,100 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Midroom — Ambient Writing Canvas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midroom</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <canvas id="ambient-canvas"></canvas>
-
-    <main class="canvas-container">
-        
-        <nav class="top-nav">
-            <div class="nav-controls">
-                <button class="nav-btn" id="menu-toggle">Menu</button>
-                <button class="nav-btn" id="new-canvas-btn" title="Open Clean Canvas">+</button>
-            </div>
-            <span class="status-indicator" id="status-indicator">Private Room</span>
-        </nav>
-
-        <textarea id="text-input" placeholder="Type your thoughts into the void..." autofocus spellcheck="false"></textarea>
-
-        <footer class="toolbar">
-            <div class="stats">
-                <span id="word-count">0</span> words
-            </div>
-            <div class="actions">
-                <button class="action-btn" id="save-btn">Save Draft</button>
-                <button class="action-btn" id="copy-btn">Copy Text</button>
-                <button class="action-btn" id="download-btn">Download .txt</button>
-            </div>
-        </footer>
-
+    
+    <nav>
+        <button id="menu-toggle">☰</button>
+        <span id="status-indicator">Private Room</span>
+        <button id="settings-toggle">⚙️</button>
+    </nav>
+    
+    <main>
+        <textarea id="text-input" class="font-medium" placeholder="Start writing..."></textarea>
     </main>
+    
+    <footer>
+        <div class="footer-left">
+            <span id="word-count">0</span> words
+        </div>
+        <div id="now-playing-whisper" class="now-playing-hidden"></div>
+    </footer>
 
-    <div class="sidebar" id="sidebar">
-        <header class="sidebar-header">
-            <h3>THE VAULT</h3>
-            <button class="icon-btn" id="close-sidebar">&times;</button>
-        </header>
-        <ul class="drafts-list" id="drafts-list"></ul>
-        
-        <div class="sidebar-footer">
-            <button class="nav-btn" id="settings-toggle">Chamber Settings</button>
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <h2>The Vault</h2>
+            <button id="close-sidebar">&times;</button>
+        </div>
+        <button id="new-canvas-btn">New Canvas</button>
+        <ul id="drafts-list"></ul>
+        <div class="sidebar-actions">
+            <button id="save-btn">Save Draft</button>
+            <button id="copy-btn">Copy Text</button>
+            <button id="download-btn">Download .txt</button>
         </div>
     </div>
 
-    <div class="settings-modal" id="settings-modal">
+    <div id="settings-modal">
         <div class="settings-content">
-            <header class="settings-header">
-                <h3>CHAMBER SETTINGS</h3>
-                <button class="icon-btn" id="close-settings">&times;</button>
-            </header>
-
+            <div class="settings-header">
+                <h2>CHAMBER SETTINGS</h2>
+                <button id="close-settings">&times;</button>
+            </div>
+            
             <div class="settings-section">
-                <h4>Ambient Audio Suite</h4>
-                <div class="control-group">
-                    <div class="label-row">
-                        <label>Master Volume</label>
-                        <span id="volume-val">50%</span>
-                    </div>
-                    <input type="range" class="volume-slider" id="master-volume" min="0" max="100" value="50">
+                <h3 class="settings-subtitle">AMBIENT AUDIO SUITE</h3>
+                <div class="volume-control">
+                    <label>Master Volume</label>
+                    <span id="volume-val">50%</span>
                 </div>
-                <div class="audio-grid">
-                    <div class="audio-card" data-sound="lofi">
-                        <span class="card-status"></span>
-                        <span class="card-name">LoFi Beats</span>
-                    </div>
-                    <div class="audio-card" data-sound="rain">
-                        <span class="card-status"></span>
-                        <span class="card-name">Rain on Canopy</span>
-                    </div>
-                    <div class="audio-card" data-sound="void">
-                        <span class="card-status"></span>
-                        <span class="card-name">Deep Void Hum</span>
-                    </div>
-                    <div class="audio-card" data-sound="keyboard">
-                        <span class="card-status"></span>
-                        <span class="card-name">Mechanical SFX</span>
-                    </div>
+                <input type="range" id="master-volume" min="0" max="100" value="50">
+                
+                <div class="audio-card-container">
+                    <button class="audio-card" data-sound="lofi">
+                        <span class="track-title">Miffy Cafe</span>
+                        <span class="track-artist">sakuracloud</span>
+                    </button>
+                    <button class="audio-card" data-sound="rain">
+                        <span class="track-title">Midnight Rain</span>
+                        <span class="track-artist">Ambient</span>
+                    </button>
+                    <button class="audio-card" data-sound="void">
+                        <span class="track-title">Cruising</span>
+                        <span class="track-artist">Aisake, Dosi</span>
+                    </button>
+                    <button class="audio-card" data-sound="keyboard">
+                        <span class="track-title">Tactile Switches</span>
+                        <span class="track-artist">Mechanical SFX</span>
+                    </button>
                 </div>
             </div>
 
             <div class="settings-section">
-                <h4>Aesthetic Tuning</h4>
-                <div class="control-group">
-                    <label>Text Scaling</label>
-                    <div class="toggle-group">
-                        <button class="scale-btn" data-size="small">Small</button>
-                        <button class="scale-btn active" data-size="medium">Medium</button>
-                        <button class="scale-btn" data-size="large">Large</button>
-                    </div>
+                <h3 class="settings-subtitle">AESTHETIC TUNING</h3>
+                <label>Text Scaling</label>
+                <div class="scale-buttons">
+                    <button class="scale-btn" data-size="small">Small</button>
+                    <button class="scale-btn active" data-size="medium">Medium</button>
+                    <button class="scale-btn" data-size="large">Large</button>
                 </div>
-                <div class="control-group split-row">
-                    <label for="particle-switch">Spore Particle Engine</label>
-                    <label class="switch-container">
+                
+                <div class="toggle-control">
+                    <label>Spore Particle Engine</label>
+                    <label class="switch">
                         <input type="checkbox" id="particle-switch" checked>
-                        <span class="switch-slider"></span>
+                        <span class="slider round"></span>
                     </label>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="toast-container" id="toast-notification">Notification</div>
-
+    <div id="toast-notification"></div>
     <script src="script.js"></script>
 </body>
 </html>
