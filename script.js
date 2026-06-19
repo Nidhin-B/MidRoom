@@ -7,34 +7,34 @@
 // ==========================================================================
 const musicPlaylist = [
     {
-        title: "Chamber Chills Live", 
+        title: "Lofi Cafe Live", 
         artist: "Lofi Girl",
-        youtubeId: "12" // Automatically mapped from your 1st link
+        youtubeId: "X4VbdwhkE10"
     },
     {
-        title: "Espresso Vibes", 
+        title: "Espresso", 
         artist: "Sabrina Carpenter",
-        youtubeId: "13" // Automatically mapped from your 2nd link
+        youtubeId: "aSugSGCC12I"
     },
     {
-        title: "Midnight Writing", 
-        artist: "Ambient Radio",
-        youtubeId: "14" // Automatically mapped from your 3rd link
+        title: "Please Please Please", 
+        artist: "Sabrina Carpenter",
+        youtubeId: "cF1Na4AIecM"
     },
     {
-        title: "Deep Focus Flow", 
-        artist: "Calm Beats",
-        youtubeId: "15" // Automatically mapped from your 4th link
+        title: "Taste", 
+        artist: "Sabrina Carpenter",
+        youtubeId: "G7KNmW9a75Y"
     },
     {
-        title: "Sunder Melodies", 
-        artist: "Vapor Aesthetic",
-        youtubeId: "16" // Automatically mapped from your 5th link
+        title: "Birds of a Feather", 
+        artist: "Billie Eilish",
+        youtubeId: "UtF6Jej8yb4"
     },
     {
-        title: "Velvet Room Aura", 
-        artist: "Synthwave Live",
-        youtubeId: "17" // Automatically mapped from your 6th link
+        title: "Lofi Study Beats Live", 
+        artist: "Lofi Records",
+        youtubeId: "W8a4sUabCUo"
     }
 ];
 
@@ -236,7 +236,7 @@ function saveChamberSettings() {
     });
 
     const activeScaleBtn = document.querySelector('.scale-btn.active');
-    const textScale = activeScaleBtn ? activeScaleBtn.getAttribute('data-size'] : 'medium';
+    const textScale = activeScaleBtn ? activeScaleBtn.getAttribute('data-size') : 'medium';
 
     const settingsProfile = {
         volume: masterVolume ? masterVolume.value : 50,
