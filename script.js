@@ -15,7 +15,7 @@ const musicPlaylist = [
     { title: "Dandelions", artist: "Ruth B.", youtubeId: "m2Vw-V3yqK4" },
     { title: "Bed Chem", artist: "Sabrina Carpenter", youtubeId: "d2bI9Z_ZId8" },
     { title: "CHIHIRO", artist: "Billie Eilish", youtubeId: "BY_X0YI-JMM" },
-    { title: "Synthwave Radio Live", artist: "Lofi Girl", youtubeId: "4xDzrJKXOOY" },
+    { title: "Manchild", artist: "Sabrina Carpenter", youtubeId: "gGdGFtwCNBE" },
     { title: "From The Start", artist: "Laufey", youtubeId: "36YnV9STBqc" },
     { title: "New Jeans", artist: "NewJeans", youtubeId: "Y7ix6RITDEI" }
 ];
