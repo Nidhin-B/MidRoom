@@ -1,144 +1,303 @@
 /* ==========================================================================
-   THE VOID CHAMBER CORE CORE THEME
-   ========================================================================== */
+   MIDROOM — AMBIENT FANTASY WRITING CANVAS CORE STYLES 
+   ========================================================================= */
+
+/* 1. RESET & UNIVERSAL SYSTEM VARIABLES */
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    font-family: Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
-body {
-    background-color: #030604;
-    color: #5c7e6d;
-    font-family: Georgia, serif;
+html, body {
+    background: linear-gradient(180deg, #0d1e16 0%, #060a08 60%, #020403 100%); 
+    color: #cbd5e1; 
     height: 100vh;
-    height: 100dvh;
+    height: 100dvh; 
+    width: 100vw;
+    display: flex;
     overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
 }
 
-/* ==========================================================================
-   WORKSPACE LAYOUT
-   ========================================================================== */
-.app-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-    padding: 24px;
-}
-
-.app-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.header-left {
-    display: flex;
-    gap: 12px;
-}
-
-.ui-btn {
-    background: rgba(20, 36, 26, 0.2);
-    border: 1px solid #162c20;
-    color: #4a6b5a;
-    padding: 6px 16px;
-    font-family: inherit;
-    font-size: 0.9rem;
-    cursor: pointer;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.ui-btn:hover {
-    border-color: #2e543d;
-    color: #79e6a6;
-}
-
-.clear-btn {
-    padding: 6px 12px;
-}
-
-.typing-status {
-    color: #213d2c;
-    font-size: 0.9rem;
-    font-style: italic;
-}
-
-/* Canvas Input Area */
-.writing-area {
-    flex: 1;
-    padding: 40px 0;
-}
-
-.writing-area textarea {
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    border: none;
-    resize: none;
-    outline: none;
-    color: #3b5c4b;
-    font-family: Georgia, serif;
-    font-style: italic;
-    font-size: 1.25rem;
-    line-height: 1.7;
-    transition: font-size 0.2s ease;
-}
-
-/* Application Footer Elements */
-.app-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid rgba(22, 44, 32, 0.3);
-    padding-top: 16px;
-    font-size: 0.85rem;
-}
-
-.footer-left {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    color: #2e543d;
-}
-
-.footer-action-btn {
-    background: transparent;
-    border: none;
-    color: #2e543d;
-    font-family: inherit;
-    cursor: pointer;
-    font-size: 0.85rem;
-}
-
-.footer-action-btn:hover {
-    color: #5c7e6d;
-}
-
-.footer-right {
-    color: #213d2c;
-}
-
-/* ==========================================================================
-   CHAMBER DIALOG SYSTEM MODAL
-   ========================================================================== */
-.settings-modal {
+#ambient-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(3, 6, 4, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    z-index: 1000;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* THE GHOST STREAM PLAYER SYSTEM */
+.hidden-sc-player {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    top: -10px;
+    left: -10px;
+}
+
+/* 2. THE WRITING VOID CONTAINER LAYOUT */
+.canvas-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    padding: 24px 24px; 
+    position: relative;
+    z-index: 1;
+    background: rgba(10, 15, 13, 0.35); 
+}
+
+/* 3. TOP NAVIGATION HEADER */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    flex-shrink: 0; 
+    padding: calc(15px + env(safe-area-inset-top)) 0 15px 0; 
+}
+
+.nav-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-btn {
+    background: transparent;
+    border: 1px solid #1f3a2b;
+    color: #52796f;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+    border-color: #52796f;
+    color: #cbd5e1;
+    background: rgba(82, 121, 111, 0.05);
+}
+
+.status-indicator {
+    font-size: 0.85rem;
+    color: #355245;
+    letter-spacing: 1px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+/* 4. THE MAIN CENTRAL TEXT INPUT FIELD */
+#text-input {
+    flex: 1;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    color: #cbd5e1;
+    font-size: 1.25rem; 
+    line-height: 1.8;
+    padding: 30px 0;
+    letter-spacing: 0.2px;
+    transition: font-size 0.2s ease;
+}
+
+#text-input.font-small { font-size: 1.05rem; }
+#text-input.font-medium { font-size: 1.25rem; }
+#text-input.font-large { font-size: 1.55rem; }
+
+#text-input::placeholder {
+    color: #1a3325;
+    font-style: italic;
+}
+
+/* 5. FIXED UNIVERSAL BOTTOM TOOLBAR LAYOUT */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 0 calc(15px + env(safe-area-inset-bottom)) 0;
+    border-top: 1px solid #101c16;
+    flex-shrink: 0;
+}
+
+.stats {
+    font-size: 0.85rem;
+    color: #4f7466;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* MINIMALIST NOW PLAYING HUD HUD STYLING */
+.now-playing-hud {
+    font-family: sans-serif;
+    font-size: 0.78rem;
+    color: #355245;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+    text-transform: lowercase;
+}
+
+.actions {
+    display: flex;
+    gap: 16px;
+}
+
+.action-btn {
+    background: transparent;
+    border: none;
+    color: #4f7466;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.action-btn:hover {
+    color: #a7f3d0;
+}
+
+/* 6. THE ENCHANTED VAULT SIDEBAR SYSTEM */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100%;
+    background: #060a08;
+    border-right: 1px solid #14241c;
+    z-index: 10;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-shrink: 0;
+}
+
+.sidebar-header h3 {
+    color: #52796f;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    color: #355245;
+    font-size: 1.3rem;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.icon-btn:hover {
+    color: #ef4444;
+}
+
+/* RECENT DRAFTS INTERACTIVE LIST LAYOUT */
+.drafts-list {
+    list-style: none;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.drafts-list li {
+    padding: 12px 14px;
+    background: rgba(45, 90, 68, 0.08); 
+    border-radius: 6px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.drafts-list li:hover {
+    background: rgba(53, 114, 88, 0.2);
+    color: #a7f3d0; 
+}
+
+.drafts-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.drafts-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.drafts-list::-webkit-scrollbar-thumb {
+    background: #14241c;
+    border-radius: 2px;
+}
+
+/* SIDEBAR FOOTER REGION FOR SETTINGS ACCESS */
+.sidebar-footer {
+    padding-top: 16px;
+    border-top: 1px solid #14241c;
+    margin-top: auto;
+    flex-shrink: 0;
+}
+.sidebar-footer .nav-btn {
+    width: 100%;
+    text-align: center;
+}
+
+/* ==========================================================================
+   7. ATMOSPHERIC CHAMBER SETTINGS SYSTEM (GLASS OVERLAY)
+   ========================================================================== */
+.settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    background: rgba(4, 8, 6, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 100;
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 20px;
 }
 
 .settings-modal.active {
@@ -147,259 +306,290 @@ body {
 }
 
 .settings-content {
-    background: #060d09;
-    border: 1px solid #12241a;
+    background: #060a08;
+    border: 1px solid #14241c;
     width: 100%;
-    max-width: 400px;
-    border-radius: 14px;
+    max-width: 480px;
+    border-radius: 12px;
     padding: 24px;
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.9);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    transform: translateY(15px);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.modal-header {
+.settings-modal.active .settings-content {
+    transform: translateY(0);
+}
+
+.settings-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    border-bottom: 1px solid #14241c;
+    padding-bottom: 12px;
 }
 
-.modal-header h2 {
-    font-family: sans-serif;
+.settings-header h3 {
+    color: #52796f;
     font-size: 0.95rem;
     letter-spacing: 1.5px;
-    color: #4a6b5a;
-}
-
-.close-btn {
-    background: transparent;
-    border: none;
-    color: #213d2c;
-    font-size: 1.4rem;
-    cursor: pointer;
-}
-
-.close-btn:hover {
-    color: #79e6a6;
+    font-weight: 600;
+    font-family: sans-serif;
 }
 
 .settings-section {
     margin-bottom: 24px;
 }
 
-.settings-section:last-child {
-    margin-bottom: 0;
+.settings-section h4 {
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    color: #355245;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
 }
 
-.section-title {
-    font-family: sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: #213d2c;
+.control-group {
     margin-bottom: 16px;
 }
 
-/* Master Volume Slider Elements */
-.volume-row {
+.label-row {
     display: flex;
     justify-content: space-between;
-    font-size: 0.9rem;
-    color: #5c7e6d;
-    margin-bottom: 12px;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
-#master-volume {
+.control-group label {
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.label-row label { margin-bottom: 0; }
+#volume-val { font-size: 0.8rem; color: #52796f; font-family: sans-serif; }
+
+/* CUSTOM FOREST SLIDER STYLING */
+.volume-slider {
     -webkit-appearance: none;
+    appearance: none;
     width: 100%;
-    background: #0f1f15;
-    height: 3px;
+    height: 4px;
+    background: #14241c;
     border-radius: 2px;
     outline: none;
-    margin-bottom: 18px;
 }
 
-#master-volume::-webkit-slider-thumb {
+.volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 14px;
     height: 14px;
+    background: #a7f3d0;
     border-radius: 50%;
-    background: #8ef7c2;
     cursor: pointer;
-    box-shadow: 0 0 6px rgba(142, 247, 194, 0.4);
+    transition: transform 0.1s ease;
 }
+.volume-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
-/* ==========================================================================
-   DYNAMIC PLAYLIST WRAPPER LAYOUT
-   ========================================================================== */
+/* SCROLLABLE AUDIO PLAYLIST LAYOUT */
 .audio-playlist-wrapper {
-    max-height: 180px;
+    max-height: 175px; 
     overflow-y: auto;
-    border: 1px solid #12241a;
+    border: 1px solid #14241c;
     border-radius: 8px;
-    background: #040805;
+    background: rgba(4, 8, 6, 0.4);
     padding: 6px;
-    overscroll-behavior: contain;
+    margin-top: 12px;
 }
 
 .audio-playlist-wrapper::-webkit-scrollbar {
     width: 4px;
 }
+
+.audio-playlist-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 .audio-playlist-wrapper::-webkit-scrollbar-thumb {
-    background: #12241a;
+    background: #14241c;
     border-radius: 2px;
 }
 
-.loading-state {
-    font-size: 0.8rem;
-    color: #213d2c;
-    text-align: center;
-    padding: 24px 0;
-    font-style: italic;
+.audio-playlist-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #355245;
 }
 
-/* Row UI Nodes */
+.audio-playlist {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 .audio-track {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 10px 12px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-bottom: 4px;
-    transition: background 0.2s ease;
-}
-
-.audio-track:last-child {
-    margin-bottom: 0;
+    transition: all 0.2s ease;
+    user-select: none;
 }
 
 .audio-track:hover {
-    background: rgba(18, 36, 26, 0.4);
+    background: rgba(45, 90, 68, 0.06);
 }
 
 .audio-track.active {
-    background: rgba(18, 36, 26, 0.7);
-    border: 1px solid #162c20;
+    border-color: #52796f;
+    background: rgba(82, 121, 111, 0.1);
 }
 
 .track-meta {
     display: flex;
     align-items: center;
     gap: 12px;
-    min-width: 0;
 }
 
 .card-status {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    background: #12241a;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
+    background: #14241c;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .audio-track.active .card-status {
-    background: #8ef7c2;
-    box-shadow: 0 0 8px #8ef7c2;
+    background: #a7f3d0;
+    box-shadow: 0 0 8px #a7f3d0;
 }
 
 .card-name {
+    font-size: 0.8rem;
+    color: #cbd5e1;
     font-family: sans-serif;
-    font-size: 0.85rem;
-    color: #5c7e6d;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .audio-track.active .card-name {
-    color: #8ef7c2;
+    color: #a7f3d0;
 }
 
 .track-index {
+    font-size: 0.75rem;
+    color: #355245;
     font-family: sans-serif;
-    font-size: 0.8rem;
-    color: #213d2c;
-    flex-shrink: 0;
+    letter-spacing: 0.5px;
 }
 
-/* ==========================================================================
-   AESTHETIC CONTROLS (TEXT SCALING & TOGGLES)
-   ========================================================================== */
-.tuning-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.9rem;
-    color: #5c7e6d;
-    margin-bottom: 16px;
+.audio-track.active .track-index {
+    color: #52796f;
 }
 
-/* Pill Selection Layout Options */
-.scale-buttons {
+/* TOGGLE OPTION BUTTON GROUPS */
+.toggle-group {
     display: flex;
-    background: #040805;
-    border: 1px solid #12241a;
-    padding: 2px;
+    gap: 6px;
+    background: #0a0f0d;
+    padding: 4px;
     border-radius: 6px;
+    border: 1px solid #14241c;
 }
 
 .scale-btn {
+    flex: 1;
     background: transparent;
     border: none;
-    color: #2e543d;
-    padding: 4px 12px;
+    color: #4f7466;
+    padding: 6px;
     font-size: 0.8rem;
-    font-family: inherit;
-    cursor: pointer;
     border-radius: 4px;
+    cursor: pointer;
+    font-family: sans-serif;
+    transition: all 0.2s ease;
 }
 
 .scale-btn.active {
-    background: #12241a;
-    color: #8ef7c2;
+    background: #14241c;
+    color: #a7f3d0;
 }
 
-/* iOS Minimal Switch Component */
+/* CUSTOM ATMOSPHERIC TOGGLE SWITCHES */
+.split-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+}
+.split-row label { margin-bottom: 0; }
+
 .switch-container {
     position: relative;
     display: inline-block;
-    width: 32px;
-    height: 18px;
+    width: 38px;
+    height: 20px;
 }
+.switch-container input { opacity: 0; width: 0; height: 0; }
 
-.switch-container input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.slider-switch {
+.switch-slider {
     position: absolute;
     cursor: pointer;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #12241a;
-    border-radius: 18px;
-    transition: .2s;
+    background-color: #14241c;
+    transition: .3s;
+    border-radius: 20px;
+    border: 1px solid #1f3a2b;
 }
 
-.slider-switch:before {
+.switch-slider:before {
     position: absolute;
     content: "";
     height: 12px;
     width: 12px;
     left: 3px;
     bottom: 3px;
-    background-color: #2e543d;
+    background-color: #4f7466;
+    transition: .3s;
     border-radius: 50%;
-    transition: .2s;
 }
 
-input:checked + .slider-switch {
-    background-color: rgba(142, 247, 194, 0.2);
+input:checked + .switch-slider {
+    background-color: rgba(82, 121, 111, 0.15);
+    border-color: #52796f;
+}
+input:checked + .switch-slider:before {
+    transform: translateX(18px);
+    background-color: #a7f3d0;
 }
 
-input:checked + .slider-switch:before {
-    transform: translateX(14px);
-    background-color: #8ef7c2;
+/* ==========================================================================
+   8. TOAST NOTIFICATIONS UI
+   ========================================================================== */
+.toast-container {
+    position: fixed;
+    bottom: calc(80px + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #0d1e16;
+    border: 1px solid #1f3a2b;
+    color: #a7f3d0;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    font-family: sans-serif;
+    letter-spacing: 0.3px;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.toast-container.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
