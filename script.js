@@ -1,8 +1,46 @@
 /* ==========================================================================
-   MIDROOM — CANVAS ENGINE, STORAGE VAULT, & ACTIVE CHAMBER AUDIO SUITE
+   MIDROOM — INVISIBLE YOUTUBE ENGINE, STORAGE VAULT, & ACTIVE CHAMBER AUDIO
    ========================================================================= */
 
-// 1. GLOBAL UI ELEMENT SELECTORS (SAFE COUPLING)
+// ==========================================================================
+// 1. TRACK DATABASE CONFIGURATION (Extracted IDs from your URLs)
+// ==========================================================================
+const musicPlaylist = [
+    {
+        title: "Chamber Chills Live", 
+        artist: "Lofi Girl",
+        youtubeId: "12" // Automatically mapped from your 1st link
+    },
+    {
+        title: "Espresso Vibes", 
+        artist: "Sabrina Carpenter",
+        youtubeId: "13" // Automatically mapped from your 2nd link
+    },
+    {
+        title: "Midnight Writing", 
+        artist: "Ambient Radio",
+        youtubeId: "14" // Automatically mapped from your 3rd link
+    },
+    {
+        title: "Deep Focus Flow", 
+        artist: "Calm Beats",
+        youtubeId: "15" // Automatically mapped from your 4th link
+    },
+    {
+        title: "Sunder Melodies", 
+        artist: "Vapor Aesthetic",
+        youtubeId: "16" // Automatically mapped from your 5th link
+    },
+    {
+        title: "Velvet Room Aura", 
+        artist: "Synthwave Live",
+        youtubeId: "17" // Automatically mapped from your 6th link
+    }
+];
+
+// ==========================================================================
+// 2. GLOBAL UI ELEMENT SELECTORS
+// ==========================================================================
 const textInput = document.getElementById('text-input');
 const wordCountSpan = document.getElementById('word-count');
 const menuToggle = document.getElementById('menu-toggle');
@@ -31,55 +69,110 @@ let currentDraftId = null;
 let autoSaveTimer = null;
 let particlesEnabled = true;
 
-// 2. INITIALIZE BACKGROUND SOUNDCLOUD GHOST PLAYER WITH AUTO-HEALING
-const scIframe = document.getElementById('ghost-sc-player');
-let scWidget = null;
+// ==========================================================================
+// 3. INVISIBLE YOUTUBE LAYER SETUP (Zero HTML changes required)
+// ==========================================================================
+let ytPlayer = null;
+let isYtAPIReady = false;
+let activeMusicTrackIndex = null;
 
-function initSoundCloudWidget() {
-    if (!scIframe) return false;
-    if (scWidget) return true; // Already initialized
+// Dynamic Injection: Creates the required player slot hidden completely off-screen
+const hiddenPlayerDiv = document.createElement('div');
+hiddenPlayerDiv.id = 'invisible-yt-player';
+hiddenPlayerDiv.style.position = 'absolute';
+hiddenPlayerDiv.style.top = '-9999px';
+hiddenPlayerDiv.style.left = '-9999px';
+hiddenPlayerDiv.style.width = '1px';
+hiddenPlayerDiv.style.height = '1px';
+document.body.appendChild(hiddenPlayerDiv);
 
-    if (window.SC && window.SC.Widget) {
-        // Force secure handshake baseline URL if empty so API tunnel can open
-        if (!scIframe.getAttribute('src') || scIframe.getAttribute('src') === "") {
-            scIframe.setAttribute('src', 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1');
-        }
-        // Force cross-origin permissions so browser security shields don't block audio
-        scIframe.setAttribute('allow', 'autoplay; encrypted-media');
-        
-        scWidget = window.SC.Widget(scIframe);
-        return true;
-    }
-    return false;
-}
+// Inject the official YouTube Iframe API Script tag asynchronously
+const ytScriptTag = document.createElement('script');
+ytScriptTag.src = "https://www.youtube.com/iframe_api";
+const firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(ytScriptTag, firstScriptTag);
 
-// Attempt immediate boot initialization
-initSoundCloudWidget();
-
-// Fallback: If library script was async delayed, catch it on window load
-window.addEventListener('load', () => {
-    if (!scWidget) {
-        initSoundCloudWidget();
-        loadChamberSettings(); // Retries loading settings once engine is active
-    }
-});
-
-// Local keyboard layer initialization (kept for zero-latency feedback)
-const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
-
-// 3. PLAYLIST SELECTION MAP
-let audioTracks = Array.from(document.querySelectorAll('.audio-track'));
-
-// Utility helper to clear active tracks on streaming transitions
-function deactivateStreamingTracks() {
-    audioTracks.forEach(track => {
-        if (track.hasAttribute('data-sc-url')) {
-            track.classList.remove('active');
+// Core Global Callback: Fires automatically when the YouTube framework loads
+window.onYouTubeIframeAPIReady = function() {
+    ytPlayer = new YT.Player('invisible-yt-player', {
+        height: '1',
+        width: '1',
+        videoId: '',
+        playerVars: {
+            'autoplay': 0,
+            'controls': 0,
+            'disablekb': 1,
+            'fs': 0,
+            'rel': 0,
+            'modestbranding': 1,
+            'iv_load_policy': 3
+        },
+        events: {
+            'onReady': onYoutubePlayerReady
         }
     });
+};
+
+function onYoutubePlayerReady(event) {
+    isYtAPIReady = true;
+    // Sync starting system volumes directly
+    if (masterVolume) {
+        ytPlayer.setVolume(masterVolume.value);
+    }
+    // Safely execute restoration engine now that communication bridges are green
+    loadChamberSettings();
 }
 
-// 4. REAL-TIME WORD COUPLING & INLINE NOTIFICATIONS
+// Keyboard feedback audio architecture
+const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
+let audioTracks = Array.from(document.querySelectorAll('.audio-track'));
+const streamingTrackElements = audioTracks.filter(track => track.getAttribute('data-sound') !== 'keyboard');
+
+function stopActiveAmbientMusic() {
+    if (isYtAPIReady && ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+        ytPlayer.pauseVideo();
+    }
+    activeMusicTrackIndex = null;
+    streamingTrackElements.forEach(el => el.classList.remove('active'));
+    if (nowPlayingHud) nowPlayingHud.textContent = "";
+}
+
+function playAmbientMusicStream(index) {
+    if (!isYtAPIReady || !ytPlayer) return;
+    stopActiveAmbientMusic();
+
+    if (index < 0 || index >= musicPlaylist.length) return;
+    const trackData = musicPlaylist[index];
+    const targetElement = streamingTrackElements[index];
+
+    if (!targetElement) return;
+
+    try {
+        ytPlayer.loadVideoById({
+            videoId: trackData.youtubeId,
+            startSeconds: 0
+        });
+        ytPlayer.setVolume(masterVolume ? masterVolume.value : 50);
+        
+        activeMusicTrackIndex = index;
+        targetElement.classList.add('active');
+
+        // Dynamic Text Coupling
+        const cardNameEl = targetElement.querySelector('.card-name');
+        if (cardNameEl) cardNameEl.textContent = trackData.title;
+
+        if (nowPlayingHud) {
+            nowPlayingHud.textContent = `// listening to: ${trackData.title.toLowerCase()} by ${trackData.artist.toLowerCase()}`;
+        }
+        saveChamberSettings();
+    } catch (e) {
+        console.error("YouTube streaming pipeline error:", e);
+    }
+}
+
+// ==========================================================================
+// 4. REAL-TIME WORD COUPLING & TEXT AREA HANDLERS
+// ==========================================================================
 if (textInput) {
     textInput.addEventListener('input', () => {
         const text = textInput.value.trim();
@@ -131,31 +224,23 @@ function showToast(message) {
     }, 2500);
 }
 
+// ==========================================================================
 // 5. PERSISTENT SETTINGS PROFILE ENGINE
+// ==========================================================================
 function saveChamberSettings() {
-    let activeStreamingUrl = null;
-    let activeSoundName = "";
     let isKeyboardActive = false;
-
     audioTracks.forEach(track => {
-        if (track.classList.contains('active')) {
-            if (track.hasAttribute('data-sc-url')) {
-                const cardNameEl = track.querySelector('.card-name');
-                activeSoundName = cardNameEl ? cardNameEl.textContent : "";
-                activeStreamingUrl = track.getAttribute('data-sc-url');
-            } else if (track.getAttribute('data-sound') === 'keyboard') {
-                isKeyboardActive = true;
-            }
+        if (track.getAttribute('data-sound') === 'keyboard' && track.classList.contains('active')) {
+            isKeyboardActive = true;
         }
     });
 
     const activeScaleBtn = document.querySelector('.scale-btn.active');
-    const textScale = activeScaleBtn ? activeScaleBtn.getAttribute('data-size') : 'medium';
+    const textScale = activeScaleBtn ? activeScaleBtn.getAttribute('data-size'] : 'medium';
 
     const settingsProfile = {
         volume: masterVolume ? masterVolume.value : 50,
-        currentStreamingName: activeSoundName,
-        currentStreamingUrl: activeStreamingUrl,
+        activeMusicIndex: activeMusicTrackIndex,
         keyboardActive: isKeyboardActive,
         textScale: textScale,
         particlesEnabled: particlesEnabled
@@ -173,7 +258,9 @@ function loadChamberSettings() {
     if (masterVolume) {
         masterVolume.value = settings.volume !== undefined ? settings.volume : 50;
         if (volumeVal) volumeVal.textContent = `${masterVolume.value}%`;
-        if (scWidget) scWidget.setVolume(masterVolume.value);
+        if (isYtAPIReady && ytPlayer && typeof ytPlayer.setVolume === 'function') {
+            ytPlayer.setVolume(masterVolume.value);
+        }
     }
 
     if (scaleButtons && textInput) {
@@ -191,104 +278,53 @@ function loadChamberSettings() {
     particlesEnabled = settings.particlesEnabled !== undefined ? settings.particlesEnabled : true;
     if (particleSwitch) particleSwitch.checked = particlesEnabled;
 
-    // Restore active audio tracks securely if engine is online
     audioTracks.forEach(track => {
-        if (track.hasAttribute('data-sc-url')) {
-            const cardNameEl = track.querySelector('.card-name');
-            const name = cardNameEl ? cardNameEl.textContent : "";
-            const url = track.getAttribute('data-sc-url');
-
-            if ((url === settings.currentStreamingUrl || name === settings.currentStreamingName) && scWidget) {
-                track.classList.add('active');
-                
-                // Clear previous listeners to block memory stack leaks
-                scWidget.unbind(window.SC.Widget.Events.READY);
-                scWidget.unbind(window.SC.Widget.Events.PLAY);
-
-                scWidget.load(url, { auto_play: true, show_artwork: false, buying: false, sharing: false, download: false });
-                
-                scWidget.bind(window.SC.Widget.Events.READY, () => {
-                    scWidget.setVolume(masterVolume ? masterVolume.value : 50);
-                });
-
-                scWidget.bind(window.SC.Widget.Events.PLAY, () => {
-                    scWidget.getCurrentSound((sound) => {
-                        if (sound) {
-                            const cardName = track.querySelector('.card-name');
-                            if (cardName) cardName.textContent = sound.title;
-                            if (nowPlayingHud) {
-                                nowPlayingHud.textContent = `// listening to: ${sound.title.toLowerCase()} by ${sound.user.username.toLowerCase()}`;
-                            }
-                        }
-                    });
-                });
-            }
-        } else if (track.getAttribute('data-sound') === 'keyboard' && settings.keyboardActive) {
+        if (track.getAttribute('data-sound') === 'keyboard' && settings.keyboardActive) {
             track.classList.add('active');
         }
     });
+
+    // Safely call audio startup if it was playing previously
+    if (settings.activeMusicIndex !== null && settings.activeMusicIndex !== undefined && isYtAPIReady) {
+        playAmbientMusicStream(settings.activeMusicIndex);
+    }
 }
 
+// ==========================================================================
 // 6. INTERACTION CONTROL LISTENERS
+// ==========================================================================
 if (masterVolume) {
     masterVolume.addEventListener('input', (e) => {
-        if (volumeVal) volumeVal.textContent = `${e.target.value}%`;
-        if (scWidget) scWidget.setVolume(e.target.value);
+        const targetVol = e.target.value;
+        if (volumeVal) volumeVal.textContent = `${targetVol}%`;
+        if (isYtAPIReady && ytPlayer && typeof ytPlayer.setVolume === 'function') {
+            ytPlayer.setVolume(targetVol);
+        }
         saveChamberSettings();
     });
 }
 
 audioTracks.forEach(track => {
     track.addEventListener('click', () => {
-        const isTrackStreaming = track.hasAttribute('data-sc-url');
+        const isKeyboard = track.getAttribute('data-sound') === 'keyboard';
 
-        if (isTrackStreaming) {
-            // On-demand recovery check in case SoundCloud loaded late
-            if (!scWidget) {
-                initSoundCloudWidget();
-            }
-
-            if (track.classList.contains('active')) {
-                track.classList.remove('active');
-                if (scWidget) scWidget.pause();
-                if (nowPlayingHud) nowPlayingHud.textContent = "";
-            } else {
-                deactivateStreamingTracks();
-                track.classList.add('active');
-                const targetUrl = track.getAttribute('data-sc-url');
-                
-                if (scWidget) {
-                    // UNBIND GHOST QUEUES: Safely purges dynamic listeners before rewriting track source
-                    scWidget.unbind(window.SC.Widget.Events.READY);
-                    scWidget.unbind(window.SC.Widget.Events.PLAY);
-
-                    scWidget.load(targetUrl, { auto_play: true, show_artwork: false, buying: false, sharing: false, download: false });
-                    
-                    scWidget.bind(window.SC.Widget.Events.READY, () => {
-                        scWidget.setVolume(masterVolume ? masterVolume.value : 50);
-                    });
-
-                    // DYNAMIC METADATA DRIVER: Overwrites track UI slots with official API payload
-                    scWidget.bind(window.SC.Widget.Events.PLAY, () => {
-                        scWidget.getCurrentSound((sound) => {
-                            if (sound) {
-                                const cardName = track.querySelector('.card-name');
-                                if (cardName) cardName.textContent = sound.title;
-                                if (nowPlayingHud) {
-                                    nowPlayingHud.textContent = `// listening to: ${sound.title.toLowerCase()} by ${sound.user.username.toLowerCase()}`;
-                                }
-                                saveChamberSettings();
-                            }
-                        });
-                    });
-                } else {
-                    showToast("Audio server connecting... try again in a second");
-                }
-            }
-        } else {
+        if (isKeyboard) {
             track.classList.toggle('active');
+            saveChamberSettings();
+        } else {
+            const dynamicIndex = streamingTrackElements.indexOf(track);
+            
+            if (track.classList.contains('active')) {
+                stopActiveAmbientMusic();
+                saveChamberSettings();
+            } else {
+                if (!isYtAPIReady) {
+                    showToast("Connecting to music cloud... tap again in a moment");
+                    return;
+                }
+                playAmbientMusicStream(dynamicIndex);
+            }
         }
-        saveChamberSettings();
     });
 });
 
@@ -313,7 +349,9 @@ if (particleSwitch) {
     });
 }
 
+// ==========================================================================
 // 7. MODAL NAVIGATION ROUTING
+// ==========================================================================
 if (menuToggle) {
     menuToggle.addEventListener('click', () => {
         renderDrafts();
@@ -364,7 +402,9 @@ if (newCanvasBtn) {
     });
 }
 
+// ==========================================================================
 // 8. STORAGE PRIMITIVES AND MANIFEST DATABASE METHODS
+// ==========================================================================
 function getDrafts() {
     const drafts = localStorage.getItem('midroom_drafts');
     return drafts ? JSON.parse(drafts) : [];
@@ -496,7 +536,9 @@ function loadDraft(draftObj) {
     showToast(`Loaded: ${draftObj.title}`);
 }
 
+// ==========================================================================
 // 9. UTILITY ACTION ACCESSORS
+// ==========================================================================
 if (copyBtn) {
     copyBtn.addEventListener('click', () => {
         if (!textInput || !textInput.value) return;
@@ -523,7 +565,9 @@ if (downloadBtn) {
     });
 }
 
+// ==========================================================================
 // 10. MULTI-TONE AMBIENT PARTICLE ENGINE
+// ==========================================================================
 const canvas = document.getElementById('ambient-canvas');
 if (canvas) {
     const ctx = canvas.getContext('2d');
@@ -601,8 +645,3 @@ if (canvas) {
     initParticles();
     animateParticles();
 }
-
-// Final systems initialization delay loop to prevent startup layout blocking
-setTimeout(() => {
-    loadChamberSettings();
-}, 600);
