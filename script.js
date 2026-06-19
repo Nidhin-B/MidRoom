@@ -131,7 +131,7 @@ function saveChamberSettings() {
     const textScale = activeScaleBtn ? activeScaleBtn.getAttribute('data-size') : 'medium';
 
     const settingsProfile = {
-        volume: masterVolume ? masterVolume.value : 50;
+        volume: masterVolume ? masterVolume.value : 50,
         activeSounds: activeSounds,
         textScale: textScale,
         particlesEnabled: particlesEnabled
