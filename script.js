@@ -1,8 +1,8 @@
 /* ==========================================================================
-   MIDROOM — CANVAS ENGINE, STORAGE VAULT, & ACTIVE CHAMBER AUDIO SUITE
+   MIDROOM — CANVAS ENGINE, STORAGE VAULT, & SIDEBAR CONTROL MATRIX
    ========================================================================= */
 
-// 1. GLOBAL DOM SELECTORS
+// 1. DOM SELECTORS
 const textInput = document.getElementById('text-input');
 const wordCountSpan = document.getElementById('word-count');
 const menuToggle = document.getElementById('menu-toggle');
@@ -16,9 +16,6 @@ const copyBtn = document.getElementById('copy-btn');
 const downloadBtn = document.getElementById('download-btn');
 const toast = document.getElementById('toast-notification');
 
-const settingsToggle = document.getElementById('settings-toggle');
-const settingsModal = document.getElementById('settings-modal');
-const closeSettings = document.getElementById('close-settings');
 const masterVolume = document.getElementById('master-volume');
 const volumeVal = document.getElementById('volume-val');
 const scaleButtons = document.querySelectorAll('.scale-btn');
@@ -29,7 +26,7 @@ let currentDraftId = null;
 let autoSaveTimer = null;
 let particlesEnabled = true;
 
-// 2. CRASH-PROOF AUDIO ENGINE MATRIX
+// 2. AUDIO SYSTEM CONFIGURATION
 const audioStreams = {};
 
 try {
@@ -49,7 +46,6 @@ try {
 
 const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
 
-// Track Metadata for the Toast Notifications
 const trackDetails = {
     lofi: "sakuracloud — miffy cafe",
     rain: "Ambient Canopy Rain",
@@ -57,7 +53,7 @@ const trackDetails = {
     keyboard: "Tactile Mechanical Switches"
 };
 
-// 3. CORE INPUT & REAL-TIME EVENT LISTENERS
+// 3. EVENT MATRIX & TEXT RUNTIME
 if (textInput) {
     textInput.addEventListener('input', () => {
         const text = textInput.value.trim();
@@ -76,7 +72,6 @@ if (textInput) {
 
     textInput.addEventListener('focus', () => {
         if (sidebar) sidebar.classList.remove('active');
-        if (settingsModal) settingsModal.classList.remove('active');
     });
 
     textInput.addEventListener('keydown', () => {
@@ -104,7 +99,7 @@ function showToast(message) {
     setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// 4. PERSISTENT SETTINGS PROFILE ENGINE
+// 4. PREFERENCES PROFILE STORAGE
 function saveChamberSettings() {
     const activeSounds = [];
     soundButtons.forEach(btn => {
@@ -161,14 +156,16 @@ function loadChamberSettings() {
         const soundType = btn.getAttribute('data-sound');
         if (settings.activeSounds && settings.activeSounds.includes(soundType)) {
             btn.classList.add('active');
-            if (audioStreams[soundType]) audioStreams[soundType].play().catch(() => {});
+            if (audioStreams[soundType]) {
+                audioStreams[soundType].play().catch(() => {});
+            }
         } else {
             btn.classList.remove('active');
         }
     });
 }
 
-// 5. AUDIO & MODAL LISTENERS
+// 5. INTERACTION MANAGEMENT
 if (masterVolume) {
     masterVolume.addEventListener('input', (e) => {
         const calculatedVolume = e.target.value / 100;
@@ -191,7 +188,6 @@ soundButtons.forEach(btn => {
                 if (masterVolume) audioStreams[soundType].volume = masterVolume.value / 100;
                 audioStreams[soundType].play().catch(() => {});
                 
-                // This triggers the Toast notification with the Artist info!
                 if (trackDetails[soundType]) {
                     showToast(`♪ Now Playing: ${trackDetails[soundType]}`);
                 }
@@ -201,7 +197,6 @@ soundButtons.forEach(btn => {
         } else if (soundType === 'keyboard' && btn.classList.contains('active')) {
              showToast(`♪ Activated: ${trackDetails[soundType]}`);
         }
-        
         saveChamberSettings();
     });
 });
@@ -229,11 +224,8 @@ if (particleSwitch) {
 
 if (menuToggle) menuToggle.addEventListener('click', () => { renderDrafts(); if (sidebar) sidebar.classList.add('active'); });
 if (closeSidebar) closeSidebar.addEventListener('click', () => { if (sidebar) sidebar.classList.remove('active'); });
-if (settingsToggle) settingsToggle.addEventListener('click', () => { if (sidebar) sidebar.classList.remove('active'); if (settingsModal) settingsModal.classList.add('active'); });
-if (closeSettings) closeSettings.addEventListener('click', () => { if (settingsModal) settingsModal.classList.remove('active'); });
-if (settingsModal) settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) settingsModal.classList.remove('active'); });
 
-// 6. STORAGE VAULT ENGINE
+// 6. STORAGE VAULT CORE
 function getDrafts() { return JSON.parse(localStorage.getItem('midroom_drafts') || '[]'); }
 
 function renderDrafts() {
@@ -242,7 +234,7 @@ function renderDrafts() {
     draftsList.innerHTML = '';
     
     if (drafts.length === 0) {
-        draftsList.innerHTML = '<li style="padding: 15px; text-align: center; opacity: 0.5;">Vault is empty</li>';
+        draftsList.innerHTML = '<li style="padding: 15px; text-align: center; opacity: 0.4; font-size:0.85rem;">Vault is empty</li>';
         return;
     }
     
@@ -251,9 +243,9 @@ function renderDrafts() {
         li.style.display = 'flex';
         li.style.justifyContent = 'space-between';
         li.style.alignItems = 'center';
-        li.style.padding = '10px';
+        li.style.padding = '10px 5px';
         li.style.cursor = 'pointer';
-        li.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+        li.style.borderBottom = '1px solid rgba(255,255,255,0.03)';
         
         const info = document.createElement('div');
         info.style.flex = '1';
@@ -263,10 +255,11 @@ function renderDrafts() {
         title.textContent = draft.title || 'Untitled';
         title.style.display = 'block';
         title.style.color = '#cbd5e1';
+        title.style.fontSize = '0.9rem';
         
         const time = document.createElement('span');
         time.textContent = draft.time || '';
-        time.style.fontSize = '0.75rem';
+        time.style.fontSize = '0.7rem';
         time.style.color = '#52796f';
         
         info.appendChild(title);
@@ -373,7 +366,7 @@ if (downloadBtn) {
     });
 }
 
-// 8. PARTICLE ENGINE
+// 8. ANIMATED CANVAS PARTICLES
 const canvas = document.getElementById('ambient-canvas');
 if (canvas) {
     const ctx = canvas.getContext('2d');
@@ -435,5 +428,4 @@ if (canvas) {
     animateParticles();
 }
 
-// Final systems boot
 loadChamberSettings();
