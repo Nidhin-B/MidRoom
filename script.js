@@ -14,10 +14,11 @@ const musicPlaylist = [
     { title: "Bumblebee", artist: "Bambee", youtubeId: "YQE25k7l7p0" },
     { title: "Dandelions", artist: "Ruth B.", youtubeId: "m2Vw-V3yqK4" },
     { title: "Mantra", artist: "JENNIE", youtubeId: "g5H664eB1P4" },
-    { title: "CHIHIRO", artist: "Billie Eilish", youtubeId: "BY_X0YI-JMM" },
+    { title: "blue", artist: "yung kai", youtubeId: "3pA-2q115vU" },
     { title: "Manchild", artist: "Sabrina Carpenter", youtubeId: "gGdGFtwCNBE" },
     { title: "From The Start", artist: "Laufey", youtubeId: "36YnV9STBqc" },
-    { title: "New Jeans", artist: "NewJeans", youtubeId: "Y7ix6RITDEI" }
+    { title: "New Jeans", artist: "NewJeans", youtubeId: "Y7ix6RITDEI" },
+    { title: "Kawaikute gomen", artist: "HoneyWorks", youtubeId: "Y7ix6RITDEI" }
 ];
 
 // ==========================================================================
