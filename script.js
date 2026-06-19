@@ -11,7 +11,7 @@ const musicPlaylist = [
     { title: "Please Please Please", artist: "Sabrina Carpenter", youtubeId: "dQw4w9WgXcQ" },
     { title: "I Want It That Way", artist: "Backstreet Boys", youtubeId: "kJQP7kiw5Fk" },
     { title: "Stuck On You", artist: "Nowlu", youtubeId: "3JWTaaS7LdU" },
-    { title: "Lofi Study Beats Live", artist: "Lofi Records", youtubeId: "W8a4sUabCUo" },
+    { title: "Bumblebee", artist: "Bambee", youtubeId: "YQE25k7l7p0" },
     { title: "Feather", artist: "Sabrina Carpenter", youtubeId: "2eO0N_S_fks" },
     { title: "Bed Chem", artist: "Sabrina Carpenter", youtubeId: "d2bI9Z_ZId8" },
     { title: "CHIHIRO", artist: "Billie Eilish", youtubeId: "BY_X0YI-JMM" },
