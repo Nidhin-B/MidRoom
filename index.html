@@ -2,54 +2,110 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Room</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Midroom — Ambient Writing Canvas</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="ambient-canvas"></canvas>
-    
-    <header class="room-header">
-        <button id="menu-toggle">☰</button>
-        <span class="room-title">PRIVATE ROOM</span>
-        <div style="width: 40px;"></div> <!-- Spacer for balance -->
-    </header>
 
-    <main>
-        <textarea id="text-input" placeholder="Start writing..."></textarea>
+    <canvas id="ambient-canvas"></canvas>
+
+    <main class="canvas-container">
+        
+        <nav class="top-nav">
+            <div class="nav-controls">
+                <button class="nav-btn" id="menu-toggle">Menu</button>
+                <button class="nav-btn" id="new-canvas-btn" title="Open Clean Canvas">+</button>
+            </div>
+            <span class="status-indicator" id="status-indicator">Private Room</span>
+        </nav>
+
+        <textarea id="text-input" placeholder="Type your thoughts into the void..." autofocus spellcheck="false"></textarea>
+
+        <footer class="toolbar">
+            <div class="stats">
+                <span id="word-count">0</span> words
+            </div>
+            <div class="actions">
+                <button class="action-btn" id="save-btn">Save Draft</button>
+                <button class="action-btn" id="copy-btn">Copy Text</button>
+                <button class="action-btn" id="download-btn">Download .txt</button>
+            </div>
+        </footer>
+
     </main>
 
-    <footer class="room-footer">
-        <div class="footer-actions">
-            <button id="save-btn">Save</button>
-            <button id="copy-btn">Copy</button>
-            <button id="download-btn">Download</button>
+    <div class="sidebar" id="sidebar">
+        <header class="sidebar-header">
+            <h3>THE VAULT</h3>
+            <button class="icon-btn" id="close-sidebar">&times;</button>
+        </header>
+        <ul class="drafts-list" id="drafts-list"></ul>
+        
+        <div class="sidebar-footer">
+            <button class="nav-btn" id="settings-toggle">Chamber Settings</button>
         </div>
-    </footer>
+    </div>
 
-    <div id="sidebar">
-        <div class="sidebar-header">
-            <h2>CHAMBER</h2>
-            <button id="close-sidebar">&times;</button>
-        </div>
-        <button id="new-canvas-btn">New Canvas</button>
-        <div class="sidebar-section">
-            <h3>DRAFTS</h3>
-            <ul id="drafts-list"></ul>
-        </div>
-        <div class="sidebar-section">
-            <h3>AUDIO</h3>
-            <input type="range" id="master-volume" min="0" max="100" value="100">
-            <div class="sound-grid">
-                <button class="sound-btn" data-sound="lofi">LoFi</button>
-                <button class="sound-btn" data-sound="rain">Rain</button>
-                <button class="sound-btn" data-sound="void">Void</button>
-                <button class="sound-btn" data-sound="keyboard">Keys</button>
+    <div class="settings-modal" id="settings-modal">
+        <div class="settings-content">
+            <header class="settings-header">
+                <h3>CHAMBER SETTINGS</h3>
+                <button class="icon-btn" id="close-settings">&times;</button>
+            </header>
+
+            <div class="settings-section">
+                <h4>Ambient Audio Suite</h4>
+                <div class="control-group">
+                    <div class="label-row">
+                        <label>Master Volume</label>
+                        <span id="volume-val">50%</span>
+                    </div>
+                    <input type="range" class="volume-slider" id="master-volume" min="0" max="100" value="50">
+                </div>
+                <div class="audio-grid">
+                    <div class="audio-card" data-sound="lofi">
+                        <span class="card-status"></span>
+                        <span class="card-name">LoFi Beats</span>
+                    </div>
+                    <div class="audio-card" data-sound="rain">
+                        <span class="card-status"></span>
+                        <span class="card-name">Rain on Canopy</span>
+                    </div>
+                    <div class="audio-card" data-sound="void">
+                        <span class="card-status"></span>
+                        <span class="card-name">Deep Void Hum</span>
+                    </div>
+                    <div class="audio-card" data-sound="keyboard">
+                        <span class="card-status"></span>
+                        <span class="card-name">Mechanical SFX</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h4>Aesthetic Tuning</h4>
+                <div class="control-group">
+                    <label>Text Scaling</label>
+                    <div class="toggle-group">
+                        <button class="scale-btn" data-size="small">Small</button>
+                        <button class="scale-btn active" data-size="medium">Medium</button>
+                        <button class="scale-btn" data-size="large">Large</button>
+                    </div>
+                </div>
+                <div class="control-group split-row">
+                    <label for="particle-switch">Spore Particle Engine</label>
+                    <label class="switch-container">
+                        <input type="checkbox" id="particle-switch" checked>
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="toast-notification"></div>
+    <div class="toast-container" id="toast-notification">Notification</div>
+
     <script src="script.js"></script>
 </body>
 </html>
