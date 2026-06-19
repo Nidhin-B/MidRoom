@@ -15,6 +15,7 @@ const saveBtn = document.getElementById('save-btn');
 const copyBtn = document.getElementById('copy-btn');
 const downloadBtn = document.getElementById('download-btn');
 const toast = document.getElementById('toast-notification');
+const nowPlayingHud = document.getElementById('now-playing-track');
 
 // SETTINGS CONTROL SYSTEM SELECTORS
 const settingsToggle = document.getElementById('settings-toggle');
@@ -30,39 +31,27 @@ let currentDraftId = null;
 let autoSaveTimer = null;
 let particlesEnabled = true;
 
-// 2. CRASH-PROOF AUDIO ENGINE MATRIX
-const audioStreams = {};
+// 2. INITIALIZE BACKGROUND SOUNDCLOUD GHOST PLAYER
+const scIframe = document.getElementById('ghost-sc-player');
+let scWidget = null;
 
-try {
-    audioStreams.lofi = new Audio(encodeURI('sakuracloud - miffy cafe  [NCS Release].mp3'));
-    audioStreams.lofi.loop = true;
-} catch (e) { console.log("LoFi stream bypassed."); }
+if (scIframe && window.SC) {
+    scWidget = SC.Widget(scIframe);
+}
 
-try {
-    audioStreams.rain = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-light-rain-loop-2393.mp3');
-    audioStreams.rain.loop = true;
-} catch (e) { console.log("Rain stream bypassed."); }
-
-try {
-    audioStreams.void = new Audio(encodeURI('Aisake, Dosi - Cruising [NCS Release].mp3'));
-    audioStreams.void.loop = true;
-} catch (e) { console.log("Void stream bypassed."); }
-
+// Local keyboard layer initialization (kept for zero-latency feedback)
 const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
 
-// 3. PLAYLIST COUPLING MATRIX ENGINE
-let audioCards = Array.from(document.querySelectorAll('.audio-track')).filter(el => {
-    const text = (el.innerText || el.textContent).toLowerCase();
-    return /lofi|rain|void|hum|mechanical|sfx/i.test(text) && el.children.length < 3;
-});
+// 3. PLAYLIST SELECTION MAP
+let audioTracks = Array.from(document.querySelectorAll('.audio-track'));
 
-function getSoundType(card) {
-    const text = (card.innerText || card.textContent).toLowerCase();
-    if (text.includes('lofi')) return 'lofi';
-    if (text.includes('rain')) return 'rain';
-    if (text.includes('void') || text.includes('hum')) return 'void';
-    if (text.includes('mechanical') || text.includes('sfx')) return 'keyboard';
-    return null;
+// Utility helper to clear active tracks on streaming transitions
+function deactivateStreamingTracks() {
+    audioTracks.forEach(track => {
+        if (track.hasAttribute('data-sc-url')) {
+            track.classList.remove('active');
+        }
+    });
 }
 
 // 4. REAL-TIME WORD COUPLING & INLINE NOTIFICATIONS
@@ -92,8 +81,8 @@ if (textInput) {
 
     textInput.addEventListener('keydown', (e) => {
         let isKeyboardActive = false;
-        audioCards.forEach(card => {
-            if (getSoundType(card) === 'keyboard' && card.classList.contains('active')) {
+        audioTracks.forEach(track => {
+            if (track.getAttribute('data-sound') === 'keyboard' && track.classList.contains('active')) {
                 isKeyboardActive = true;
             }
         });
@@ -119,11 +108,17 @@ function showToast(message) {
 
 // 5. PERSISTENT SETTINGS PROFILE ENGINE
 function saveChamberSettings() {
-    const activeSounds = [];
-    audioCards.forEach(card => {
-        if (card.classList.contains('active')) {
-            const soundType = getSoundType(card);
-            if (soundType) activeSounds.push(soundType);
+    const activeStreamingUrl = null;
+    let activeSoundName = "";
+    let isKeyboardActive = false;
+
+    audioTracks.forEach(track => {
+        if (track.classList.contains('active')) {
+            if (track.hasAttribute('data-sc-url')) {
+                activeSoundName = track.querySelector('.card-name').textContent;
+            } else if (track.getAttribute('data-sound') === 'keyboard') {
+                isKeyboardActive = true;
+            }
         }
     });
 
@@ -132,7 +127,8 @@ function saveChamberSettings() {
 
     const settingsProfile = {
         volume: masterVolume ? masterVolume.value : 50,
-        activeSounds: activeSounds,
+        currentStreamingName: activeSoundName,
+        keyboardActive: isKeyboardActive,
         textScale: textScale,
         particlesEnabled: particlesEnabled
     };
@@ -149,11 +145,7 @@ function loadChamberSettings() {
     if (masterVolume) {
         masterVolume.value = settings.volume !== undefined ? settings.volume : 50;
         if (volumeVal) volumeVal.textContent = `${masterVolume.value}%`;
-        const targetVolume = masterVolume.value / 100;
-
-        for (let track in audioStreams) {
-            if (audioStreams[track]) audioStreams[track].volume = targetVolume;
-        }
+        if (scWidget) scWidget.setVolume(masterVolume.value);
     }
 
     if (scaleButtons && textInput) {
@@ -171,15 +163,18 @@ function loadChamberSettings() {
     particlesEnabled = settings.particlesEnabled !== undefined ? settings.particlesEnabled : true;
     if (particleSwitch) particleSwitch.checked = particlesEnabled;
 
-    audioCards.forEach(card => {
-        const soundType = getSoundType(card);
-        if (settings.activeSounds && settings.activeSounds.includes(soundType)) {
-            card.classList.add('active');
-            if (audioStreams[soundType]) {
-                audioStreams[soundType].play().catch(() => {});
+    // Restore active states
+    audioTracks.forEach(track => {
+        if (track.hasAttribute('data-sc-url')) {
+            const name = track.querySelector('.card-name').textContent;
+            if (name === settings.currentStreamingName && scWidget) {
+                track.classList.add('active');
+                const scUrl = track.getAttribute('data-sc-url');
+                scWidget.load(scUrl, { auto_play: true, show_artwork: false, buying: false, sharing: false, download: false });
+                if (nowPlayingHud) nowPlayingHud.textContent = `// listening to: ${name.toLowerCase()}`;
             }
-        } else {
-            card.classList.remove('active');
+        } else if (track.getAttribute('data-sound') === 'keyboard' && settings.keyboardActive) {
+            track.classList.add('active');
         }
     });
 }
@@ -187,28 +182,40 @@ function loadChamberSettings() {
 // 6. INTERACTION CONTROL LISTENERS
 if (masterVolume) {
     masterVolume.addEventListener('input', (e) => {
-        const calculatedVolume = e.target.value / 100;
         if (volumeVal) volumeVal.textContent = `${e.target.value}%`;
-        
-        for (let track in audioStreams) {
-            if (audioStreams[track]) audioStreams[track].volume = calculatedVolume;
-        }
+        if (scWidget) scWidget.setVolume(e.target.value);
         saveChamberSettings();
     });
 }
 
-audioCards.forEach(card => {
-    card.addEventListener('click', () => {
-        card.classList.toggle('active');
-        const soundType = getSoundType(card);
+audioTracks.forEach(track => {
+    track.addEventListener('click', () => {
+        const isTrackStreaming = track.hasAttribute('data-sc-url');
+        const trackName = track.querySelector('.card-name').textContent;
 
-        if (soundType && audioStreams[soundType]) {
-            if (card.classList.contains('active')) {
-                if (masterVolume) audioStreams[soundType].volume = masterVolume.value / 100;
-                audioStreams[soundType].play().catch(() => {});
+        if (isTrackStreaming) {
+            if (track.classList.contains('active')) {
+                // If clicking an already active track, turn it off
+                track.classList.remove('active');
+                if (scWidget) scWidget.pause();
+                if (nowPlayingHud) nowPlayingHud.textContent = "";
             } else {
-                audioStreams[soundType].pause();
+                // If switching streams, clear other options since widget plays one stream at a time
+                deactivateStreamingTracks();
+                track.classList.add('active');
+                const targetUrl = track.getAttribute('data-sc-url');
+                
+                if (scWidget) {
+                    scWidget.load(targetUrl, { auto_play: true, show_artwork: false, buying: false, sharing: false, download: false });
+                    scWidget.bind(SC.Widget.Events.READY, () => {
+                        scWidget.setVolume(masterVolume ? masterVolume.value : 50);
+                    });
+                }
+                if (nowPlayingHud) nowPlayingHud.textContent = `// listening to: ${trackName.toLowerCase()}`;
             }
+        } else {
+            // Pure local toggles (Mechanical SFX engine)
+            track.classList.toggle('active');
         }
         saveChamberSettings();
     });
@@ -525,4 +532,6 @@ if (canvas) {
 }
 
 // Final systems initialization
-loadChamberSettings();
+setTimeout(() => {
+    loadChamberSettings();
+}, 600);
