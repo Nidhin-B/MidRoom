@@ -24,7 +24,8 @@
 
         <footer class="toolbar">
             <div class="stats">
-                <span id="word-count">0</span> words
+                <span id="word-count">0</span> words 
+                <span id="now-playing-track" class="now-playing-hud"></span>
             </div>
             <div class="actions">
                 <button class="action-btn" id="save-btn">Save Draft</button>
@@ -66,21 +67,21 @@
                 
                 <div class="audio-playlist-wrapper">
                     <div class="audio-playlist">
-                        <div class="audio-track" data-sound="lofi">
+                        <div class="audio-track" data-sc-url="https://soundcloud.com/nocopyrightsounds/sakuracloud-miffy-cafe-ncs-release">
                             <div class="track-meta">
                                 <span class="card-status"></span>
                                 <span class="card-name">LoFi Beats</span>
                             </div>
                             <span class="track-index">Void-01</span>
                         </div>
-                        <div class="audio-track" data-sound="rain">
+                        <div class="audio-track" data-sc-url="https://soundcloud.com/the-asmr-shaman/pure-rain-falling-on-tent-loopable-ambient-noise-for-sleep-study-meditation">
                             <div class="track-meta">
                                 <span class="card-status"></span>
                                 <span class="card-name">Rain on Canopy</span>
                             </div>
                             <span class="track-index">Void-02</span>
                         </div>
-                        <div class="audio-track" data-sound="void">
+                        <div class="audio-track" data-sc-url="https://soundcloud.com/cryochamber/atrium-carceri-deep-bunker-ambient">
                             <div class="track-meta">
                                 <span class="card-status"></span>
                                 <span class="card-name">Deep Void Hum</span>
@@ -120,6 +121,10 @@
     </div>
 
     <div class="toast-container" id="toast-notification">Notification</div>
+
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+    
+    <iframe id="ghost-sc-player" class="hidden-sc-player" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1" scrolling="no" frameborder="no" allow="autoplay"></iframe>
 
     <script src="script.js"></script>
 </body>
