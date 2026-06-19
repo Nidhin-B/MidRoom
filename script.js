@@ -8,7 +8,7 @@
 const musicPlaylist = [
     { title: "Lofi Cafe Live", artist: "Lofi Girl", youtubeId: "X4VbdwhkE10" },
     { title: "Espresso", artist: "Sabrina Carpenter", youtubeId: "aSugSGCC12I" },
-    { title: "Please Please Please", artist: "Sabrina Carpenter", youtubeId: "cF1Na4AIecM" },
+    { title: "Please Please Please", artist: "Sabrina Carpenter", youtubeId: "dQw4w9WgXcQ" },
     { title: "Taste", artist: "Sabrina Carpenter", youtubeId: "G7KNmW9a75Y" },
     { title: "Birds of a Feather", artist: "Billie Eilish", youtubeId: "UtF6Jej8yb4" },
     { title: "Lofi Study Beats Live", artist: "Lofi Records", youtubeId: "W8a4sUabCUo" },
