@@ -2,82 +2,129 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Void Chamber</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Midroom — Ambient Writing Canvas</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <main class="app-container">
-        <header class="app-header">
-            <div class="header-left">
-                <button id="open-settings-btn" class="ui-btn">Menu</button>
-                <button class="ui-btn clear-btn">+</button>
-            </div>
-            <div class="typing-status">typing...</div>
-        </header>
+    <canvas id="ambient-canvas"></canvas>
 
-        <section class="writing-area">
-            <textarea id="text-canvas" placeholder="Type your thoughts into the void..." autofocus></textarea>
-        </section>
-
-        <footer class="app-footer">
-            <div class="footer-left">
-                <span id="word-count">0 words</span>
-                <button class="footer-action-btn">Save Draft</button>
-                <button class="footer-action-btn">Copy Text</button>
-                <button class="footer-action-btn">Download .txt</button>
+    <main class="canvas-container">
+        
+        <nav class="top-nav">
+            <div class="nav-controls">
+                <button class="nav-btn" id="menu-toggle">Menu</button>
+                <button class="nav-btn" id="new-canvas-btn" title="Open Clean Canvas">+</button>
             </div>
-            <div id="now-playing-hud" class="footer-right">// listening to: silence</div>
+            <span class="status-indicator" id="status-indicator">Private Room</span>
+        </nav>
+
+        <textarea id="text-input" placeholder="Type your thoughts into the void..." autofocus spellcheck="false"></textarea>
+
+        <footer class="toolbar">
+            <div class="stats">
+                <span id="word-count">0</span> words 
+                <span id="now-playing-track" class="now-playing-hud"></span>
+            </div>
+            <div class="actions">
+                <button class="action-btn" id="save-btn">Save Draft</button>
+                <button class="action-btn" id="copy-btn">Copy Text</button>
+                <button class="action-btn" id="download-btn">Download .txt</button>
+            </div>
         </footer>
+
     </main>
 
-    <div id="settings-modal" class="settings-modal">
+    <div class="sidebar" id="sidebar">
+        <header class="sidebar-header">
+            <h3>THE VAULT</h3>
+            <button class="icon-btn" id="close-sidebar">&times;</button>
+        </header>
+        <ul class="drafts-list" id="drafts-list"></ul>
+        
+        <div class="sidebar-footer">
+            <button class="nav-btn" id="settings-toggle">Chamber Settings</button>
+        </div>
+    </div>
+
+    <div class="settings-modal" id="settings-modal">
         <div class="settings-content">
-            <div class="modal-header">
-                <h2>CHAMBER SETTINGS</h2>
-                <button id="close-settings-btn" class="close-btn">&times;</button>
-            </div>
+            <header class="settings-header">
+                <h3>CHAMBER SETTINGS</h3>
+                <button class="icon-btn" id="close-settings">&times;</button>
+            </header>
 
             <div class="settings-section">
-                <div class="section-title">AMBIENT AUDIO SUITE</div>
-                
-                <div class="volume-row">
-                    <span>Master Volume</span>
-                    <span id="volume-percentage">50%</span>
+                <h4>Ambient Audio Suite</h4>
+                <div class="control-group">
+                    <div class="label-row">
+                        <label>Master Volume</label>
+                        <span id="volume-val">50%</span>
+                    </div>
+                    <input type="range" class="volume-slider" id="master-volume" min="0" max="100" value="50">
                 </div>
-                <input type="range" id="master-volume" min="0" max="100" value="50">
-
+                
                 <div class="audio-playlist-wrapper">
-                    <div class="loading-state">Connecting to MidRoom Stream...</div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <div class="section-title">AESTHETIC TUNING</div>
-                
-                <div class="tuning-row">
-                    <span>Text Scaling</span>
-                    <div class="scale-buttons">
-                        <button class="scale-btn active" data-scale="small">Small</button>
-                        <button class="scale-btn" data-scale="medium">Medium</button>
-                        <button class="scale-btn" data-scale="large">Large</button>
+                    <div class="audio-playlist">
+                        <div class="audio-track" data-sc-url="https://soundcloud.com/nocopyrightsounds/sakuracloud-miffy-cafe-ncs-release">
+                            <div class="track-meta">
+                                <span class="card-status"></span>
+                                <span class="card-name">LoFi Beats</span>
+                            </div>
+                            <span class="track-index">Void-01</span>
+                        </div>
+                        <div class="audio-track" data-sc-url="https://soundcloud.com/the-asmr-shaman/pure-rain-falling-on-tent-loopable-ambient-noise-for-sleep-study-meditation">
+                            <div class="track-meta">
+                                <span class="card-status"></span>
+                                <span class="card-name">Rain on Canopy</span>
+                            </div>
+                            <span class="track-index">Void-02</span>
+                        </div>
+                        <div class="audio-track" data-sc-url="https://soundcloud.com/cryochamber/atrium-carceri-deep-bunker-ambient">
+                            <div class="track-meta">
+                                <span class="card-status"></span>
+                                <span class="card-name">Deep Void Hum</span>
+                            </div>
+                            <span class="track-index">Void-03</span>
+                        </div>
+                        <div class="audio-track" data-sound="keyboard">
+                            <div class="track-meta">
+                                <span class="card-status"></span>
+                                <span class="card-name">Mechanical SFX</span>
+                            </div>
+                            <span class="track-index">Keys-01</span>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="tuning-row">
-                    <span>Spore Particle Engine</span>
+            <div class="settings-section">
+                <h4>Aesthetic Tuning</h4>
+                <div class="control-group">
+                    <label>Text Scaling</label>
+                    <div class="toggle-group">
+                        <button class="scale-btn" data-size="small">Small</button>
+                        <button class="scale-btn active" data-size="medium">Medium</button>
+                        <button class="scale-btn" data-size="large">Large</button>
+                    </div>
+                </div>
+                <div class="control-group split-row">
+                    <label for="particle-switch">Spore Particle Engine</label>
                     <label class="switch-container">
-                        <input type="checkbox" id="particle-toggle" checked>
-                        <span class="slider-switch"></span>
+                        <input type="checkbox" id="particle-switch" checked>
+                        <span class="switch-slider"></span>
                     </label>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="toast-container" id="toast-notification">Notification</div>
+
     <script src="https://w.soundcloud.com/player/api.js"></script>
-    <iframe id="ghost-sc-player" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1" scrolling="no" frameborder="no" allow="autoplay"></iframe>
+    
+    <iframe id="ghost-sc-player" class="hidden-sc-player" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1" scrolling="no" frameborder="no" allow="autoplay"></iframe>
 
     <script src="script.js"></script>
 </body>
