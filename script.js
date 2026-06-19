@@ -2,7 +2,7 @@
    MIDROOM — CANVAS ENGINE, STORAGE VAULT, & ACTIVE CHAMBER AUDIO SUITE
    ========================================================================= */
 
-// 1. GLOBAL UI ELEMENT SELECTORS (SAFE COUPLING)
+// 1. GLOBAL DOM SELECTORS (Defensive mapping)
 const textInput = document.getElementById('text-input');
 const wordCountSpan = document.getElementById('word-count');
 const menuToggle = document.getElementById('menu-toggle');
@@ -16,7 +16,7 @@ const copyBtn = document.getElementById('copy-btn');
 const downloadBtn = document.getElementById('download-btn');
 const toast = document.getElementById('toast-notification');
 
-// SETTINGS CONTROL SYSTEM SELECTORS
+// SETTINGS & AUDIO SELECTORS
 const settingsToggle = document.getElementById('settings-toggle');
 const settingsModal = document.getElementById('settings-modal');
 const closeSettings = document.getElementById('close-settings');
@@ -24,8 +24,8 @@ const masterVolume = document.getElementById('master-volume');
 const volumeVal = document.getElementById('volume-val');
 const scaleButtons = document.querySelectorAll('.scale-btn');
 const particleSwitch = document.getElementById('particle-switch');
+const audioCards = document.querySelectorAll('.audio-card');
 
-// CORE DATA STATE TRACKERS
 let currentDraftId = null;
 let autoSaveTimer = null;
 let particlesEnabled = true;
@@ -33,6 +33,7 @@ let particlesEnabled = true;
 // 2. CRASH-PROOF AUDIO ENGINE MATRIX
 const audioStreams = {};
 
+// Safely parsing your uploaded GitHub repository files
 try {
     audioStreams.lofi = new Audio(encodeURI('sakuracloud - miffy cafe  [NCS Release].mp3'));
     audioStreams.lofi.loop = true;
@@ -50,22 +51,29 @@ try {
 
 const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
 
-// 3. TEXT-MATCHING CARD AUTO-DETECTION ENGINE
-let audioCards = Array.from(document.querySelectorAll('#settings-modal button, #settings-modal div, .audio-card, .sound-btn')).filter(el => {
-    const text = (el.innerText || el.textContent).toLowerCase();
-    return /lofi|rain|void|hum|mechanical|sfx/i.test(text) && el.children.length < 3;
-});
+// Helper to trigger the "Now Playing" Whisper text
+function updateNowPlayingWhisper() {
+    const whisper = document.getElementById('now-playing-whisper');
+    if (!whisper) return;
 
-function getSoundType(card) {
-    const text = (card.innerText || card.textContent).toLowerCase();
-    if (text.includes('lofi')) return 'lofi';
-    if (text.includes('rain')) return 'rain';
-    if (text.includes('void') || text.includes('hum')) return 'void';
-    if (text.includes('mechanical') || text.includes('sfx')) return 'keyboard';
-    return null;
+    let activeTracks = [];
+    audioCards.forEach(card => {
+        if (card.classList.contains('active') && card.getAttribute('data-sound') !== 'keyboard') {
+            const title = card.querySelector('.track-title')?.textContent || '';
+            const artist = card.querySelector('.track-artist')?.textContent || '';
+            if (title) activeTracks.push(`${artist} — ${title}`);
+        }
+    });
+
+    if (activeTracks.length > 0) {
+        whisper.textContent = `♪ ${activeTracks.join(' + ')}`;
+        whisper.classList.add('show');
+    } else {
+        whisper.classList.remove('show');
+    }
 }
 
-// 4. REAL-TIME WORD COUPLING & INLINE NOTIFICATIONS
+// 3. CORE INPUT & REAL-TIME EVENT LISTENERS
 if (textInput) {
     textInput.addEventListener('input', () => {
         const text = textInput.value.trim();
@@ -93,7 +101,7 @@ if (textInput) {
     textInput.addEventListener('keydown', (e) => {
         let isKeyboardActive = false;
         audioCards.forEach(card => {
-            if (getSoundType(card) === 'keyboard' && card.classList.contains('active')) {
+            if (card.getAttribute('data-sound') === 'keyboard' && card.classList.contains('active')) {
                 isKeyboardActive = true;
             }
         });
@@ -112,18 +120,15 @@ function showToast(message) {
     if (!toast) return;
     toast.textContent = message;
     toast.classList.add('show');
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 2500);
+    setTimeout(() => toast.classList.remove('show'), 2500);
 }
 
-// 5. PERSISTENT SETTINGS PROFILE ENGINE
+// 4. PERSISTENT SETTINGS PROFILE ENGINE
 function saveChamberSettings() {
     const activeSounds = [];
     audioCards.forEach(card => {
         if (card.classList.contains('active')) {
-            const soundType = getSoundType(card);
-            if (soundType) activeSounds.push(soundType);
+            activeSounds.push(card.getAttribute('data-sound'));
         }
     });
 
@@ -172,7 +177,7 @@ function loadChamberSettings() {
     if (particleSwitch) particleSwitch.checked = particlesEnabled;
 
     audioCards.forEach(card => {
-        const soundType = getSoundType(card);
+        const soundType = card.getAttribute('data-sound');
         if (settings.activeSounds && settings.activeSounds.includes(soundType)) {
             card.classList.add('active');
             if (audioStreams[soundType]) {
@@ -182,9 +187,11 @@ function loadChamberSettings() {
             card.classList.remove('active');
         }
     });
+
+    updateNowPlayingWhisper();
 }
 
-// 6. INTERACTION CONTROL LISTENERS
+// 5. AUDIO & MODAL LISTENERS
 if (masterVolume) {
     masterVolume.addEventListener('input', (e) => {
         const calculatedVolume = e.target.value / 100;
@@ -200,7 +207,7 @@ if (masterVolume) {
 audioCards.forEach(card => {
     card.addEventListener('click', () => {
         card.classList.toggle('active');
-        const soundType = getSoundType(card);
+        const soundType = card.getAttribute('data-sound');
 
         if (soundType && audioStreams[soundType]) {
             if (card.classList.contains('active')) {
@@ -210,6 +217,7 @@ audioCards.forEach(card => {
                 audioStreams[soundType].pause();
             }
         }
+        updateNowPlayingWhisper();
         saveChamberSettings();
     });
 });
@@ -235,62 +243,14 @@ if (particleSwitch) {
     });
 }
 
-// 7. MODAL NAVIGATION ROUTING
-if (menuToggle) {
-    menuToggle.addEventListener('click', () => {
-        renderDrafts();
-        if (sidebar) sidebar.classList.add('active');
-    });
-}
+if (menuToggle) menuToggle.addEventListener('click', () => { renderDrafts(); if (sidebar) sidebar.classList.add('active'); });
+if (closeSidebar) closeSidebar.addEventListener('click', () => { if (sidebar) sidebar.classList.remove('active'); });
+if (settingsToggle) settingsToggle.addEventListener('click', () => { if (sidebar) sidebar.classList.remove('active'); if (settingsModal) settingsModal.classList.add('active'); });
+if (closeSettings) closeSettings.addEventListener('click', () => { if (settingsModal) settingsModal.classList.remove('active'); });
+if (settingsModal) settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) settingsModal.classList.remove('active'); });
 
-if (closeSidebar) {
-    closeSidebar.addEventListener('click', () => {
-        sidebar.classList.remove('active');
-    });
-}
-
-if (settingsToggle) {
-    settingsToggle.addEventListener('click', () => {
-        if (sidebar) sidebar.classList.remove('active'); 
-        if (settingsModal) settingsModal.classList.add('active');
-    });
-}
-
-if (closeSettings) {
-    closeSettings.addEventListener('click', () => {
-        settingsModal.classList.remove('active');
-    });
-}
-
-if (settingsModal) {
-    settingsModal.addEventListener('click', (e) => {
-        if (e.target === settingsModal) {
-            settingsModal.classList.remove('active');
-        }
-    });
-}
-
-if (newCanvasBtn) {
-    newCanvasBtn.addEventListener('click', () => {
-        if (!textInput || textInput.value.trim() === "") return;
-        autoSaveDraft();
-        
-        textInput.value = "";
-        currentDraftId = null;
-        if (wordCountSpan) wordCountSpan.textContent = "0";
-        if (statusIndicator) {
-            statusIndicator.textContent = "Private Room";
-            statusIndicator.style.color = "";
-        }
-        showToast("Opened a fresh canvas void");
-    });
-}
-
-// 8. STORAGE PRIMITIVES AND MANIFEST DATABASE METHODS
-function getDrafts() {
-    const drafts = localStorage.getItem('midroom_drafts');
-    return drafts ? JSON.parse(drafts) : [];
-}
+// 6. STORAGE VAULT ENGINE
+function getDrafts() { return JSON.parse(localStorage.getItem('midroom_drafts') || '[]'); }
 
 function renderDrafts() {
     if (!draftsList) return;
@@ -318,21 +278,22 @@ function renderDrafts() {
         const title = document.createElement('span');
         title.textContent = draft.title || 'Untitled';
         title.style.display = 'block';
+        title.style.color = '#cbd5e1';
         
         const time = document.createElement('span');
         time.textContent = draft.time || '';
-        time.style.fontSize = '0.8em';
-        time.style.opacity = '0.5';
+        time.style.fontSize = '0.75rem';
+        time.style.color = '#52796f';
         
         info.appendChild(title);
         info.appendChild(time);
         
         const delBtn = document.createElement('button');
-        delBtn.textContent = '×';
+        delBtn.innerHTML = '&times;';
         delBtn.style.background = 'none';
         delBtn.style.border = 'none';
         delBtn.style.color = '#ef4444';
-        delBtn.style.fontSize = '1.2em';
+        delBtn.style.fontSize = '1.2rem';
         delBtn.style.cursor = 'pointer';
         delBtn.addEventListener('click', (e) => deleteDraft(draft.id, e));
         
@@ -353,22 +314,9 @@ function autoSaveDraft() {
 
     if (currentDraftId === null) {
         currentDraftId = Date.now();
-        const newDraft = {
-            id: currentDraftId,
-            title: firstLine + '...',
-            content: text,
-            time: timestamp
-        };
-        drafts.unshift(newDraft);
+        drafts.unshift({ id: currentDraftId, title: firstLine + '...', content: text, time: timestamp });
     } else {
-        drafts = drafts.map(draft => {
-            if (draft.id === currentDraftId) {
-                draft.title = firstLine + '...';
-                draft.content = text;
-                draft.time = timestamp;
-            }
-            return draft;
-        });
+        drafts = drafts.map(d => d.id === currentDraftId ? { ...d, title: firstLine + '...', content: text, time: timestamp } : d);
     }
 
     localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
@@ -378,12 +326,21 @@ function autoSaveDraft() {
     }
 }
 
+if (newCanvasBtn) {
+    newCanvasBtn.addEventListener('click', () => {
+        if (!textInput || textInput.value.trim() === "") return;
+        autoSaveDraft();
+        textInput.value = "";
+        currentDraftId = null;
+        if (wordCountSpan) wordCountSpan.textContent = "0";
+        if (statusIndicator) { statusIndicator.textContent = "Private Room"; statusIndicator.style.color = ""; }
+        showToast("Opened a fresh canvas void");
+    });
+}
+
 if (saveBtn) {
     saveBtn.addEventListener('click', () => {
-        if (!textInput || !textInput.value.trim()) {
-            showToast("Cannot save an empty canvas");
-            return;
-        }
+        if (!textInput || !textInput.value.trim()) { showToast("Cannot save an empty canvas"); return; }
         autoSaveDraft();
         showToast("Draft securely cataloged");
     });
@@ -391,14 +348,9 @@ if (saveBtn) {
 
 function deleteDraft(id, event) {
     if (event) event.stopPropagation(); 
-    let drafts = getDrafts();
-    drafts = drafts.filter(draft => draft.id !== id);
+    let drafts = getDrafts().filter(d => d.id !== id);
     localStorage.setItem('midroom_drafts', JSON.stringify(drafts));
-    
-    if (currentDraftId === id) {
-        currentDraftId = null;
-    }
-    
+    if (currentDraftId === id) currentDraftId = null;
     renderDrafts();
     showToast("Draft turned to ash");
 }
@@ -408,17 +360,12 @@ function loadDraft(draftObj) {
     currentDraftId = draftObj.id;
     textInput.value = draftObj.content;
     textInput.dispatchEvent(new Event('input')); 
-    
-    if (statusIndicator) {
-        statusIndicator.textContent = "Editing Draft";
-        statusIndicator.style.color = "#52796f";
-    }
-    
+    if (statusIndicator) { statusIndicator.textContent = "Editing Draft"; statusIndicator.style.color = "#52796f"; }
     if (sidebar) sidebar.classList.remove('active');
     showToast(`Loaded: ${draftObj.title}`);
 }
 
-// 9. UTILITY ACTION ACCESSORS
+// 7. UTILITY ENGINE
 if (copyBtn) {
     copyBtn.addEventListener('click', () => {
         if (!textInput || !textInput.value) return;
@@ -430,13 +377,10 @@ if (copyBtn) {
 if (downloadBtn) {
     downloadBtn.addEventListener('click', () => {
         if (!textInput || !textInput.value) return;
-        const text = textInput.value;
-
-        const blob = new Blob([text], { type: 'text/plain' });
+        const blob = new Blob([textInput.value], { type: 'text/plain' });
         const anchor = document.createElement('a');
         anchor.download = `midroom_draft_${Date.now()}.txt`;
         anchor.href = window.URL.createObjectURL(blob);
-        anchor.target = '_blank';
         anchor.style.display = 'none';
         document.body.appendChild(anchor);
         anchor.click();
@@ -445,7 +389,7 @@ if (downloadBtn) {
     });
 }
 
-// 10. UPGRADED MULTI-TONE AMBIENT PARTICLE ENGINE
+// 8. PARTICLE ENGINE
 const canvas = document.getElementById('ambient-canvas');
 if (canvas) {
     const ctx = canvas.getContext('2d');
@@ -453,10 +397,7 @@ if (canvas) {
     const maxParticles = 45; 
     const forestColors = ['#3f5e52', '#52796f', '#71978c', '#2f4f43'];
 
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
@@ -471,40 +412,27 @@ if (canvas) {
             this.fadeSpeed = Math.random() * 0.004 + 0.001;
             this.color = forestColors[Math.floor(Math.random() * forestColors.length)];
         }
-
         update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-
+            this.x += this.speedX; this.y += this.speedY;
             if (this.y < 0 || this.x < 0 || this.x > canvas.width) {
                 this.x = Math.random() * canvas.width;
                 this.y = canvas.height + Math.random() * 20;
                 this.alpha = 0; 
             }
-
-            if (this.alpha < 0.5) {
-                this.alpha += this.fadeSpeed;
-            }
+            if (this.alpha < 0.5) this.alpha += this.fadeSpeed;
         }
-
         draw() {
-            ctx.save();
-            ctx.globalAlpha = this.alpha;
-            ctx.beginPath();
+            ctx.save(); ctx.globalAlpha = this.alpha; ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.shadowBlur = this.size * 3;
-            ctx.shadowColor = '#1f3a2b';
-            ctx.fill();
-            ctx.restore();
+            ctx.fillStyle = this.color; ctx.shadowBlur = this.size * 3;
+            ctx.shadowColor = '#1f3a2b'; ctx.fill(); ctx.restore();
         }
     }
 
     function initParticles() {
         particlesArray = [];
         for (let i = 0; i < maxParticles; i++) {
-            let p = new SporeParticle();
-            p.y = Math.random() * canvas.height; 
+            let p = new SporeParticle(); p.y = Math.random() * canvas.height; 
             particlesArray.push(p);
         }
     }
@@ -513,8 +441,7 @@ if (canvas) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if (particlesEnabled) {
             for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
+                particlesArray[i].update(); particlesArray[i].draw();
             }
         }
         requestAnimationFrame(animateParticles);
@@ -524,5 +451,5 @@ if (canvas) {
     animateParticles();
 }
 
-// Final systems initialization
+// Final systems boot
 loadChamberSettings();
