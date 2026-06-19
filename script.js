@@ -18,7 +18,8 @@ const musicPlaylist = [
     { title: "Manchild", artist: "Sabrina Carpenter", youtubeId: "BlTopk-muo4" },
     { title: "From The Start", artist: "Laufey", youtubeId: "h8DeZSB2o-c" },
     { title: "New Jeans", artist: "NewJeans", youtubeId: "Krr2u8BUtLw" },
-   { title: "Kawaikute gomen", artist: "HoneyWorks", youtubeId: "jOkC2FWd2Z8" }
+   { title: "Kawaikute gomen", artist: "HoneyWorks", youtubeId: "jOkC2FWd2Z8" },
+   { title: "Strategy", artist: "TWICE", youtubeId: "nmbiBVPe5bY" }
 ];
 
 // ==========================================================================
