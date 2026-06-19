@@ -23,7 +23,6 @@
         <div class="footer-left">
             <span id="word-count">0</span> words
         </div>
-        <div id="now-playing-whisper" class="now-playing-hidden"></div>
     </footer>
 
     <div id="sidebar">
@@ -51,26 +50,22 @@
                 <h3 class="settings-subtitle">AMBIENT AUDIO SUITE</h3>
                 <div class="volume-control">
                     <label>Master Volume</label>
-                    <span id="volume-val">50%</span>
+                    <span id="volume-val">100%</span>
                 </div>
-                <input type="range" id="master-volume" min="0" max="100" value="50">
+                <input type="range" id="master-volume" min="0" max="100" value="100">
                 
-                <div class="audio-card-container">
-                    <button class="audio-card" data-sound="lofi">
-                        <span class="track-title">Miffy Cafe</span>
-                        <span class="track-artist">sakuracloud</span>
+                <div class="sound-grid">
+                    <button class="sound-btn" data-sound="lofi">
+                        <span class="dot"></span> LoFi Beats
                     </button>
-                    <button class="audio-card" data-sound="rain">
-                        <span class="track-title">Midnight Rain</span>
-                        <span class="track-artist">Ambient</span>
+                    <button class="sound-btn" data-sound="rain">
+                        <span class="dot"></span> Rain on Canopy
                     </button>
-                    <button class="audio-card" data-sound="void">
-                        <span class="track-title">Cruising</span>
-                        <span class="track-artist">Aisake, Dosi</span>
+                    <button class="sound-btn" data-sound="void">
+                        <span class="dot"></span> Deep Void Hum
                     </button>
-                    <button class="audio-card" data-sound="keyboard">
-                        <span class="track-title">Tactile Switches</span>
-                        <span class="track-artist">Mechanical SFX</span>
+                    <button class="sound-btn" data-sound="keyboard">
+                        <span class="dot"></span> Mechanical SFX
                     </button>
                 </div>
             </div>
