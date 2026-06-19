@@ -3,53 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Chamber</title>
+    <title>The Void Chamber</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <main class="app-container">
         <header class="app-header">
-            <div class="logo">// CH-09</div>
-            <button id="open-settings-btn" class="nav-btn">Chamber Settings</button>
+            <div class="header-left">
+                <button id="open-settings-btn" class="ui-btn">Menu</button>
+                <button class="ui-btn clear-btn">+</button>
+            </div>
+            <div class="typing-status">typing...</div>
         </header>
 
         <section class="writing-area">
-            <textarea placeholder="Begin your transmission here..."></textarea>
+            <textarea id="text-canvas" placeholder="Type your thoughts into the void..." autofocus></textarea>
         </section>
 
         <footer class="app-footer">
-            <div id="now-playing-track">// listening to: silence</div>
-            <div class="system-status">SYS_STATUS: READY</div>
+            <div class="footer-left">
+                <span id="word-count">0 words</span>
+                <button class="footer-action-btn">Save Draft</button>
+                <button class="footer-action-btn">Copy Text</button>
+                <button class="footer-action-btn">Download .txt</button>
+            </div>
+            <div id="now-playing-hud" class="footer-right">// listening to: silence</div>
         </footer>
     </main>
 
     <div id="settings-modal" class="settings-modal">
         <div class="settings-content">
             <div class="modal-header">
-                <h2>Chamber Settings</h2>
+                <h2>CHAMBER SETTINGS</h2>
                 <button id="close-settings-btn" class="close-btn">&times;</button>
             </div>
-            
-            <hr class="divider">
 
             <div class="settings-section">
-                <label for="master-volume">Master Output</label>
-                <div class="volume-container">
-                    <input type="range" id="master-volume" min="0" max="100" value="50">
+                <div class="section-title">AMBIENT AUDIO SUITE</div>
+                
+                <div class="volume-row">
+                    <span>Master Volume</span>
+                    <span id="volume-percentage">50%</span>
+                </div>
+                <input type="range" id="master-volume" min="0" max="100" value="50">
+
+                <div class="audio-playlist-wrapper">
+                    <div class="loading-state">Connecting to MidRoom Stream...</div>
                 </div>
             </div>
 
             <div class="settings-section">
-                <label>Ambient Tuning</label>
-                <div class="audio-playlist-wrapper">
+                <div class="section-title">AESTHETIC TUNING</div>
+                
+                <div class="tuning-row">
+                    <span>Text Scaling</span>
+                    <div class="scale-buttons">
+                        <button class="scale-btn active" data-scale="small">Small</button>
+                        <button class="scale-btn" data-scale="medium">Medium</button>
+                        <button class="scale-btn" data-scale="large">Large</button>
                     </div>
+                </div>
+
+                <div class="tuning-row">
+                    <span>Spore Particle Engine</span>
+                    <label class="switch-container">
+                        <input type="checkbox" id="particle-toggle" checked>
+                        <span class="slider-switch"></span>
+                    </label>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="https://w.soundcloud.com/player/api.js"></script>
-
     <iframe id="ghost-sc-player" style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1" scrolling="no" frameborder="no" allow="autoplay"></iframe>
 
     <script src="script.js"></script>
