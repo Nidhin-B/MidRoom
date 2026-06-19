@@ -9,19 +9,20 @@
 <body>
     <canvas id="ambient-canvas"></canvas>
     
-    <nav>
-        <button id="menu-toggle">☰</button>
-        <span id="status-indicator">Private Room</span>
-        <button id="settings-toggle">⚙️</button>
-    </nav>
-    
     <main>
         <textarea id="text-input" class="font-medium" placeholder="Start writing..."></textarea>
     </main>
     
     <footer>
         <div class="footer-left">
-            <span id="word-count">0</span> words
+            <button id="menu-toggle">☰ Menu</button>
+            <span id="word-count-container"><span id="word-count">0</span> words</span>
+            <span id="status-indicator">Private Room</span>
+        </div>
+        <div class="footer-actions">
+            <button id="save-btn">Save Draft</button>
+            <button id="copy-btn">Copy Text</button>
+            <button id="download-btn">Download .txt</button>
         </div>
     </footer>
 
@@ -30,62 +31,46 @@
             <h2>The Vault</h2>
             <button id="close-sidebar">&times;</button>
         </div>
+        
         <button id="new-canvas-btn">New Canvas</button>
         <ul id="drafts-list"></ul>
-        <div class="sidebar-actions">
-            <button id="save-btn">Save Draft</button>
-            <button id="copy-btn">Copy Text</button>
-            <button id="download-btn">Download .txt</button>
-        </div>
-    </div>
 
-    <div id="settings-modal">
-        <div class="settings-content">
-            <div class="settings-header">
-                <h2>CHAMBER SETTINGS</h2>
-                <button id="close-settings">&times;</button>
+        <div class="sidebar-settings-section">
+            <h3 class="settings-subtitle">Ambient Audio Suite</h3>
+            <div class="volume-control">
+                <label>Volume</label>
+                <span id="volume-val">100%</span>
+            </div>
+            <input type="range" id="master-volume" min="0" max="100" value="100">
+            
+            <div class="sound-grid">
+                <button class="sound-btn" data-sound="lofi">
+                    <span class="dot"></span> LoFi Beats
+                </button>
+                <button class="sound-btn" data-sound="rain">
+                    <span class="dot"></span> Rain
+                </button>
+                <button class="sound-btn" data-sound="void">
+                    <span class="dot"></span> Deep Void
+                </button>
+                <button class="sound-btn" data-sound="keyboard">
+                    <span class="dot"></span> Keyboard
+                </button>
+            </div>
+
+            <h3 class="settings-subtitle" style="margin-top: 25px;">Aesthetic Tuning</h3>
+            <div class="scale-buttons">
+                <button class="scale-btn" data-size="small">Small</button>
+                <button class="scale-btn active" data-size="medium">Medium</button>
+                <button class="scale-btn" data-size="large">Large</button>
             </div>
             
-            <div class="settings-section">
-                <h3 class="settings-subtitle">AMBIENT AUDIO SUITE</h3>
-                <div class="volume-control">
-                    <label>Master Volume</label>
-                    <span id="volume-val">100%</span>
-                </div>
-                <input type="range" id="master-volume" min="0" max="100" value="100">
-                
-                <div class="sound-grid">
-                    <button class="sound-btn" data-sound="lofi">
-                        <span class="dot"></span> LoFi Beats
-                    </button>
-                    <button class="sound-btn" data-sound="rain">
-                        <span class="dot"></span> Rain on Canopy
-                    </button>
-                    <button class="sound-btn" data-sound="void">
-                        <span class="dot"></span> Deep Void Hum
-                    </button>
-                    <button class="sound-btn" data-sound="keyboard">
-                        <span class="dot"></span> Mechanical SFX
-                    </button>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3 class="settings-subtitle">AESTHETIC TUNING</h3>
-                <label>Text Scaling</label>
-                <div class="scale-buttons">
-                    <button class="scale-btn" data-size="small">Small</button>
-                    <button class="scale-btn active" data-size="medium">Medium</button>
-                    <button class="scale-btn" data-size="large">Large</button>
-                </div>
-                
-                <div class="toggle-control">
-                    <label>Spore Particle Engine</label>
-                    <label class="switch">
-                        <input type="checkbox" id="particle-switch" checked>
-                        <span class="slider round"></span>
-                    </label>
-                </div>
+            <div class="toggle-control">
+                <label>Spore Particles</label>
+                <label class="switch">
+                    <input type="checkbox" id="particle-switch" checked>
+                    <span class="slider round"></span>
+                </label>
             </div>
         </div>
     </div>
