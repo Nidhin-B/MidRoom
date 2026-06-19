@@ -52,7 +52,7 @@ let autoSaveTimer = null;
 let particlesEnabled = true;
 
 // ==========================================================================
-// 3. INVISIBLE YOUTUBE LAYER SETUP (Zero HTML changes required)
+// 3. INVISIBLE YOUTUBE LAYER SETUP (Standard API Endpoint Integration)
 // ==========================================================================
 let ytPlayer = null;
 let isYtAPIReady = false;
@@ -69,7 +69,7 @@ hiddenPlayerDiv.style.width = '1px';
 hiddenPlayerDiv.style.height = '1px';
 document.body.appendChild(hiddenPlayerDiv);
 
-// Inject the official YouTube Iframe API Script tag asynchronously
+// Inject the official standard YouTube Iframe API Script tag asynchronously
 const ytScriptTag = document.createElement('script');
 ytScriptTag.src = "https://www.youtube.com/iframe_api";
 const firstScriptTag = document.getElementsByTagName('script')[0];
@@ -88,7 +88,8 @@ window.onYouTubeIframeAPIReady = function() {
             'fs': 0,
             'rel': 0,
             'modestbranding': 1,
-            'iv_load_policy': 3
+            'iv_load_policy': 3,
+            'origin': window.location.origin
         },
         events: {
             'onReady': onYoutubePlayerReady
@@ -101,44 +102,39 @@ function onYoutubePlayerReady(event) {
     if (masterVolume) {
         ytPlayer.setVolume(masterVolume.value);
     }
-    // Generate the scrolling menu list and restore saved states
     buildDynamicPlaylistUI();
     loadChamberSettings();
 }
 
 // ==========================================================================
-// 4. DYNAMIC PLAYLIST GENERATION ENGINE (Auto-builds list on load)
+// 4. DYNAMIC PLAYLIST GENERATION ENGINE (Restores layout coupling)
 // ==========================================================================
 function buildDynamicPlaylistUI() {
     const staticTracks = document.querySelectorAll('.audio-track');
     if (staticTracks.length === 0) return;
     
-    // Find parent container element holding the playlist layout rows
     const container = staticTracks[0].parentElement;
-    
-    // Wipe out all old elements (clearing the old music and mechanical keyboard row)
     staticTracks.forEach(track => track.remove());
     
-    // Build entire expanded library row by row
     musicPlaylist.forEach((trackData, index) => {
         const trackCard = document.createElement('div');
         trackCard.className = 'audio-track';
         trackCard.style.cursor = 'pointer';
         
+        // Retain semantic class targeting so original CSS lighting active states map properly
         const nameSpan = document.createElement('span');
         nameSpan.className = 'card-name';
         nameSpan.textContent = `${trackData.title} — ${trackData.artist}`;
         
         trackCard.appendChild(nameSpan);
         
-        // Wire track clicking logic up natively
         trackCard.addEventListener('click', () => {
             if (trackCard.classList.contains('active')) {
                 stopActiveAmbientMusic();
                 saveChamberSettings();
             } else {
                 if (!isYtAPIReady) {
-                    showToast("Connecting to music cloud...");
+                    showToast("Connecting to audio stream...");
                     return;
                 }
                 playAmbientMusicStream(index);
@@ -148,7 +144,6 @@ function buildDynamicPlaylistUI() {
         container.appendChild(trackCard);
     });
     
-    // Re-index global tracker reference array
     streamingTrackElements = Array.from(container.querySelectorAll('.audio-track'));
 }
 
