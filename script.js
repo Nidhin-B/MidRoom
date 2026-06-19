@@ -1,5 +1,5 @@
 // ==========================================================================
-// INTERFACE WINDOW DISPLAY CONTROLS
+// SYSTEM DIALOG INTERFACE MODAL CONFIGURATIONS
 // ==========================================================================
 const modal = document.getElementById('settings-modal');
 const openModalBtn = document.getElementById('open-settings-btn');
@@ -7,28 +7,52 @@ const closeModalBtn = document.getElementById('close-settings-btn');
 
 openModalBtn.addEventListener('click', () => modal.classList.add('active'));
 closeModalBtn.addEventListener('click', () => modal.classList.remove('active'));
-
-// Close modal if user clicks outside the inner settings card content
 modal.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.remove('active');
 });
 
 // ==========================================================================
-// SOUNDCLOUD PLAYLIST CONTROLLER ENGINE
+// AESTHETIC COMPONENT CONTROLLERS (TEXT SCALING INTEGRATION)
+// ==========================================================================
+const textCanvas = document.getElementById('text-canvas');
+const scaleButtons = document.querySelectorAll('.scale-btn');
+
+scaleButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        scaleButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const scale = btn.getAttribute('data-scale');
+        if (scale === 'small') textCanvas.style.fontSize = '1.1rem';
+        if (scale === 'medium') textCanvas.style.fontSize = '1.35rem';
+        if (scale === 'large') textCanvas.style.fontSize = '1.65rem';
+    });
+});
+
+// Simple Word Counter Logic Hook
+textCanvas.addEventListener('input', () => {
+    const text = textCanvas.value.trim();
+    const words = text === '' ? 0 : text.split(/\s+/).length;
+    document.getElementById('word-count').textContent = `${words} words`;
+});
+
+// ==========================================================================
+// SOUNDCLOUD REAL-TIME AUDIO COMPONENT SUITE
 // ==========================================================================
 const scIframe = document.getElementById('ghost-sc-player');
 const scWidget = window.SC ? SC.Widget(scIframe) : null;
 const playlistWrapper = document.querySelector('.audio-playlist-wrapper');
 const masterVolume = document.getElementById('master-volume'); 
-const nowPlayingHud = document.getElementById('now-playing-track'); 
+const volumePercentage = document.getElementById('volume-percentage');
+const nowPlayingHud = document.getElementById('now-playing-hud'); 
 
-// The MidRoom public streaming target link
-const midroomPlaylistUrl = "https://on.soundcloud.com/NKliQ4FRDKOjeBuZCr";
+// CRITICAL FIX: Expanded direct canonical web link resolves the routing blocker perfectly
+const midroomDesktopUrl = "https://soundcloud.com/nidhin-b/sets/midroom-playlist";
 
 if (scWidget && playlistWrapper) {
     
-    // Inject the playlist source URL into the hidden engine on execution
-    scWidget.load(midroomPlaylistUrl, {
+    // Inject the audio package stream data quietly background-side
+    scWidget.load(midroomDesktopUrl, {
         auto_play: false,
         show_artwork: false,
         buying: false,
@@ -38,23 +62,22 @@ if (scWidget && playlistWrapper) {
         show_user: false
     });
 
-    // Run layout generator once the hidden SoundCloud puppet registers READY status
+    // Fire assembly loops once connection validates successfully
     scWidget.bind(SC.Widget.Events.READY, () => {
         
-        // Pull down structural tracking arrays from the loaded stream source
+        // Query sounds array from the verified framework endpoint
         scWidget.getSounds((songs) => {
             if (!songs || songs.length === 0) {
-                playlistWrapper.innerHTML = `<div style="font-size:0.8rem;color:#355245;text-align:center;padding:20px;">FAILED TO RECONSTRUCT STREAM</div>`;
+                playlistWrapper.innerHTML = `<div class="loading-state" style="color:#cf6666;">FAILED TO RECONSTRUCT STREAM</div>`;
                 return;
             }
             
-            // Clear out static design structural placeholders safely
+            // Safe clear-slate array structural execution
             playlistWrapper.innerHTML = '';
 
-            // Construct and inject every sound node entry systematically
+            // Generate interface nodes sequentially mapped to your tracks
             songs.forEach((song, index) => {
                 const displayIndex = String(index + 1).padStart(2, '0');
-                
                 const trackRow = document.createElement('div');
                 trackRow.className = 'audio-track';
                 trackRow.setAttribute('data-track-index', index);
@@ -67,21 +90,19 @@ if (scWidget && playlistWrapper) {
                     <span class="track-index">Void-${displayIndex}</span>
                 `;
                 
-                // Audio Selection Click Listener Logic Block
+                // Track Event Selectors
                 trackRow.addEventListener('click', () => {
-                    // Reset styling frameworks for unselected layout lines
                     document.querySelectorAll('.audio-track').forEach(t => t.classList.remove('active'));
                     trackRow.classList.add('active');
 
-                    // Command puppet widget to skip to the target entry and initialize playback
+                    // Skip the player stream index natively to current row positioning
                     scWidget.skip(index);
                     scWidget.play();
 
-                    // Instantly scale the track feed output match active control balances
-                    const currentVol = masterVolume ? masterVolume.value : 50;
-                    scWidget.setVolume(currentVol);
+                    // Instantly lock gain parameters to match the position of your interface slider
+                    scWidget.setVolume(masterVolume.value);
 
-                    // Update Main Interface Status Lines
+                    // Update HUD data layout values
                     if (nowPlayingHud) {
                         nowPlayingHud.textContent = `// listening to: ${song.title.toLowerCase()}`;
                     }
@@ -93,9 +114,11 @@ if (scWidget && playlistWrapper) {
     });
 }
 
-// Map real-time movement values on Master Volume to active engine components
-if (masterVolume && scWidget) {
-    masterVolume.addEventListener('input', (e) => {
-        scWidget.setVolume(e.target.value);
-    });
-}
+// Master Volume Slider Real-Time Balancer Interaction Execution
+masterVolume.addEventListener('input', (e) => {
+    const val = e.target.value;
+    volumePercentage.textContent = `${val}%`;
+    if (scWidget) {
+        scWidget.setVolume(val);
+    }
+});
