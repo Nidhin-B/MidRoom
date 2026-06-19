@@ -1,5 +1,5 @@
 /* ==========================================================================
-   RESET & SYSTEM CONFIGURATION
+   THE VOID CHAMBER CORE CORE THEME
    ========================================================================== */
 * {
     margin: 0;
@@ -8,59 +8,67 @@
 }
 
 body {
-    background-color: #040806;
-    color: #cbd5e1;
-    font-family: 'Courier New', Courier, monospace;
+    background-color: #030604;
+    color: #5c7e6d;
+    font-family: Georgia, serif;
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
 }
 
 /* ==========================================================================
-   MAIN UI INTERFACE LAYOUT
+   WORKSPACE LAYOUT
    ========================================================================== */
 .app-container {
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
-    padding: 20px;
+    padding: 24px;
 }
 
 .app-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #14241c;
 }
 
-.logo {
-    color: #355245;
-    font-weight: bold;
-    letter-spacing: 2px;
+.header-left {
+    display: flex;
+    gap: 12px;
 }
 
-.nav-btn {
-    background: transparent;
-    border: 1px solid #14241c;
-    color: #cbd5e1;
-    padding: 8px 16px;
-    cursor: pointer;
-    border-radius: 4px;
+.ui-btn {
+    background: rgba(20, 36, 26, 0.2);
+    border: 1px solid #162c20;
+    color: #4a6b5a;
+    padding: 6px 16px;
     font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 6px;
     transition: all 0.2s ease;
 }
 
-.nav-btn:hover {
-    background: #14241c;
-    border-color: #355245;
+.ui-btn:hover {
+    border-color: #2e543d;
+    color: #79e6a6;
 }
 
-/* Writing Space Canvas */
+.clear-btn {
+    padding: 6px 12px;
+}
+
+.typing-status {
+    color: #213d2c;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Canvas Input Area */
 .writing-area {
     flex: 1;
-    padding: 20px 0;
+    padding: 40px 0;
 }
 
 .writing-area textarea {
@@ -70,188 +78,195 @@ body {
     border: none;
     resize: none;
     outline: none;
-    color: #cbd5e1;
-    font-family: inherit;
-    font-size: 1.1rem;
-    line-height: 1.6;
+    color: #3b5c4b;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    line-height: 1.7;
+    transition: font-size 0.2s ease;
 }
 
-/* Footer HUD */
+/* Application Footer Elements */
 .app-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 15px;
-    border-top: 1px solid #14241c;
+    border-top: 1px solid rgba(22, 44, 32, 0.3);
+    padding-top: 16px;
     font-size: 0.85rem;
-    color: #355245;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: #2e543d;
+}
+
+.footer-action-btn {
+    background: transparent;
+    border: none;
+    color: #2e543d;
+    font-family: inherit;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.footer-action-btn:hover {
+    color: #5c7e6d;
+}
+
+.footer-right {
+    color: #213d2c;
 }
 
 /* ==========================================================================
-   CHAMBER MODAL SYSTEM (SCOPED CONFIGURATION)
+   CHAMBER DIALOG SYSTEM MODAL
    ========================================================================== */
 .settings-modal {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    background: rgba(4, 8, 6, 0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    z-index: 100;
+    width: 100%;
+    height: 100%;
+    background: rgba(3, 6, 4, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 20px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    transition: opacity 0.25s ease;
 }
 
-/* Active State Triggered via JavaScript */
 .settings-modal.active {
     opacity: 1;
     pointer-events: auto;
 }
 
 .settings-content {
-    background: #060a08;
-    border: 1px solid #14241c;
+    background: #060d09;
+    border: 1px solid #12241a;
     width: 100%;
-    max-width: 440px;
-    border-radius: 12px;
+    max-width: 400px;
+    border-radius: 14px;
     padding: 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
-    margin: auto 0;
-    flex-shrink: 0;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.9);
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 24px;
 }
 
 .modal-header h2 {
-    font-size: 1.2rem;
-    color: #cbd5e1;
-    letter-spacing: 1px;
+    font-family: sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 1.5px;
+    color: #4a6b5a;
 }
 
 .close-btn {
     background: transparent;
     border: none;
-    color: #355245;
-    font-size: 1.5rem;
+    color: #213d2c;
+    font-size: 1.4rem;
     cursor: pointer;
-    transition: color 0.2s ease;
 }
 
 .close-btn:hover {
-    color: #cbd5e1;
-}
-
-.divider {
-    border: 0;
-    height: 1px;
-    background: #14241c;
-    margin: 16px 0;
+    color: #79e6a6;
 }
 
 .settings-section {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
-.settings-section label {
-    display: block;
-    font-size: 0.8rem;
-    color: #355245;
-    text-transform: uppercase;
+.settings-section:last-child {
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-family: sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
     letter-spacing: 1px;
-    margin-bottom: 10px;
+    color: #213d2c;
+    margin-bottom: 16px;
 }
 
-/* Range Slider UI Customization */
-.volume-container {
-    width: 100%;
+/* Master Volume Slider Elements */
+.volume-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #5c7e6d;
+    margin-bottom: 12px;
 }
 
 #master-volume {
     -webkit-appearance: none;
     width: 100%;
-    background: #14241c;
-    height: 4px;
+    background: #0f1f15;
+    height: 3px;
     border-radius: 2px;
     outline: none;
+    margin-bottom: 18px;
 }
 
 #master-volume::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: #cbd5e1;
+    background: #8ef7c2;
     cursor: pointer;
-    transition: transform 0.1s ease;
-}
-
-#master-volume::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    background: #00ff66;
+    box-shadow: 0 0 6px rgba(142, 247, 194, 0.4);
 }
 
 /* ==========================================================================
-   DYNAMIC PLAYLIST COMPONENT SYSTEM (ANTI-BREAK LOCKDOWN)
+   DYNAMIC PLAYLIST WRAPPER LAYOUT
    ========================================================================== */
 .audio-playlist-wrapper {
-    max-height: 180px; 
+    max-height: 180px;
     overflow-y: auto;
-    border: 1px solid #14241c;
+    border: 1px solid #12241a;
     border-radius: 8px;
-    background: rgba(4, 8, 6, 0.4);
+    background: #040805;
     padding: 6px;
-    
-    /* Lock mechanical scrolls natively to prevent canvas jitter */
     overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: #14241c transparent;
 }
 
-/* Custom Scroll Track Rules */
 .audio-playlist-wrapper::-webkit-scrollbar {
     width: 4px;
 }
-.audio-playlist-wrapper::-webkit-scrollbar-track {
-    background: transparent;
-}
 .audio-playlist-wrapper::-webkit-scrollbar-thumb {
-    background: #14241c;
+    background: #12241a;
     border-radius: 2px;
 }
-.audio-playlist-wrapper::-webkit-scrollbar-thumb:hover {
-    background: #355245;
+
+.loading-state {
+    font-size: 0.8rem;
+    color: #213d2c;
+    text-align: center;
+    padding: 24px 0;
+    font-style: italic;
 }
 
-/* Row Component Elements */
+/* Row UI Nodes */
 .audio-track {
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    padding: 10px 12px;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    transition: all 0.2s ease;
-    user-select: none;
-    white-space: nowrap;
-    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
     margin-bottom: 4px;
+    transition: background 0.2s ease;
 }
 
 .audio-track:last-child {
@@ -259,49 +274,132 @@ body {
 }
 
 .audio-track:hover {
-    background: rgba(20, 36, 28, 0.3);
+    background: rgba(18, 36, 26, 0.4);
 }
 
-/* Glowing Target UI Selections */
 .audio-track.active {
-    background: rgba(20, 36, 28, 0.6);
-    border-color: #355245;
+    background: rgba(18, 36, 26, 0.7);
+    border: 1px solid #162c20;
 }
 
 .track-meta {
     display: flex;
     align-items: center;
     gap: 12px;
-    min-width: 0; /* Critical compression shield */
+    min-width: 0;
 }
 
 .card-status {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
-    background: #14241c;
-    transition: all 0.2s ease;
+    background: #12241a;
     flex-shrink: 0;
+    transition: all 0.2s ease;
 }
 
 .audio-track.active .card-status {
-    background: #00ff66;
-    box-shadow: 0 0 8px rgba(0, 255, 102, 0.8);
+    background: #8ef7c2;
+    box-shadow: 0 0 8px #8ef7c2;
 }
 
 .card-name {
-    font-size: 0.8rem;
-    color: #cbd5e1;
     font-family: sans-serif;
+    font-size: 0.85rem;
+    color: #5c7e6d;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
+.audio-track.active .card-name {
+    color: #8ef7c2;
+}
+
 .track-index {
-    font-size: 0.75rem;
-    color: #355245;
     font-family: sans-serif;
-    letter-spacing: 0.5px;
+    font-size: 0.8rem;
+    color: #213d2c;
     flex-shrink: 0;
+}
+
+/* ==========================================================================
+   AESTHETIC CONTROLS (TEXT SCALING & TOGGLES)
+   ========================================================================== */
+.tuning-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #5c7e6d;
+    margin-bottom: 16px;
+}
+
+/* Pill Selection Layout Options */
+.scale-buttons {
+    display: flex;
+    background: #040805;
+    border: 1px solid #12241a;
+    padding: 2px;
+    border-radius: 6px;
+}
+
+.scale-btn {
+    background: transparent;
+    border: none;
+    color: #2e543d;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.scale-btn.active {
+    background: #12241a;
+    color: #8ef7c2;
+}
+
+/* iOS Minimal Switch Component */
+.switch-container {
+    position: relative;
+    display: inline-block;
+    width: 32px;
+    height: 18px;
+}
+
+.switch-container input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider-switch {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #12241a;
+    border-radius: 18px;
+    transition: .2s;
+}
+
+.slider-switch:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #2e543d;
+    border-radius: 50%;
+    transition: .2s;
+}
+
+input:checked + .slider-switch {
+    background-color: rgba(142, 247, 194, 0.2);
+}
+
+input:checked + .slider-switch:before {
+    transform: translateX(14px);
+    background-color: #8ef7c2;
 }
