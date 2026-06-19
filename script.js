@@ -13,7 +13,7 @@ const musicPlaylist = [
     { title: "Stuck On You", artist: "Nowlu", youtubeId: "3JWTaaS7LdU" },
     { title: "Bumblebee", artist: "Bambee", youtubeId: "YQE25k7l7p0" },
     { title: "Dandelions", artist: "Ruth B.", youtubeId: "m2Vw-V3yqK4" },
-    { title: "Bed Chem", artist: "Sabrina Carpenter", youtubeId: "d2bI9Z_ZId8" },
+    { title: "Mantra", artist: "JENNIE", youtubeId: "g5H664eB1P4" },
     { title: "CHIHIRO", artist: "Billie Eilish", youtubeId: "BY_X0YI-JMM" },
     { title: "Manchild", artist: "Sabrina Carpenter", youtubeId: "gGdGFtwCNBE" },
     { title: "From The Start", artist: "Laufey", youtubeId: "36YnV9STBqc" },
