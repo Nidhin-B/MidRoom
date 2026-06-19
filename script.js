@@ -31,13 +31,38 @@ let currentDraftId = null;
 let autoSaveTimer = null;
 let particlesEnabled = true;
 
-// 2. INITIALIZE BACKGROUND SOUNDCLOUD GHOST PLAYER
+// 2. INITIALIZE BACKGROUND SOUNDCLOUD GHOST PLAYER WITH AUTO-HEALING
 const scIframe = document.getElementById('ghost-sc-player');
 let scWidget = null;
 
-if (scIframe && window.SC) {
-    scWidget = SC.Widget(scIframe);
+function initSoundCloudWidget() {
+    if (!scIframe) return false;
+    if (scWidget) return true; // Already initialized
+
+    if (window.SC && window.SC.Widget) {
+        // Force secure handshake baseline URL if empty so API tunnel can open
+        if (!scIframe.getAttribute('src') || scIframe.getAttribute('src') === "") {
+            scIframe.setAttribute('src', 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1');
+        }
+        // Force cross-origin permissions so browser security shields don't block audio
+        scIframe.setAttribute('allow', 'autoplay; encrypted-media');
+        
+        scWidget = window.SC.Widget(scIframe);
+        return true;
+    }
+    return false;
 }
+
+// Attempt immediate boot initialization
+initSoundCloudWidget();
+
+// Fallback: If library script was async delayed, catch it on window load
+window.addEventListener('load', () => {
+    if (!scWidget) {
+        initSoundCloudWidget();
+        loadChamberSettings(); // Retries loading settings once engine is active
+    }
+});
 
 // Local keyboard layer initialization (kept for zero-latency feedback)
 const keyboardClickSFXUrl = 'https://assets.mixkit.co/sfx/preview/mixkit-mechanical-keyboard-single-press-824.mp3';
@@ -115,7 +140,8 @@ function saveChamberSettings() {
     audioTracks.forEach(track => {
         if (track.classList.contains('active')) {
             if (track.hasAttribute('data-sc-url')) {
-                activeSoundName = track.querySelector('.card-name').textContent;
+                const cardNameEl = track.querySelector('.card-name');
+                activeSoundName = cardNameEl ? cardNameEl.textContent : "";
                 activeStreamingUrl = track.getAttribute('data-sc-url');
             } else if (track.getAttribute('data-sound') === 'keyboard') {
                 isKeyboardActive = true;
@@ -165,26 +191,27 @@ function loadChamberSettings() {
     particlesEnabled = settings.particlesEnabled !== undefined ? settings.particlesEnabled : true;
     if (particleSwitch) particleSwitch.checked = particlesEnabled;
 
-    // Restore active audio tracks securely
+    // Restore active audio tracks securely if engine is online
     audioTracks.forEach(track => {
         if (track.hasAttribute('data-sc-url')) {
-            const name = track.querySelector('.card-name').textContent;
+            const cardNameEl = track.querySelector('.card-name');
+            const name = cardNameEl ? cardNameEl.textContent : "";
             const url = track.getAttribute('data-sc-url');
 
             if ((url === settings.currentStreamingUrl || name === settings.currentStreamingName) && scWidget) {
                 track.classList.add('active');
                 
-                // Unbind previous endpoints to stop duplicate queues at startup
-                scWidget.unbind(SC.Widget.Events.READY);
-                scWidget.unbind(SC.Widget.Events.PLAY);
+                // Clear previous listeners to block memory stack leaks
+                scWidget.unbind(window.SC.Widget.Events.READY);
+                scWidget.unbind(window.SC.Widget.Events.PLAY);
 
                 scWidget.load(url, { auto_play: true, show_artwork: false, buying: false, sharing: false, download: false });
                 
-                scWidget.bind(SC.Widget.Events.READY, () => {
+                scWidget.bind(window.SC.Widget.Events.READY, () => {
                     scWidget.setVolume(masterVolume ? masterVolume.value : 50);
                 });
 
-                scWidget.bind(SC.Widget.Events.PLAY, () => {
+                scWidget.bind(window.SC.Widget.Events.PLAY, () => {
                     scWidget.getCurrentSound((sound) => {
                         if (sound) {
                             const cardName = track.querySelector('.card-name');
@@ -216,6 +243,11 @@ audioTracks.forEach(track => {
         const isTrackStreaming = track.hasAttribute('data-sc-url');
 
         if (isTrackStreaming) {
+            // On-demand recovery check in case SoundCloud loaded late
+            if (!scWidget) {
+                initSoundCloudWidget();
+            }
+
             if (track.classList.contains('active')) {
                 track.classList.remove('active');
                 if (scWidget) scWidget.pause();
@@ -226,18 +258,18 @@ audioTracks.forEach(track => {
                 const targetUrl = track.getAttribute('data-sc-url');
                 
                 if (scWidget) {
-                    // UNBIND GHOST QUEUES: Purges event memory leaks before firing new instance
-                    scWidget.unbind(SC.Widget.Events.READY);
-                    scWidget.unbind(SC.Widget.Events.PLAY);
+                    // UNBIND GHOST QUEUES: Safely purges dynamic listeners before rewriting track source
+                    scWidget.unbind(window.SC.Widget.Events.READY);
+                    scWidget.unbind(window.SC.Widget.Events.PLAY);
 
                     scWidget.load(targetUrl, { auto_play: true, show_artwork: false, buying: false, sharing: false, download: false });
                     
-                    scWidget.bind(SC.Widget.Events.READY, () => {
+                    scWidget.bind(window.SC.Widget.Events.READY, () => {
                         scWidget.setVolume(masterVolume ? masterVolume.value : 50);
                     });
 
-                    // DYNAMIC ATTRIBUTION: Extracts metadata from stream loop automatically
-                    scWidget.bind(SC.Widget.Events.PLAY, () => {
+                    // DYNAMIC METADATA DRIVER: Overwrites track UI slots with official API payload
+                    scWidget.bind(window.SC.Widget.Events.PLAY, () => {
                         scWidget.getCurrentSound((sound) => {
                             if (sound) {
                                 const cardName = track.querySelector('.card-name');
@@ -249,6 +281,8 @@ audioTracks.forEach(track => {
                             }
                         });
                     });
+                } else {
+                    showToast("Audio server connecting... try again in a second");
                 }
             }
         } else {
@@ -433,7 +467,6 @@ if (saveBtn) {
     });
 }
 
-// Fix parameter coupling names to maintain consistency with the blueprint map
 function deleteDraft(id, event) {
     if (event) event.stopPropagation(); 
     let drafts = getDrafts();
@@ -490,7 +523,7 @@ if (downloadBtn) {
     });
 }
 
-// 10. UPGRADED MULTI-TONE AMBIENT PARTICLE ENGINE
+// 10. MULTI-TONE AMBIENT PARTICLE ENGINE
 const canvas = document.getElementById('ambient-canvas');
 if (canvas) {
     const ctx = canvas.getContext('2d');
@@ -569,7 +602,7 @@ if (canvas) {
     animateParticles();
 }
 
-// Final systems initialization
+// Final systems initialization delay loop to prevent startup layout blocking
 setTimeout(() => {
     loadChamberSettings();
 }, 600);
